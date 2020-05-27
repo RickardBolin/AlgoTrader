@@ -3,5 +3,6 @@
 Den mest extrema hedgefonden
 
 ```
-pip(pa din mamma) install kompisfonden
+https://github.com/ranaroussi/yfinance
 ```
+
