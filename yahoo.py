@@ -1,9 +1,4 @@
 import yfinance as yf
 
-tickers = yf.Tickers('msft aapl goog')
-# ^ returns a named tuple of Ticker objects
-
-# access each ticker using (example)
-tickers.msft.info
-tickers.aapl.history(period="1mo")
-tickers.goog.actions
+data = yf.download(tickers="AAPL", period="5d", interval="1m")
+print(data)
