@@ -10,13 +10,14 @@ register_matplotlib_converters()
 from backend import stock_data as sd
 from collections import namedtuple
 from tkfilterlist import FilterList
+from functools import partial
 
 
 class StockWindow:
 
     def __init__(self, StockTab):
         self.StockTab = StockTab
-        self.StockWindow = StockPlot(StockTab)
+        self.StockPlot = StockPlot(StockTab)
         self.StockList = StockList(StockTab)
 
 
@@ -37,11 +38,12 @@ class StockPlot:
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
-    def update_stock(self, stock):
-        stock_data = sd.get_stock_data(stock, start="2019-05-25", interval="1d")
+    def update_stock(self, ticker):
+        stock_data = sd.get_stock_data(ticker, start="2019-05-25", interval="1d")
         self.graph[0].set_ydata(stock_data["Close"])
         self.a.set_ylim([0.9*min(stock_data["Close"]), 1.1*max(stock_data["Close"])])
         self.canvas.draw()
+
 
 
 class StockList:
@@ -59,6 +61,12 @@ class StockList:
                             item[0].lower().startswith(text.lower()) or item[1].lower().startswith(text.lower()))
         
         self.stock_list.pack(side="top", expand=1, fill="both")
+        self.stock_list.bind('<Return>', self.search)
+
+    def search(self, event):
+        ticker = self.stock_list.selection()[0]
+        StockPlot.update_stock(self.root.StockPlot.stock_frame, ticker)
+
 
     @staticmethod
     def load_ticker_name_info(exchange):
