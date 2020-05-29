@@ -17,34 +17,24 @@ class StockWindow:
         self.stock_frame = tk.Frame(self.root)
         self.stock_frame.pack(side=tk.BOTTOM)
 
-        # Create figure with some data
-        self.figure = Figure(figsize=(5,5), dpi=100)
+        # Initialize stock window with Apple stock data
+        self.figure = Figure(figsize=(5, 5), dpi=100)
+        print(self.figure)
         stock_data = sd.get_stock_data("AAPL", start="2019-05-25", interval="1d")
         self.a = self.figure.add_subplot(111)
-        self.graph = self.a.plot(stock_data)
+        self.graph = self.a.plot(stock_data["Close"])
         self.canvas = FigureCanvasTkAgg(self.figure, self.stock_frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        #self.plot_stock()
 
-    def plot_stock(self, stock):
+    def update_stock(self, stock):
         stock_data = sd.get_stock_data(stock, start="2019-05-25", interval="1d")
-        #f = Figure(figsize=(5,5), dpi=100)
-        #a = f.add_subplot(111)
-        self.graph[3].set_ydata(stock_data["Close"])
+        self.graph[0].set_ydata(stock_data["Close"])
+        self.a.set_ylim([0.9*min(stock_data["Close"]), 1.1*max(stock_data["Close"])])
         self.canvas.draw()
-        self.canvas.flush_events()
-
-        #canvas = FigureCanvasTkAgg(f, self.stock_frame)
-        #canvas.draw()
-        #canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-
-        #toolbar = NavigationToolbar2Tk(canvas, self)
-        #toolbar.update()
-        #canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
 
-class Buttons():
+class Buttons:
 
     def __init__(self, root):
         self.root = root
@@ -63,9 +53,9 @@ class Buttons():
 
     def search_stock(self, event):
         stock = self.stock_entry.get()
-        StockWindow.plot_stock(stock)
-        print("Stock: " + stock)
+        StockWindow.update_stock(stock)
         return 0
+
 
 root = tk.Tk()
 root.minsize(640, 400)
