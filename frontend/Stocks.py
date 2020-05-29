@@ -10,7 +10,6 @@ register_matplotlib_converters()
 from backend import stock_data as sd
 from collections import namedtuple
 from tkfilterlist import FilterList
-from functools import partial
 
 
 class StockWindow:
@@ -65,7 +64,6 @@ class StockList:
 
     def search(self, event):
         ticker = self.stock_list.selection()[0]
-        StockPlot.update_stock(self.root.StockPlot.stock_frame, ticker)
 
 
     @staticmethod
