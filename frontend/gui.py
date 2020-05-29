@@ -2,12 +2,12 @@ import sys
 sys.path.append("..")
 
 import tkinter as tk
-from backend import stock_data as sd
 from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
+from backend import stock_data as sd
 
 
 class StockWindow:
