@@ -17,14 +17,14 @@ class StockWindow:
 
     def __init__(self, StockTab):
         self.StockTab = StockTab
-        self.StockPlot = StockPlot(StockTab)
-        self.StockList = StockList(StockTab)
+        self.StockPlot = StockPlot(StockTab, self)
+        self.StockList = StockList(StockTab, self.StockPlot)
 
 
 class StockPlot:
 
-    def __init__(self, root):
-
+    def __init__(self, root, StockWindow):
+        self.StockWindow = StockWindow
         self.root = root
         self.stock_frame = tk.Frame(self.root)
         self.stock_frame.pack(side="left", anchor=tk.NW)
@@ -45,10 +45,10 @@ class StockPlot:
         self.canvas.draw()
 
 
-
 class StockList:
 
-    def __init__(self, root):
+    def __init__(self, root, StockPlot):
+        self.StockPlot = StockPlot
         self.root = root
         self.stock_list_frame = tk.Frame(self.root)
         self.stock_list_frame.pack(anchor=tk.NE)
@@ -65,7 +65,7 @@ class StockList:
 
     def search(self, event):
         ticker = self.stock_list.selection()[0]
-        StockPlot.update_stock(self.root.StockPlot.stock_frame, ticker)
+        StockPlot.update_stock(self.StockPlot, ticker)
 
 
     @staticmethod
