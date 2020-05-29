@@ -9,6 +9,7 @@ from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 from backend import stock_data as sd
 from collections import namedtuple
+from tkfilterlist import FilterList
 
 
 class StockWindow:
@@ -69,7 +70,7 @@ class StockList:
         self.root = root
         self.stock_list_frame = tk.Frame(self.root)
         self.stock_list_frame.pack(anchor=tk.NE)
-
+        '''
         self.stock_list = tk.Listbox(self.stock_list_frame, width=27, height=27)
         self.stock_list.pack(side="left")
 
@@ -78,11 +79,18 @@ class StockList:
         self.stock_scroller.pack(side="right", fill="y")
 
         self.stock_list.config(yscrollcommand=self.stock_scroller.set)
-
+        '''
         stock_names = self.load_ticker_name_info("NASDAQ")
+        self.stock_list = FilterList(self.stock_list_frame,
+                source=stock_names,
+                display_rule=lambda item: item[0],
+                filter_rule=lambda item, text:
+                            item[0].lower().startswith(text.lower()))
+        
+        self.stock_list.pack(side="top", expand=1, fill="both")
 
-        for i, stock_name in enumerate(stock_names):
-            self.stock_list.insert(i, stock_name.ticker + ": " + stock_name.name)
+#        for i, stock_name in enumerate(stock_names):
+#            self.stock_list.insert(i, stock_name.ticker + ": " + stock_name.name)
 
     @staticmethod
     def load_ticker_name_info(exchange):
