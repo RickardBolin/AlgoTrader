@@ -18,7 +18,6 @@ class StockWindow:
         self.StockTab = StockTab
         self.StockWindow = StockPlot(StockTab)
         self.StockList = StockList(StockTab)
-        self.Buttons = Buttons(StockTab)
 
 
 class StockPlot:
@@ -45,52 +44,21 @@ class StockPlot:
         self.canvas.draw()
 
 
-class Buttons:
-
-    def __init__(self, root):
-        self.root = root
-        self.button_frame = tk.Frame(self.root, width=30, height=10)
-        self.button_frame.pack(anchor=tk.SE)
-
-        self.stock_entry = tk.Entry(self.button_frame)
-        self.stock_entry.grid(row=0, column=1)
-
-        self.search_button = tk.Button(self.button_frame, text="Search")
-        self.search_button.grid(row=0)
-        self.search_button.bind("<Button-1>", self.search_stock)
-
-    def search_stock(self, event):
-        stock = self.stock_entry.get()
-        StockPlot.update_stock(stock)
-
-
 class StockList:
 
     def __init__(self, root):
         self.root = root
         self.stock_list_frame = tk.Frame(self.root)
         self.stock_list_frame.pack(anchor=tk.NE)
-        '''
-        self.stock_list = tk.Listbox(self.stock_list_frame, width=27, height=27)
-        self.stock_list.pack(side="left")
-
-        self.stock_scroller = tk.Scrollbar(self.stock_list_frame, orient="vertical")
-        self.stock_scroller.config(command=self.stock_list.yview)
-        self.stock_scroller.pack(side="right", fill="y")
-
-        self.stock_list.config(yscrollcommand=self.stock_scroller.set)
-        '''
         stock_names = self.load_ticker_name_info("NASDAQ")
         self.stock_list = FilterList(self.stock_list_frame,
+                height=27,
                 source=stock_names,
-                display_rule=lambda item: item[0] + " | " + item[1],
+                display_rule=lambda item: item[0] + ": " + item[1],
                 filter_rule=lambda item, text:
                             item[0].lower().startswith(text.lower()) or item[1].lower().startswith(text.lower()))
         
         self.stock_list.pack(side="top", expand=1, fill="both")
-
-#        for i, stock_name in enumerate(stock_names):
-#            self.stock_list.insert(i, stock_name.ticker + ": " + stock_name.name)
 
     @staticmethod
     def load_ticker_name_info(exchange):
