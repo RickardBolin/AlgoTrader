@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from functools import partial
 import matplotlib
 #matplotlib.use("TkAgg")
@@ -6,7 +7,15 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from matplotlib.figure import Figure
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
+import sys
+sys.path.append("..")
 from backend import stock_data as sd
+
+
+style = ttk.Style()
+print(style.theme_names())
+style.theme_use('alt')
+
 
 
 class StockWindow:
