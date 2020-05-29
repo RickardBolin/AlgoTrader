@@ -1,5 +1,9 @@
+import sys
+sys.path.append("..")
+
 import tkinter as tk
 from backend import stock_data as sd
+from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
 from pandas.plotting import register_matplotlib_converters
@@ -38,7 +42,6 @@ class Buttons:
         self.button_frame.pack(anchor=tk.SE)
 
         self.stock_entry = tk.Entry(self.button_frame)
-
         self.stock_entry.grid(row=0, column=1)
 
         self.search_button = tk.Button(self.button_frame, text="Search")
