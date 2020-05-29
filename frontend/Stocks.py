@@ -2,7 +2,6 @@ import sys
 sys.path.append("..")
 
 import tkinter as tk
-from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
 from pandas.plotting import register_matplotlib_converters
@@ -11,6 +10,15 @@ from backend import stock_data as sd
 
 
 class StockWindow:
+
+    def __init__(self, StockTab):
+        self.StockTab = StockTab
+        self.StockWindow = StockPlot(StockTab)
+        self.StockBox = StockBox(StockTab)
+        self.Buttons = Buttons(StockTab)
+
+
+class StockPlot:
 
     def __init__(self, root):
 
@@ -50,8 +58,7 @@ class Buttons:
 
     def search_stock(self, event):
         stock = self.stock_entry.get()
-        StockWindow.update_stock(stock)
-        return 0
+        StockPlot.update_stock(stock)
 
 
 class StockBox:
@@ -73,10 +80,3 @@ class StockBox:
         for i in range(100):
             self.stock_box.insert(i, "STONKS")
 
-
-root = tk.Tk()
-root.minsize(800, 500)
-StockWindow = StockWindow(root)
-StockBox = StockBox(root)
-Buttons = Buttons(root)
-root.mainloop()
