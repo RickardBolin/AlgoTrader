@@ -1,6 +1,7 @@
 import tkinter as tk					 
 from tkinter import ttk
 from Stocks import StockWindow
+from algorithms import AlgorithmWindow
 
 root = tk.Tk()
 root.style = ttk.Style()
@@ -20,6 +21,7 @@ tabControl.add(tab3, text='Portfolios')
 tabControl.pack(expand=1, fill="both")
 
 Stocks = StockWindow(tab1)
+Algorithms = AlgorithmWindow(tab2)
 
 root.mainloop()
 
