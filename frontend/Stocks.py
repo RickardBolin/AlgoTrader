@@ -65,7 +65,7 @@ class StockList:
 
     def search(self, event):
         ticker = self.stock_list.selection()[0]
-        StockPlot.update_stock(self.StockPlot, ticker)
+        self.StockPlot.update_stock(ticker)
 
 
     @staticmethod
