@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import ttk
 from functools import partial
 import matplotlib
 #matplotlib.use("TkAgg")
@@ -10,12 +9,6 @@ register_matplotlib_converters()
 import sys
 sys.path.append("..")
 from backend import stock_data as sd
-
-
-style = ttk.Style()
-print(style.theme_names())
-style.theme_use('alt')
-
 
 
 class StockWindow:
@@ -66,7 +59,7 @@ class Buttons:
         return 0
 
 
-root = tk.Tk()
+root = ttk.Tk()
 root.minsize(640, 400)
 StockWindow = StockWindow(root)
 Buttons = Buttons(root)
