@@ -83,9 +83,9 @@ class StockList:
         stock_names = self.load_ticker_name_info("NASDAQ")
         self.stock_list = FilterList(self.stock_list_frame,
                 source=stock_names,
-                display_rule=lambda item: item[0],
+                display_rule=lambda item: item[0] + " | " + item[1],
                 filter_rule=lambda item, text:
-                            item[0].lower().startswith(text.lower()))
+                            item[0].lower().startswith(text.lower()) or item[1].lower().startswith(text.lower()))
         
         self.stock_list.pack(side="top", expand=1, fill="both")
 

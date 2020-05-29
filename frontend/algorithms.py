@@ -63,16 +63,13 @@ class AlgorithmBox:
         self.stock_box_frame = tk.Frame(self.root)
         self.stock_box_frame.pack(anchor=tk.NE)
 
-        self.stock_box = tk.Listbox(self.stock_box_frame, width=27, height=27)
-        self.stock_box.pack(side="left")
-
-        self.stock_scroller = tk.Scrollbar(self.stock_box_frame, orient="vertical")
-        self.stock_scroller.config(command=self.stock_box.yview)
-        self.stock_scroller.pack(side="right", fill="y")
-
-        self.stock_box.config(yscrollcommand=self.stock_scroller.set)
-
         files = os.listdir("../algorithms")
-        for i,alg in enumerate(files):
-            self.stock_box.insert(i, alg)
+        self.stock_list = FilterList(self.stock_list_frame,
+                source=files,
+                display_rule=lambda item: item[0] + " | " + item[1],
+                filter_rule=lambda item, text:
+                            item[0].lower().startswith(text.lower()) or item[1].lower().startswith(text.lower()))
+        
+        self.stock_list.pack(side="top", expand=1, fill="both")
+
 
