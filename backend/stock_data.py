@@ -11,3 +11,4 @@ def plot_stock(ticker, start, end=None, interval=None):
 
 def get_stock_data(ticker, start, end=None, interval=None):
 	return yf.download(tickers=ticker, start=start, end=end, interval=interval)
+
