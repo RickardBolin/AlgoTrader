@@ -80,3 +80,4 @@ class Workspace:
         self.workspace_list.insert(index, new_string)
         self.workspace_list.activate(index)
         self.workspace_list.update()
+

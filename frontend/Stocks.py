@@ -49,6 +49,10 @@ class StockPlot:
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
+        self.toolbar = NavigationToolbar2Tk(self.canvas, self.stock_frame)
+        self.toolbar.update()
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
     def update_stock_plot(self, tickers):
         """
         UNFINISHED
@@ -89,7 +93,7 @@ class StockList:
     def __init__(self, root):
         self.root = root
 
-        self.stock_list_frame = tk.Frame(self.root)
+        self.stock_list_frame = tk.LabelFrame(self.root, text='Stocks')
         self.stock_list_frame.pack(anchor=tk.NE)
         stock_names = self.load_ticker_name_info("NASDAQ")
         self.stock_list = FilterList(self.stock_list_frame,
@@ -130,6 +134,7 @@ class StockList:
         """
         with open("../Data/Tickers/" + exchange + ".csv") as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
+            next(csv_file)
             company = namedtuple("company_info", ["ticker", "name"])
             stock_info = [company(stock[0], stock[1]) for stock in csv_reader]
             return stock_info

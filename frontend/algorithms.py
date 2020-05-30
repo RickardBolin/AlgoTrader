@@ -23,9 +23,28 @@ class AlgorithmWindow:
     def update_plot(self, event):
         
         item = self.AlgorithmBox.stock_list.selection()
-        print(item)
-        self.PlotWindow.a.set_title(item)
+        bot = self.load_agent(item)
+        ans = bot.algorithm(bot,"waf")
+        self.PlotWindow.a.set_title(ans)
         self.PlotWindow.canvas.draw()
+
+    def load_agent(self,name):
+        '''Loads a bot from the bots directory and validates
+        its interface'''
+        mod_name = "trading_algorithms." + name + ".main"
+        mod = __import__(mod_name, fromlist=['Bot'])
+        klass = getattr(mod, 'Bot')
+        self.has_function(klass, name, "algorithm")
+
+        return klass
+
+
+    def has_function(self,module, bot_name, function_name):
+        '''Checks if bot has the named function'''
+        op = getattr(module, function_name, None)
+        if not callable(op):
+            raise NotImplementedError('Bot "{}" does not implement method: "{}"'.format(
+                bot_name, function_name))
 
 
 class PlotWindow:
@@ -72,7 +91,7 @@ class AlgorithmBox:
         self.stock_list_frame = tk.Frame(self.root)
         self.stock_list_frame.pack(anchor=tk.NE)
 
-        files = os.listdir("../algorithms")
+        files = os.listdir("../trading_algorithms")
         self.stock_list = FilterList(self.stock_list_frame,
                 source=files,
                 display_rule=lambda item: item,
