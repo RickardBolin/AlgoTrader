@@ -11,6 +11,7 @@ from backend import stock_data as sd
 from collections import namedtuple
 from tkfilterlist import FilterList
 from functools import partial
+import numpy as np
 
 
 class StockWindow:
@@ -40,8 +41,11 @@ class StockPlot:
 
     def update_stock(self, ticker):
         stock_data = sd.get_stock_data(ticker, start="2019-05-25", interval="1d")
-        self.graph[0].set_ydata(stock_data["Close"])
+        #print(stock_data.index.to_numpy())
+        self.graph[0].set_data([stock_data.index,stock_data["Close"]])
+
         self.a.set_ylim([0.9*min(stock_data["Close"]), 1.1*max(stock_data["Close"])])
+        self.a.set_xlim([stock_data.index[0], stock_data.index[-1]])
         self.canvas.draw()
 
 
