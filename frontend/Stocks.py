@@ -24,19 +24,8 @@ class StockWindow:
 
     def __init__(self, stock_tab):
         self.stock_tab = stock_tab
-
         self.stock_plot = StockPlot(self.stock_tab)
-        self.workspace = Workspace(self.stock_tab, self.stock_plot)
-        self.stock_list = StockList(self.stock_tab, self.workspace)
-
-
-class Workspace:
-
-    def __init__(self, root, stock_plot):
-        self.root = root
-        self.stock_plot = stock_plot
-        self.workspace_frame = tk.Frame(self.root)
-        self.workspace_frame.pack(anchor=tk.NW)
+        self.stock_list = StockList(self.stock_tab)
 
 
 class StockPlot:
@@ -65,7 +54,7 @@ class StockPlot:
         UNFINISHED
         Updates the stock plot to the specified ticker.
         Shall also be expanded to allow specifications of dates, interval etc.
-        :param ticker: Stock ticker of stock to be plotted.
+        :param tickers: Stock tickers of stock to be plotted.
         """
 
         # We remove all line and plot new ones according to the tickers, might want to change this to be more efficient!
@@ -95,8 +84,7 @@ class StockList:
     Contains its rootframe and the stock plot which shall be updated.
     """
 
-    def __init__(self, root, stock_plot):
-        self.stock_plot = stock_plot
+    def __init__(self, root):
         self.root = root
 
         self.stock_list_frame = tk.Frame(self.root)
@@ -111,17 +99,24 @@ class StockList:
                                          text.lower()))
 
         self.stock_list.pack(side="top", expand=1, fill="both")
-        self.stock_list.bind('<Return>', self.search)
-        self.stock_list.bind('<Double-Button-1>', self.search)
+        self.stock_list.bind('<Return>', self.add_to_workspace)
+        self.stock_list.bind('<Double-Button-1>', self.add_to_workspace)
         self.stock_list.focus_set()
 
-    def search(self, event):
+    def open_communication_with_workspace(self, workspace):
         """
-        SKALL ÄNDRAS TILL ATT UPPDATERA WORKSPACE!!!!!!!!!!!!
-        Finds the
+        Gives stock list possibility to modify workspace. Perhaps silly solution, but will have to do for now.
+        :param workspace:
         """
-        tickers = [self.stock_list.selection()[0]]
-        self.stock_plot.update_stock_plot(tickers)
+        self.workspace = workspace
+
+    def add_to_workspace(self, event):
+        """
+        Adds clicked ticker to the workspace.
+        :param event: Eventhandler.
+        """
+        ticker = self.stock_list.selection()[0]
+        self.workspace.append(ticker)
 
     @staticmethod
     def load_ticker_name_info(exchange):

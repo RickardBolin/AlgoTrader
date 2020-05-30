@@ -9,8 +9,8 @@ from matplotlib.figure import Figure
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 from backend import stock_data as sd
-
 from tkfilterlist import FilterList
+
 
 class AlgorithmWindow:
 
@@ -43,7 +43,6 @@ class PlotWindow:
         self.canvas = FigureCanvasTkAgg(self.figure, self.stock_frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
-
 
 
 class Buttons:

@@ -2,26 +2,43 @@ import tkinter as tk
 from tkinter import ttk
 from Stocks import StockWindow
 from algorithms import AlgorithmWindow
-
-root = tk.Tk()
-root.style = ttk.Style()
-#('clam', 'alt', 'default', 'classic')
-root.title("Kompisfonden") 
-tabControl = ttk.Notebook(root)
-
-tab1 = ttk.Frame(tabControl) 
-tab2 = ttk.Frame(tabControl)
-tab3 = ttk.Frame(tabControl)
+from Workspace import Workspace
 
 
-tabControl.add(tab1, text='Stocks')
-tabControl.add(tab2, text='Algorithms')
-tabControl.add(tab3, text='Portfolios')
+def construct_windows(root):
+    tab_frame = ttk.Frame(root)
+    tab_frame.pack(side='right')
+    tab_control = ttk.Notebook(tab_frame)
 
-tabControl.pack(expand=1, fill="both")
+    tab1 = ttk.Frame(tab_control)
+    tab2 = ttk.Frame(tab_control)
+    tab3 = ttk.Frame(tab_control)
 
-Stocks = StockWindow(tab1)
-Algorithms = AlgorithmWindow(tab2)
+    tab_control.add(tab1, text='Stocks')
+    tab_control.add(tab2, text='Algorithms')
+    tab_control.add(tab3, text='Portfolios')
 
-root.mainloop()
+    tab_control.pack(expand=1, fill="both")
+    return StockWindow(tab1), AlgorithmWindow(tab2)
+
+
+def construct_workspace(root):
+    workspace_frame = ttk.LabelFrame(root, text='Workspace')
+    workspace_frame.pack(side='left')
+    return Workspace(workspace_frame)
+
+
+if __name__ == '__main__':
+    root = tk.Tk()
+    root.style = ttk.Style()
+    # ('clam', 'alt', 'default', 'classic')
+    root.title("Kompisfonden")
+    workspace = construct_workspace(root)
+    stock_window, algorithm_window = construct_windows(root)
+
+    # Open communications
+    stock_window.stock_list.open_communication_with_workspace(workspace)
+    workspace.open_communication_with_stock_window(stock_window)
+
+    root.mainloop()
 
