@@ -32,23 +32,20 @@ class StockPlot:
         self.figure = Figure(figsize=(5, 5), dpi=100)
         stock_data = sd.get_stock_data("AAPL", start="2013-05-25", interval="1d")
         self.a = self.figure.add_subplot(111)
-        self.graph = self.a.plot(stock_data["Close"])
+        self.graph = self.a.plot(stock_data["Close"], label="AAPL")
+        self.a.legend()
         self.canvas = FigureCanvasTkAgg(self.figure, self.stock_frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
     def update_stock(self, ticker):
-        stock_data = sd.get_stock_data(ticker, start="2013-05-25", interval="1d")
-        x = stock_data["Close"]
-        print(x.keys())
-        dates = x.keys()
-        prices = x.get("Close")
-        print(dates)
-        print(prices)
-        self.graph[0].set_data(dates[1:], prices[1:])
-        print(self.graph[0])
 
-        #self.a.set_ylim([0.9*min(stock_data["Close"]), 1.1*max(stock_data["Close"])])
+        stock_data = sd.get_stock_data(ticker, start="2019-05-25", interval="1d")
+        self.graph[0].set_data([stock_data.index, stock_data["Close"]])
+        self.a.legend(labels=[ticker])
+
+        self.a.set_ylim([0.9*min(stock_data["Close"]), 1.1*max(stock_data["Close"])])
+        self.a.set_xlim([stock_data.index[0], stock_data.index[-1]])
         self.canvas.draw()
 
 
