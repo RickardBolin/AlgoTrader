@@ -38,9 +38,17 @@ class StockPlot:
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
     def update_stock(self, ticker):
-        stock_data = sd.get_stock_data(ticker, start="2019-05-25", interval="1d")
-        self.graph[0].set_ydata(stock_data["Close"])
-        self.a.set_ylim([0.9*min(stock_data["Close"]), 1.1*max(stock_data["Close"])])
+        stock_data = sd.get_stock_data(ticker, start="2013-05-25", interval="1d")
+        x = stock_data["Close"]
+        print(x.keys())
+        dates = x.keys()
+        prices = x.get("Close")
+        print(dates)
+        print(prices)
+        self.graph[0].set_data(dates[1:], prices[1:])
+        print(self.graph[0])
+
+        #self.a.set_ylim([0.9*min(stock_data["Close"]), 1.1*max(stock_data["Close"])])
         self.canvas.draw()
 
 
