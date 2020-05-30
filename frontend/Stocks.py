@@ -43,8 +43,8 @@ class StockPlot:
         self.figure = Figure(figsize=(5, 5), dpi=100)
         stock_data = sd.get_stock_data("AAPL", start="2016-05-25", interval="1d")
         self.a = self.figure.add_subplot(111)
-        self.graph_list = self.a.plot(stock_data["Close"], label="AAPL")
-        self.a.legend()
+        #self.graph_list = self.a.plot(stock_data["Close"])
+        #self.a.legend("AAPL")
         self.canvas = FigureCanvasTkAgg(self.figure, self.stock_frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
@@ -59,19 +59,21 @@ class StockPlot:
 
         # We remove all line and plot new ones according to the tickers, might want to change this to be more efficient!
         self.graph_list = []
+        labels = []
         y_max = 0
         y_min = 1e30
         # x_max = 0
         # x_min = 1e30
         for ticker in tickers:
             stock_data = sd.get_stock_data(ticker, start="2016-05-25", interval="1d")
-            self.graph_list.append(self.a.plot(stock_data["Close"], label=ticker))
+            self.graph_list.append(self.a.plot(stock_data["Close"]))
+            labels.append(ticker)
             y_max = max(y_max, max(stock_data["Close"]))
             y_min = min(y_min, min(stock_data["Close"]))
             # x_max = max(x_max, datetime.strptime(str(stock_data.index[-1]), "%Y-%m-%d %H:%M:%S-%?:%?"))
             # x_min = min(x_min, datetime.strptime(str(stock_data.index[0]), "%Y-%m-%d %H:%M:%S-%?:%?"))
 
-        self.a.legend()
+        self.a.legend(labels)
         self.a.set_ylim([0.9 * y_min, 1.1 * y_max])
         # self.a.set_xlim([x_min, x_max])
         self.canvas.draw()
@@ -116,7 +118,8 @@ class StockList:
         :param event: Eventhandler.
         """
         ticker = self.stock_list.selection()[0]
-        self.workspace.append(ticker)
+        EMPTY_BOX = "\u2610"
+        self.workspace.append(EMPTY_BOX + ticker)
 
     @staticmethod
     def load_ticker_name_info(exchange):
