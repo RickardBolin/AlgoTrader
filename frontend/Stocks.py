@@ -23,9 +23,20 @@ class StockWindow:
     """
 
     def __init__(self, stock_tab):
-        self.StockTab = stock_tab
-        self.StockPlot = StockPlot(stock_tab)
-        self.StockList = StockList(stock_tab, self.StockPlot)
+        self.stock_tab = stock_tab
+
+        self.stock_plot = StockPlot(self.stock_tab)
+        self.workspace = Workspace(self.stock_tab, self.stock_plot)
+        self.stock_list = StockList(self.stock_tab, self.workspace)
+
+
+class Workspace:
+
+    def __init__(self, root, stock_plot):
+        self.root = root
+        self.stock_plot = stock_plot
+        self.workspace_frame = tk.Frame(self.root)
+        self.workspace_frame.pack(anchor=tk.NW)
 
 
 class StockPlot:
@@ -37,7 +48,7 @@ class StockPlot:
     def __init__(self, root):
         self.root = root
         self.stock_frame = tk.Frame(self.root)
-        self.stock_frame.pack(side="left", anchor=tk.NW)
+        self.stock_frame.pack(side="left", anchor=tk.SW)
 
         # Initialize stock window with Apple stock data
         self.figure = Figure(figsize=(5, 5), dpi=100)
