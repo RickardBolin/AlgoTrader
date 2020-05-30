@@ -10,22 +10,26 @@ register_matplotlib_converters()
 from backend import stock_data as sd
 from collections import namedtuple
 from tkfilterlist import FilterList
-from functools import partial
-import numpy as np
 
 
 class StockWindow:
-
-    def __init__(self, StockTab):
-        self.StockTab = StockTab
-        self.StockPlot = StockPlot(StockTab, self)
-        self.StockList = StockList(StockTab, self.StockPlot)
+    """
+    POTENTIALLY UNFINISHED
+    Class for the entire stock tab.
+    Currently contains its tab, a stockplot and the list of stocks in an exchange.
+    """
+    def __init__(self, stock_tab):
+        self.StockTab = stock_tab
+        self.StockPlot = StockPlot(stock_tab)
+        self.StockList = StockList(stock_tab, self.StockPlot)
 
 
 class StockPlot:
-
-    def __init__(self, root, StockWindow):
-        self.StockWindow = StockWindow
+    """
+    POTENTIALLY UNFINISHED
+    Class which handles the stockplot.
+    """
+    def __init__(self, root):
         self.root = root
         self.stock_frame = tk.Frame(self.root)
         self.stock_frame.pack(side="left", anchor=tk.NW)
@@ -39,20 +43,28 @@ class StockPlot:
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
-    def update_stock(self, ticker):
-        stock_data = sd.get_stock_data(ticker, start="2019-05-25", interval="1d")
-        #print(stock_data.index.to_numpy())
-        self.graph[0].set_data([stock_data.index,stock_data["Close"]])
-
+    def update_stock_plot(self, ticker):
+        """
+        UNFINISHED
+        Updates the stock plot to the specified ticker.
+        Shall also be expanded to allow specifications of dates, interval etc.
+        :param ticker: Stock ticker of stock to be plotted.
+        """
+        stock_data = sd.get_stock_data(ticker, start="2013-05-25", interval="1d")
+        self.graph[0].set_data([stock_data.index, stock_data["Close"]])
         self.a.set_ylim([0.9*min(stock_data["Close"]), 1.1*max(stock_data["Close"])])
         self.a.set_xlim([stock_data.index[0], stock_data.index[-1]])
         self.canvas.draw()
 
 
 class StockList:
-
-    def __init__(self, root, StockPlot):
-        self.StockPlot = StockPlot
+    """
+    NB! SEVERAL FEATURES IN THIS CLASS ARE SUBJECT TO CHANGE.
+    Class for the filterable stocklist.
+    Contains its rootframe and the stock plot which shall be updated.
+    """
+    def __init__(self, root, stock_plot):
+        self.stock_plot = stock_plot
         self.root = root
         self.stock_list_frame = tk.Frame(self.root)
         self.stock_list_frame.pack(anchor=tk.NE)
@@ -67,13 +79,21 @@ class StockList:
         self.stock_list.pack(side="top", expand=1, fill="both")
         self.stock_list.bind('<Return>', self.search)
 
-    def search(self, event):
+    def search(self):
+        """
+        SKALL ÄNDRAS TILL EN ATT UPPDATERA WORKSPACE!!!!!!!!!!!!
+        Finds the
+        """
         ticker = self.stock_list.selection()[0]
-        self.StockPlot.update_stock(ticker)
-
+        self.stock_plot.update_stock(ticker)
 
     @staticmethod
     def load_ticker_name_info(exchange):
+        """
+        Fetches stock ticker and company name from an exchange and returns them as a list of namedtuples.
+        :param exchange: Choice of stock exchange.
+        :return: List of namedtuples with stock ticker and company name from stock exchange.
+        """
         with open("../Data/Tickers/" + exchange + ".csv") as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             company = namedtuple("company_info", ["ticker", "name"])
