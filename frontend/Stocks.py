@@ -79,13 +79,13 @@ class StockList:
         self.stock_list.pack(side="top", expand=1, fill="both")
         self.stock_list.bind('<Return>', self.search)
 
-    def search(self):
+    def search(self, event):
         """
         SKALL ÄNDRAS TILL EN ATT UPPDATERA WORKSPACE!!!!!!!!!!!!
         Finds the
         """
         ticker = self.stock_list.selection()[0]
-        self.stock_plot.update_stock(ticker)
+        self.stock_plot.update_stock_plot(ticker)
 
     @staticmethod
     def load_ticker_name_info(exchange):
