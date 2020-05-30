@@ -1,7 +1,7 @@
 import tkinter as tk					 
 from tkinter import ttk
 from Stocks import StockWindow
-from algorithms import AlgorithmWindow
+#from trading_algorithms import AlgorithmWindow
 from Workspace import Workspace
 
 
@@ -19,7 +19,7 @@ def construct_tabs(root):
     tab_control.add(tab3, text='Portfolios')
 
     tab_control.pack(expand=1, fill="both")
-    return StockWindow(tab1), AlgorithmWindow(tab2)
+    return StockWindow(tab1)#, AlgorithmWindow(tab2)
 
 
 def construct_workspace(root):
@@ -34,7 +34,8 @@ if __name__ == '__main__':
     # ('clam', 'alt', 'default', 'classic')
     root.title("Kompisfonden")
     workspace = construct_workspace(root)
-    stock_window, algorithm_window = construct_tabs(root)
+    #stock_window, algorithm_window = construct_tabs(root)
+    stock_window = construct_tabs(root)
 
     # Open communications
     stock_window.stock_list.open_communication_with_workspace(workspace)
