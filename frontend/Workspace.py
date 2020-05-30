@@ -48,14 +48,15 @@ class Workspace:
         """
         Removes highlighted element from the workspace.
         """
-        highlighted_elem = self.workspace_list.curselection()[0]
-        self.workspace_list.delete(highlighted_elem)
+        highlighted_idx = self.workspace_list.curselection()[0]
+        self.workspace_list.delete(highlighted_idx)
 
     def remove_all(self, event):
         """
         Removes all elements from the workspace
         """
         self.workspace_list.delete(0, tk.END)
+
 
 
 
