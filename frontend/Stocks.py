@@ -131,7 +131,7 @@ class StockList:
         """
         with open("../Data/Tickers/" + exchange + ".csv") as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
-            csv_file.__next__()
+            next(csv_file)
             company = namedtuple("company_info", ["ticker", "name"])
             stock_info = [company(stock[0], stock[1]) for stock in csv_reader]
             return stock_info
