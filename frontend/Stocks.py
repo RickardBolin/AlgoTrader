@@ -26,7 +26,7 @@ class StockWindow:
 
     def __init__(self, stock_tab):
         self.stock_tab = stock_tab
-        self.stock_list = StockList(self.stock_tab)
+        self.list = StockList(self.stock_tab)
 
 
 class StockList:
@@ -39,10 +39,10 @@ class StockList:
     def __init__(self, root):
         self.root = root
 
-        self.stock_list_frame = tk.LabelFrame(self.root, text='Stocks')
-        self.stock_list_frame.pack(side="right", anchor=tk.NE, fill="y")
+        self.list_frame = tk.LabelFrame(self.root, text='Stocks')
+        self.list_frame.pack(side="right", anchor=tk.NE, fill="y")
         stock_names = self.load_ticker_name_info("NASDAQ")
-        self.stock_list = FilterList(self.stock_list_frame,
+        self.list = FilterList(self.list_frame,
                                      height=27,
                                      source=stock_names,
                                      display_rule=lambda item: item[0] + ": " + item[1],
@@ -50,26 +50,25 @@ class StockList:
                                      item[0].lower().startswith(text.lower()) or item[1].lower().startswith(
                                          text.lower()))
 
-        self.stock_list.pack(side="top", expand=1, fill="both")
-        self.stock_list.bind('<Return>', self.add_to_workspace)
-        self.stock_list.bind('<Double-Button-1>', self.add_to_workspace)
-        self.stock_list.focus_set()
+        self.list.pack(side="top", expand=1, fill="both")
+        self.list.bind('<Return>', self.add_to_workspace)
+        self.list.bind('<Double-Button-1>', self.add_to_workspace)
 
-    def open_communication_with_workspace(self, workspace):
+    def open_communication_with_workspaces(self, workspaces):
         """
         Gives stock list possibility to modify workspace. Perhaps silly solution, but will have to do for now.
         :param workspace:
         """
-        self.workspace = workspace
+        self.workspaces = workspaces
 
     def add_to_workspace(self, event):
         """
         Adds clicked ticker to the workspace.
         :param event: Eventhandler.
         """
-        ticker = self.stock_list.selection()[0]
+        ticker = self.list.selection()[0]
         EMPTY_BOX = "\u2610"
-        self.workspace.stock_workspace.add(EMPTY_BOX + ticker)
+        self.workspaces.stock_workspace.add(EMPTY_BOX + ticker)
 
     @staticmethod
     def load_ticker_name_info(exchange):

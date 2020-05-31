@@ -39,7 +39,9 @@ if __name__ == '__main__':
     plotter = Plotter(root)
 
     # Open communications
-    stock_window.stock_list.open_communication_with_workspace(workspaces)
+    stock_window.list.open_communication_with_workspaces(workspaces)
+    algorithm_window.list.open_communication_with_workspaces(workspaces)
+
     workspaces.stock_workspace.open_communication_with_stock_window(stock_window)
     workspaces.stock_workspace.open_communication_with_plotter(plotter)
     workspaces.algorithm_workspace.open_communication_with_plotter(plotter)

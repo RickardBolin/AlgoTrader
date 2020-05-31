@@ -47,7 +47,8 @@ class AlgorithmWorkspace:
         Adds an element at the end of the workspace.
         :param elem: Element to append.
         """
-        if elem not in self.list.get(0, tk.END):
+        stripped = [string[1:] for string in self.list.get(0, tk.END)]
+        if elem[1:] not in stripped:
             self.list.insert(tk.END, elem)
 
     def remove(self, event):

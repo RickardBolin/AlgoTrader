@@ -1,6 +1,7 @@
 import tkinter as tk
 from backend import stock_data as sd
 
+
 class StockWorkspace:
     """
     Workspace class which handels the workspace, makes sense to have as a seperate file and class. However unsure
