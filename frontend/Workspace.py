@@ -1,5 +1,6 @@
 import tkinter as tk
 
+
 class Workspace:
     """
     Workspace class which handels the workspace, makes sense to have as a seperate file and class. However unsure
@@ -37,7 +38,12 @@ class Workspace:
         Plots selected stocks.
         :param event: Eventhandle.
         """
-        self.stock_window.stock_plot.update_stock_plot(self.selected)
+        stock_plot = self.stock_window.stock_plot
+        plot_style = stock_plot.plot_style.get()
+        if plot_style == 'Regular':
+            stock_plot.update_stock_plot(self.selected)
+        else:
+            stock_plot.percentual_change_plot(self.selected)
 
     def append(self, elem):
         """
@@ -52,7 +58,10 @@ class Workspace:
         Removes highlighted element from the workspace.
         """
         highlighted_idx = self.workspace_list.curselection()[0]
+        highlighted_elem = self.workspace_list.get(highlighted_idx)[1:]
         self.workspace_list.delete(highlighted_idx)
+        if highlighted_elem in self.selected:
+            self.selected.remove(highlighted_elem)
 
     def remove_all(self, event):
         """
