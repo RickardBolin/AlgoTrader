@@ -2,7 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 from Stocks import StockWindow
 from algorithms import AlgorithmWindow
-from Workspace import Workspace
+from Workspaces import Workspaces
+from Plotter import Plotter
 
 
 def construct_tabs(root):
@@ -23,9 +24,9 @@ def construct_tabs(root):
 
 
 def construct_workspace(root):
-    workspace_frame = ttk.Frame(root)
-    workspace_frame.pack(side='left')
-    return Workspace(workspace_frame)
+    workspaces_frame = ttk.Frame(root)
+    workspaces_frame.pack(side='left')
+    return Workspaces(workspaces_frame)
 
 
 if __name__ == '__main__':
@@ -33,12 +34,16 @@ if __name__ == '__main__':
     root.style = ttk.Style()
     # ('clam', 'alt', 'default', 'classic')
     root.title("Kompisfonden")
-    workspace = construct_workspace(root)
+    workspaces = construct_workspace(root)
     stock_window, algorithm_window = construct_tabs(root)
+    plotter = Plotter(root)
 
     # Open communications
-    stock_window.stock_list.open_communication_with_workspace(workspace)
-    workspace.open_communication_with_stock_window(stock_window)
+    stock_window.stock_list.open_communication_with_workspace(workspaces)
+    workspaces.stock_workspace.open_communication_with_stock_window(stock_window)
+    workspaces.stock_workspace.open_communication_with_plotter(plotter)
+    workspaces.algorithm_workspace.open_communication_with_plotter(plotter)
+
 
     root.mainloop()
 

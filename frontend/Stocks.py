@@ -26,121 +26,7 @@ class StockWindow:
 
     def __init__(self, stock_tab):
         self.stock_tab = stock_tab
-        self.stock_plot = StockPlot(self.stock_tab)
         self.stock_list = StockList(self.stock_tab)
-
-
-class StockPlot:
-    """
-    POTENTIALLY UNFINISHED
-    Class which handles the stockplot.
-    """
-
-    def __init__(self, root):
-        self.root = root
-        self.stock_frame = tk.Frame(self.root)
-        self.button_frame = tk.Frame(self.stock_frame)
-        self.button_frame.pack(side="bottom", anchor=tk.SE)
-        self.stock_frame.pack(side="left", anchor=tk.SW)
-
-        # Add empty stock figure
-        self.plot_time_frame = "3 Years"
-        self.figure = Figure(figsize=(5, 5), dpi=100)
-        self.canvas = FigureCanvasTkAgg(self.figure, self.stock_frame)
-        self.canvas.draw()
-        self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
-
-        # Add toolbar
-        self.toolbar = NavigationToolbar2Tk(self.canvas, self.stock_frame)
-        self.toolbar.update()
-        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-
-        # Add buttons to change viewing dates
-        times = ["one_min", "one_day", "one_month", "one_year", "three_years"]
-        self.buttons = []
-        for i, time in enumerate(times):
-            self.buttons.append(tk.Button(self.button_frame, text=time))
-            self.buttons[i].grid(row=0, column=i)
-            self.buttons[i].bind("<Button-1>", eval("self." + time + "_button"))
-
-        self.PLOT_OPTIONS = [
-            'Regular',
-            'Percentual change',
-            'Growth since time t0'
-        ]
-        self.plot_style = tk.StringVar(self.stock_frame)
-        self.plot_style.set(self.PLOT_OPTIONS[0])
-
-        self.plot_menu = tk.OptionMenu(self.stock_frame, self.plot_style, *self.PLOT_OPTIONS)
-        self.plot_menu.pack(anchor=tk.NW)
-
-    def update_stock_plot(self, tickers):
-        """
-        UNFINISHED
-        Updates the stock plot to the specified tickers.
-        Shall also be expanded to allow specifications of dates, interval etc.
-        :param tickers: Stock tickers of stock to be plotted.
-        """
-
-        # We remove all lines and plot new ones according to the tickers, might want to change this to be more efficient!
-        self.figure.clear()
-        self.a = self.figure.add_subplot(111)
-
-        y_max = 0
-        y_min = 1e30
-
-        for ticker in tickers:
-            stock_data = sd.get_stock_data(ticker, start="2016-05-25", interval="1d")
-            self.a.plot(stock_data["Close"], label=ticker)
-            y_max = max(y_max, max(stock_data["Close"]))
-            y_min = min(y_min, min(stock_data["Close"]))
-
-        self.a.legend()
-        self.a.set_ylim([0.9 * y_min, 1.1 * y_max])
-        self.a.set_ylabel('$')
-        self.a.set_xlabel('Date')
-        self.canvas.draw()
-
-    def percentual_change_plot(self, tickers):
-        self.figure.clear()
-        self.a = self.figure.add_subplot(111)
-
-        y_max = 0
-        y_min = 1e30
-
-        for ticker in tickers:
-            stock_data = sd.get_stock_data(ticker, start="2016-05-25", interval="1d")
-            closed_values = stock_data['Close']
-            one_day_ahead_closed_values = closed_values.shift(1)
-            percentual_change = 100*(one_day_ahead_closed_values - closed_values).div(closed_values)
-            percentual_change = percentual_change.dropna()
-            self.a.plot(percentual_change, label=ticker)
-            y_max = max(y_max, max(percentual_change))
-            y_min = min(y_min, min(percentual_change))
-
-        self.a.legend()
-        self.a.set_ylim([0.9 * y_min, 1.1 * y_max])
-        self.a.set_ylabel('%')
-        self.a.set_xlabel('Date')
-        self.canvas.draw()
-
-
-    # Hur slår vi ihop detta till en funktion?!
-    def one_min_button(self, event):
-        self.plot_time_frame = "1 min"
-
-    def one_day_button(self, event):
-        self.plot_time_frame = "1 day"
-
-    def one_month_button(self, event):
-        self.plot_time_frame = "1 month"
-
-    def one_year_button(self, event):
-        self.plot_time_frame = "1 Year"
-
-    def three_years_button(self, event):
-        self.plot_time_frame = "3 Years"
-
 
 
 class StockList:
@@ -183,7 +69,7 @@ class StockList:
         """
         ticker = self.stock_list.selection()[0]
         EMPTY_BOX = "\u2610"
-        self.workspace.append(EMPTY_BOX + ticker)
+        self.workspace.stock_workspace.add(EMPTY_BOX + ticker)
 
     @staticmethod
     def load_ticker_name_info(exchange):
