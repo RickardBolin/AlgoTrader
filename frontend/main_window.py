@@ -1,9 +1,9 @@
 import tkinter as tk					 
 from tkinter import ttk
-from Stocks import StockWindow
-from algorithms import AlgorithmWindow
-from Workspaces import Workspaces
-from Plotter import Plotter
+from stock_window import StockWindow
+from algorithm_window import AlgorithmWindow
+from workspaces import Workspaces
+from plotter import Plotter
 
 
 def construct_tabs(root):

@@ -17,12 +17,13 @@ def convert_timestamp_to_unix(timestamp):
     date = datetime.strptime(str(timestamp)[:10], '%Y-%m-%d')
     return int(mktime(date.timetuple()))
 
+
 # INTE TESTAD!
 def convert_unix_to_timestamp(unix_time):
     return datetime.utcfromtimestamp(unix_time).strftime('%Y-%m-%d %H:%M:%S')
 
 
-def get_event_list(tickers, start="2019-05-25", interval="1d"):
+def get_event_list(tickers, start="2016-05-25", interval="1d"):
     event_list = []
     ## First draft, måste göras snabbare!
     for ticker in tickers:

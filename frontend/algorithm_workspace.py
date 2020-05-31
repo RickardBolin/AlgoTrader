@@ -1,4 +1,9 @@
 import tkinter as tk
+from backend import backtest
+from trading_algorithms.gustafs_moneymaker.bot import Bot
+from datetime import datetime
+import numpy as np
+from collections import defaultdict, namedtuple
 
 
 class AlgorithmWorkspace:
@@ -10,6 +15,7 @@ class AlgorithmWorkspace:
 
     def __init__(self, workspace_frame):
         self.selected = []
+        self.results = ()
 
         self.list = tk.Listbox(workspace_frame, height=15)
         self.label = tk.Label(workspace_frame, text="Algorithm workspace")
@@ -28,16 +34,14 @@ class AlgorithmWorkspace:
         """
         self.plotter = plotter
 
-    def update_plot(self):
+    def update_plot(self, hold_on):
         """
         Plots selected stocks.
         :param event: Eventhandle.
         """
-
         plot_style = self.plotter.plot_style.get()
         if plot_style == 'Regular':
-            pass
-            #self.plotter.update_stock_plot(self.selected)
+            self.plot_algorithm_results(hold_on)
         else:
             pass
             #self.plotter.percentual_change_plot(self.selected)
@@ -88,3 +92,52 @@ class AlgorithmWorkspace:
         self.list.activate(index)
         self.list.update()
 
+    def test_algorithms(self, stocks):
+        '''
+        selected_algorithms = self.selected
+        bot = self.load_agent(selected_algorithms)
+        '''
+        bot = Bot()
+        actions = backtest.backtest(bot, stocks)
+
+        x = defaultdict(list)
+        y = defaultdict(list)
+        positions = defaultdict(list)
+
+        for (time, ticker, price), position in actions:
+            x[ticker].append(self.convert_unix_to_timestamp(time))
+            # Append new price to y
+            y[ticker].append(price)
+            positions[ticker].append(position)
+
+        result = namedtuple("Result", ["timestamp", "price", "position"])
+        self.results = result(x, y, positions)
+
+    @staticmethod
+    def convert_unix_to_timestamp(unix_time):
+        return datetime.utcfromtimestamp(unix_time)
+
+    def plot_algorithm_results(self, hold_on):
+        self.plotter.update_plot(self.results, hold_on=hold_on)
+
+
+############# VAD SKA LIGGA?
+    def moving_average(data, window):
+        return np.nan_to_num(np.convolve(data, np.ones(window), 'same') / window)
+
+    def load_agent(self, name):
+        '''Loads a bot from the bots directory and validates
+        its interface'''
+        mod_name = "trading_algorithms." + name + ".main"
+        mod = __import__(mod_name, fromlist=['Bot'])
+        klass = getattr(mod, 'Bot')
+        self.has_function(klass, name, "handle_event")
+
+        return klass
+
+    def has_function(self, module, bot_name, function_name):
+        '''Checks if bot has the named function'''
+        op = getattr(module, function_name, None)
+        if not callable(op):
+            raise NotImplementedError('Bot "{}" does not implement method: "{}"'.format(
+                bot_name, function_name))

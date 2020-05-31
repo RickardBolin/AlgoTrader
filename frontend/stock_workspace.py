@@ -82,17 +82,17 @@ class StockWorkspace:
         self.list.activate(index)
         self.list.update()
 
-    def update_plot(self):
+    def update_plot(self, hold_on):
         """
         Plots selected stocks.
         """
         plot_style = self.plotter.plot_style.get()
         if plot_style == 'Regular':
-            self.plot_regular_stock(self.selected)
+            self.plot_regular_stock(self.selected, hold_on=hold_on)
         else:
             self.plot_percentual_change(self.selected)
 
-    def plot_regular_stock(self, tickers, start="2016-05-25", interval="1d"):
+    def plot_regular_stock(self, tickers, hold_on, start="2016-05-25", interval="1d"):
         """
         UNFINISHED
         """
@@ -100,7 +100,7 @@ class StockWorkspace:
         for ticker in tickers:
             stock_data = sd.get_stock_data(ticker, start=start, interval=interval)
             data[ticker] = stock_data["Close"]
-        self.plotter.update_plot(data)
+        self.plotter.update_plot(data, hold_on)
 
     def plot_percentual_change(self, tickers, start="2016-05-25", interval="1d"):
         data = dict()
