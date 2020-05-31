@@ -3,6 +3,8 @@ import csv
 
 sys.path.append("..")
 
+import matplotlib
+matplotlib.use('TkAgg')
 import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
@@ -63,7 +65,7 @@ class StockPlot:
 
         self.PLOT_OPTIONS = [
             'Regular',
-            'Subtracted means',
+            'Percentual change',
             'Growth since time t0'
         ]
         self.plot_style = tk.StringVar(self.stock_frame)
@@ -95,9 +97,11 @@ class StockPlot:
 
         self.a.legend()
         self.a.set_ylim([0.9 * y_min, 1.1 * y_max])
+        self.a.set_ylabel('$')
+        self.a.set_xlabel('Date')
         self.canvas.draw()
 
-    def subtracted_means_plot(self, tickers):
+    def percentual_change_plot(self, tickers):
         self.figure.clear()
         self.a = self.figure.add_subplot(111)
 
@@ -106,13 +110,18 @@ class StockPlot:
 
         for ticker in tickers:
             stock_data = sd.get_stock_data(ticker, start="2016-05-25", interval="1d")
-            subtracted_mean = stock_data['Close'] - stock_data['Close'].mean()
-            self.a.plot(subtracted_mean, label=ticker)
-            y_max = max(y_max, max(subtracted_mean))
-            y_min = min(y_min, min(subtracted_mean))
+            closed_values = stock_data['Close']
+            one_day_ahead_closed_values = closed_values.shift(1)
+            percentual_change = 100*(one_day_ahead_closed_values - closed_values).div(closed_values)
+            percentual_change = percentual_change.dropna()
+            self.a.plot(percentual_change, label=ticker)
+            y_max = max(y_max, max(percentual_change))
+            y_min = min(y_min, min(percentual_change))
 
         self.a.legend()
         self.a.set_ylim([0.9 * y_min, 1.1 * y_max])
+        self.a.set_ylabel('%')
+        self.a.set_xlabel('Date')
         self.canvas.draw()
 
 

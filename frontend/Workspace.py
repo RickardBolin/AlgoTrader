@@ -43,7 +43,7 @@ class Workspace:
         if plot_style == 'Regular':
             stock_plot.update_stock_plot(self.selected)
         else:
-            stock_plot.subtracted_means_plot(self.selected)
+            stock_plot.percentual_change_plot(self.selected)
 
     def append(self, elem):
         """
