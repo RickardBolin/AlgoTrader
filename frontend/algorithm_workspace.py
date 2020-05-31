@@ -93,11 +93,11 @@ class AlgorithmWorkspace:
         self.list.update()
 
     def test_algorithms(self, stocks):
-        '''
-        selected_algorithms = self.selected
-        bot = self.load_agent(selected_algorithms)
-        '''
-        bot = Bot()
+
+        #selected_algorithms = self.selected
+        selected_algorithms = "gustafs_moneymaker"
+        bot = self.load_agent(selected_algorithms)()
+
         actions = backtest.backtest(bot, stocks)
 
         x = defaultdict(list)
@@ -128,7 +128,7 @@ class AlgorithmWorkspace:
     def load_agent(self, name):
         '''Loads a bot from the bots directory and validates
         its interface'''
-        mod_name = "trading_algorithms." + name + ".main"
+        mod_name = "trading_algorithms." + name + ".bot"
         mod = __import__(mod_name, fromlist=['Bot'])
         klass = getattr(mod, 'Bot')
         self.has_function(klass, name, "handle_event")
