@@ -5,11 +5,13 @@ from backend import stock_data as sd
 import numpy as np
 
 
-def backtest(algorithm, tickers):
+def backtest(bot, tickers):
     event_list = get_event_list(tickers)
 
     for event in event_list:
-        algorithm.handle_event(event)
+        bot.handle_event(event)
+
+
 
 # INTE TESTAD!
 def convert_timestamp_to_unix(timestamp):

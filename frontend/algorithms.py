@@ -58,7 +58,7 @@ class PlotWindow:
         # Initialize stock window with Apple stock data
         self.figure = Figure(figsize=(5, 5), dpi=100)
         self.a = self.figure.add_subplot(111)
-        self.a.set_title("Chosen algoritmh")
+        self.a.set_title("Chosen algorithm")
         self.canvas = FigureCanvasTkAgg(self.figure, self.stock_frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)

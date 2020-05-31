@@ -79,8 +79,6 @@ class StockPlot:
 
         for ticker in tickers:
             stock_data = sd.get_stock_data(ticker, start="2016-05-25", interval="1d")
-            print(stock_data)
-            print(stock_data[0])
             self.a.plot(stock_data["Close"], label=ticker)
             y_max = max(y_max, max(stock_data["Close"]))
             y_min = min(y_min, min(stock_data["Close"]))
