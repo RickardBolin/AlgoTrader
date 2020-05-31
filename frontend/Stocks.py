@@ -12,7 +12,6 @@ register_matplotlib_converters()
 from backend import stock_data as sd
 from collections import namedtuple
 from tkfilterlist import FilterList
-from datetime import datetime
 
 
 class StockWindow:
@@ -37,50 +36,77 @@ class StockPlot:
     def __init__(self, root):
         self.root = root
         self.stock_frame = tk.Frame(self.root)
+        self.button_frame = tk.Frame(self.stock_frame)
+        self.button_frame.pack(side="bottom", anchor=tk.SE)
         self.stock_frame.pack(side="left", anchor=tk.SW)
 
-        # Initialize stock window with Apple stock data
+        # Add empty stock figure
+        self.plot_time_frame = "3 Years"
         self.figure = Figure(figsize=(5, 5), dpi=100)
-        stock_data = sd.get_stock_data("AAPL", start="2016-05-25", interval="1d")
-        self.a = self.figure.add_subplot(111)
-        #self.graph_list = self.a.plot(stock_data["Close"])
-        #self.a.legend("AAPL")
         self.canvas = FigureCanvasTkAgg(self.figure, self.stock_frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
+        # Add toolbar
         self.toolbar = NavigationToolbar2Tk(self.canvas, self.stock_frame)
         self.toolbar.update()
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
+        # Add buttons to change viewing dates
+        times = ["one_min", "one_day", "one_month", "one_year", "three_years"]
+        self.buttons = []
+        for i, time in enumerate(times):
+            self.buttons.append(tk.Button(self.button_frame, text=time))
+            self.buttons[i].grid(row=0, column=i)
+            self.buttons[i].bind("<Button-1>", eval("self." + time + "_button"))
+
+
+
     def update_stock_plot(self, tickers):
         """
         UNFINISHED
-        Updates the stock plot to the specified ticker.
+        Updates the stock plot to the specified tickers.
         Shall also be expanded to allow specifications of dates, interval etc.
         :param tickers: Stock tickers of stock to be plotted.
         """
 
-        # We remove all line and plot new ones according to the tickers, might want to change this to be more efficient!
-        self.graph_list = []
-        labels = []
+        # We remove all lines and plot new ones according to the tickers, might want to change this to be more efficient!
+        self.figure.clear()
+        self.a = self.figure.add_subplot(111)
+
         y_max = 0
         y_min = 1e30
-        # x_max = 0
-        # x_min = 1e30
+
         for ticker in tickers:
             stock_data = sd.get_stock_data(ticker, start="2016-05-25", interval="1d")
-            self.graph_list.append(self.a.plot(stock_data["Close"]))
-            labels.append(ticker)
+            print(stock_data)
+            print(stock_data[0])
+            self.a.plot(stock_data["Close"], label=ticker)
             y_max = max(y_max, max(stock_data["Close"]))
             y_min = min(y_min, min(stock_data["Close"]))
-            # x_max = max(x_max, datetime.strptime(str(stock_data.index[-1]), "%Y-%m-%d %H:%M:%S-%?:%?"))
-            # x_min = min(x_min, datetime.strptime(str(stock_data.index[0]), "%Y-%m-%d %H:%M:%S-%?:%?"))
 
-        self.a.legend(labels)
+        self.a.legend()
         self.a.set_ylim([0.9 * y_min, 1.1 * y_max])
-        # self.a.set_xlim([x_min, x_max])
         self.canvas.draw()
+
+
+    # Hur slår vi ihop detta till en funktion?!
+    def one_min_button(self, event):
+        self.plot_time_frame = "1 min"
+        print(self.plot_time_frame)
+
+    def one_day_button(self, event):
+        self.plot_time_frame = "1 day"
+
+    def one_month_button(self, event):
+        self.plot_time_frame = "1 month"
+
+    def one_year_button(self, event):
+        self.plot_time_frame = "1 Year"
+
+    def three_years_button(self, event):
+        self.plot_time_frame = "3 Years"
+
 
 
 class StockList:
@@ -94,7 +120,7 @@ class StockList:
         self.root = root
 
         self.stock_list_frame = tk.LabelFrame(self.root, text='Stocks')
-        self.stock_list_frame.pack(anchor=tk.NE)
+        self.stock_list_frame.pack(side="right", anchor=tk.NE, fill="y")
         stock_names = self.load_ticker_name_info("NASDAQ")
         self.stock_list = FilterList(self.stock_list_frame,
                                      height=27,

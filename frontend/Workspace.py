@@ -13,9 +13,9 @@ class Workspace:
         self.update_button = tk.Button(workspace_frame, text="Update Plot")
         self.workspace_label = tk.Label(workspace_frame, text="Workspace")
 
-        self.workspace_label.pack(expand=1, fill="both", anchor=tk.N)
-        self.workspace_list.pack(expand=1, fill="both", anchor=tk.N)
-        self.update_button.pack(expand=1, fill="x", anchor=tk.S)
+        self.workspace_label.pack(expand=1, fill="both")
+        self.workspace_list.pack(expand=1, fill="both")
+        self.update_button.pack(expand=1, fill="x")
 
         self.update_button.bind('<Button-1>', self.plot_stock)
         self.workspace_list.bind('<BackSpace>', self.remove)
