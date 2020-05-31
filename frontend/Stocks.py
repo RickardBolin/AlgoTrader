@@ -7,6 +7,7 @@ import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
 from pandas.plotting import register_matplotlib_converters
+import pandas as pd
 
 register_matplotlib_converters()
 from backend import stock_data as sd
@@ -60,7 +61,16 @@ class StockPlot:
             self.buttons[i].grid(row=0, column=i)
             self.buttons[i].bind("<Button-1>", eval("self." + time + "_button"))
 
+        self.PLOT_OPTIONS = [
+            'Regular',
+            'Subtracted means',
+            'Growth since time t0'
+        ]
+        self.plot_style = tk.StringVar(self.stock_frame)
+        self.plot_style.set(self.PLOT_OPTIONS[0])
 
+        self.plot_menu = tk.OptionMenu(self.stock_frame, self.plot_style, *self.PLOT_OPTIONS)
+        self.plot_menu.pack(anchor=tk.NW)
 
     def update_stock_plot(self, tickers):
         """
@@ -79,11 +89,27 @@ class StockPlot:
 
         for ticker in tickers:
             stock_data = sd.get_stock_data(ticker, start="2016-05-25", interval="1d")
-            print(stock_data)
-            print(stock_data[0])
             self.a.plot(stock_data["Close"], label=ticker)
             y_max = max(y_max, max(stock_data["Close"]))
             y_min = min(y_min, min(stock_data["Close"]))
+
+        self.a.legend()
+        self.a.set_ylim([0.9 * y_min, 1.1 * y_max])
+        self.canvas.draw()
+
+    def subtracted_means_plot(self, tickers):
+        self.figure.clear()
+        self.a = self.figure.add_subplot(111)
+
+        y_max = 0
+        y_min = 1e30
+
+        for ticker in tickers:
+            stock_data = sd.get_stock_data(ticker, start="2016-05-25", interval="1d")
+            subtracted_mean = stock_data['Close'] - stock_data['Close'].mean()
+            self.a.plot(subtracted_mean, label=ticker)
+            y_max = max(y_max, max(subtracted_mean))
+            y_min = min(y_min, min(subtracted_mean))
 
         self.a.legend()
         self.a.set_ylim([0.9 * y_min, 1.1 * y_max])
@@ -93,7 +119,6 @@ class StockPlot:
     # Hur slår vi ihop detta till en funktion?!
     def one_min_button(self, event):
         self.plot_time_frame = "1 min"
-        print(self.plot_time_frame)
 
     def one_day_button(self, event):
         self.plot_time_frame = "1 day"
