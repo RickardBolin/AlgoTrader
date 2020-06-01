@@ -90,7 +90,7 @@ class StockWorkspace:
         if plot_style == 'Regular':
             self.plot_regular_stock(self.selected, hold_on=hold_on)
         else:
-            self.plot_percentual_change(self.selected)
+            self.plot_percentual_change(self.selected, hold_on=hold_on)
 
     def plot_regular_stock(self, tickers, hold_on, start="2016-05-25", interval="1d"):
         """
@@ -100,9 +100,9 @@ class StockWorkspace:
         for ticker in tickers:
             stock_data = sd.get_stock_data(ticker, start=start, interval=interval)
             data[ticker] = stock_data["Close"]
-        self.plotter.update_plot(data, hold_on)
+        self.plotter.update_plot(data, type="Stock", hold_on=hold_on)
 
-    def plot_percentual_change(self, tickers, start="2016-05-25", interval="1d"):
+    def plot_percentual_change(self, tickers, hold_on, start="2016-05-25", interval="1d"):
         data = dict()
         for ticker in tickers:
             stock_data = sd.get_stock_data(ticker, start=start, interval=interval)
@@ -111,6 +111,6 @@ class StockWorkspace:
             percentual_change = 100*(one_day_ahead_closed_values - closed_values).div(closed_values)
             percentual_change = percentual_change.dropna()
             data[ticker] = percentual_change
-        self.plotter.update_plot(data)
+        self.plotter.update_plot(data, type="Stock", hold_on=hold_on)
 
 

@@ -1,6 +1,6 @@
 import tkinter as tk
-from stock_workspace import StockWorkspace
-from algorithm_workspace import AlgorithmWorkspace
+from frontend.stock_workspace import StockWorkspace
+from frontend.algorithm_workspace import AlgorithmWorkspace
 
 
 class Workspaces:

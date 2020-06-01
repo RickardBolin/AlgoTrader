@@ -58,34 +58,37 @@ class Plotter:
         self.plot_menu = tk.OptionMenu(self.plot_frame, self.plot_style, *self.PLOT_OPTIONS)
         self.plot_menu.pack(anchor=tk.NW)
 
-    def update_plot(self, data, hold_on=False):
+
+    # Type: Stock or algorithm, come up with better name later
+    def update_plot(self, data, type, hold_on=False):
         # If hold-on checkbox is not checked, plot to the current figure
         if not hold_on:
             self.figure.clear()
             self.a = self.figure.add_subplot(111)
 
         # If "data" is a dictionary, we expect it to have tickers as keys and pandas.Series-objects as values
-        if isinstance(data, dict):
+        if type == "Stock":
             for ticker, series in data.items():
                 self.a.plot(series, label=ticker)
         # If "data" is a (named)tuple, we expect it to contain the results of a backtested algorithm
         # on the form (timestamps, price, position)
-        elif isinstance(data, tuple):
-            timestamps, prices, positions = data
-            # Loop over all stocks that the algorithm was tested on
-            for ticker in timestamps:
-                x_long, x_short, y_long, y_short = [], [], [], []
+        elif type == "Algorithm_results":
+            for bot, actions in data.items():
+                timestamps, prices, positions = actions
+                # Loop over all stocks that the algorithm was tested on
+                for ticker in timestamps:
+                    x_long, x_short, y_long, y_short = [], [], [], []
 
-                # Separate long and short positions and scatter with different markers
-                for price, position, timestamp in zip(prices[ticker], positions[ticker], timestamps[ticker]):
-                    if position == "long":
-                        x_long.append(timestamp)
-                        y_long.append(price)
-                    else:
-                        x_short.append(timestamp)
-                        y_short.append(price)
-                self.a.scatter(x_long, y_long, marker='o')
-                self.a.scatter(x_short, y_short, marker='x')
+                    # Separate long and short positions and scatter with different markers
+                    for price, position, timestamp in zip(prices[ticker], positions[ticker], timestamps[ticker]):
+                        if position == "long":
+                            x_long.append(timestamp)
+                            y_long.append(price)
+                        else:
+                            x_short.append(timestamp)
+                            y_short.append(price)
+                    self.a.scatter(x_long, y_long, marker='o')
+                    self.a.scatter(x_short, y_short, marker='x')
         else:
             print("Wrong type!")
 

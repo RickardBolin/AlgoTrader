@@ -1,18 +1,8 @@
 import sys
 import csv
-
 sys.path.append("..")
 
-import matplotlib
-matplotlib.use('TkAgg')
 import tkinter as tk
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-from matplotlib.figure import Figure
-from pandas.plotting import register_matplotlib_converters
-import pandas as pd
-
-register_matplotlib_converters()
-from backend import stock_data as sd
 from collections import namedtuple
 from tkfilterlist import FilterList
 

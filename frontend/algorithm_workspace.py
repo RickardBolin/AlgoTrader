@@ -1,6 +1,5 @@
 import tkinter as tk
 from backend import backtest
-from trading_algorithms.gustafs_moneymaker.bot import Bot
 from datetime import datetime
 import numpy as np
 from collections import defaultdict, namedtuple
@@ -15,7 +14,7 @@ class AlgorithmWorkspace:
 
     def __init__(self, workspace_frame):
         self.selected = []
-        self.results = ()
+        self.results = defaultdict(tuple)
 
         self.list = tk.Listbox(workspace_frame, height=15)
         self.label = tk.Label(workspace_frame, text="Algorithm workspace")
@@ -94,40 +93,32 @@ class AlgorithmWorkspace:
 
     # Kan bara hantera en algorithm åt gången atm!
     def test_algorithms(self, stocks):
-        for name in self.selected:
-            bot = self.load_agent(name)()
+        # Load all bots that are selected in the workspace
+        bots = [self.load_agent(name)() for name in self.selected]
 
-            actions = backtest.backtest(bot, stocks)
+        # Get dictionary of the actions that each bot made, where the bot name is the key
+        actions = backtest.backtest(bots, stocks)
 
+        for bot in bots:
             x = defaultdict(list)
             y = defaultdict(list)
             positions = defaultdict(list)
 
-            for (time, ticker, price), position in actions:
+            for (time, ticker, price), position in actions[bot.name]:
                 x[ticker].append(self.convert_unix_to_timestamp(time))
                 # Append new price to y
                 y[ticker].append(price)
                 positions[ticker].append(position)
 
             result = namedtuple("Result", ["timestamp", "price", "position"])
-            self.results = result(x, y, positions)
-
-    @staticmethod
-    def convert_unix_to_timestamp(unix_time):
-        return datetime.utcfromtimestamp(unix_time)
-
-    def plot_algorithm_results(self, hold_on):
-        self.plotter.update_plot(self.results, hold_on=hold_on)
-
-
-############# VAD SKA LIGGA?
-    def moving_average(data, window):
-        return np.nan_to_num(np.convolve(data, np.ones(window), 'same') / window)
+            self.results[bot.name] = result(x, y, positions)
 
     def load_agent(self, name):
-        '''Loads a bot from the bots directory and validates
-        its interface'''
-        mod_name = "trading_algorithms." + name + ".bot"
+        """
+        Loads a bot from the bots directory and validates
+        its interface
+        """
+        mod_name = "backend.trading_algorithms." + name + ".bot"
         mod = __import__(mod_name, fromlist=['Bot'])
         klass = getattr(mod, 'Bot')
         self.has_function(klass, name, "handle_event")
@@ -135,8 +126,22 @@ class AlgorithmWorkspace:
         return klass
 
     def has_function(self, module, bot_name, function_name):
-        '''Checks if bot has the named function'''
+        """
+        Checks if bot has the named function
+        """
         op = getattr(module, function_name, None)
         if not callable(op):
             raise NotImplementedError('Bot "{}" does not implement method: "{}"'.format(
                 bot_name, function_name))
+    @staticmethod
+    def convert_unix_to_timestamp(unix_time):
+        return datetime.utcfromtimestamp(unix_time)
+
+    def plot_algorithm_results(self, hold_on):
+        self.plotter.update_plot(self.results, type="Algorithm_results", hold_on=hold_on)
+
+
+############# VAD SKA LIGGA?
+    def moving_average(data, window):
+        return np.nan_to_num(np.convolve(data, np.ones(window), 'same') / window)
+

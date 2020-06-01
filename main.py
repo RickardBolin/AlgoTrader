@@ -1,3 +1,3 @@
-from backend import stock_data as sd
+from frontend.main_window import MainWindow
 
-sd.plot_stock("AAPL", start="2010-05-25", interval="1d")
+main_window = MainWindow()

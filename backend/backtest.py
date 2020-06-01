@@ -5,11 +5,18 @@ from backend import stock_data as sd
 import numpy as np
 
 
-def backtest(bot, tickers):
+def backtest(bots, tickers):
+    # Get price changes of all stocks sorted by time
     event_list = get_event_list(tickers)
+    # Loop over each event and let each bot handle it
     for event in event_list:
-        bot.handle_event(event)
-    return bot.actions
+        for bot in bots:
+            bot.handle_event(event)
+    # Save all the different bot.actions in a dictionary
+    actions = dict()
+    for bot in bots:
+        actions[bot.name] = bot.actions
+    return actions
 
 
 # INTE TESTAD!

@@ -19,7 +19,7 @@ class AlgorithmList:
         self.list_frame = tk.Frame(self.root)
         self.list_frame.pack(anchor=tk.NE)
 
-        algorithms = os.listdir("../trading_algorithms")
+        algorithms = os.listdir("../backend/trading_algorithms")
         self.list = FilterList(self.list_frame,
                 source=algorithms,
                 display_rule=lambda item: item,
