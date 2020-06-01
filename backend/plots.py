@@ -1,13 +1,26 @@
 import backend.stock_data as sd
 from collections import defaultdict
 from file_system.file_handler import read_result
+import pandas as pd
+import backend.timeseries as ts
 
 
-def get_stocks(tickers, plot_style):
-    if plot_style == "Regular":
-        return regular_stock(tickers)
+def get_stocks(tickers, plot_style, params="None", start="2016-05-25", interval="1d", price_type="Close"):
+    stock_data = sd.get_stock_data(tickers, start=start, interval=interval)
+    stock_data = stock_data[price_type]
+    # If we do not want to apply any transformation, return the regular stock data
+    if plot_style == "None":
+        return stock_data.index, stock_data
+
+    ## Add error message when params = "None"?
+    prices = dict()
+    if len(tickers) == 1:
+        prices[tickers[0]] = eval(plot_style + "(stock_data, " + params + ")")
     else:
-        return percentual_change(tickers)
+        for ticker, _prices in stock_data.items():
+            prices[ticker] = eval(plot_style + "(_prices, " + params + ")")
+
+    return stock_data.index, pd.DataFrame.from_dict(prices)
 
 
 def get_result(result_name):  # , plot_style=None):
@@ -29,25 +42,3 @@ def get_result(result_name):  # , plot_style=None):
             structured_results[ticker] = (x_long, x_short, y_long, y_short)
     return structured_results
 
-
-def regular_stock(tickers, start="2016-05-25", interval="1d"):
-    """
-    UNFINISHED
-    """
-    data = dict()
-    for ticker in tickers:
-        stock_data = sd.get_stock_data(ticker, start=start, interval=interval)
-        data[ticker] = stock_data["Close"]
-    return data
-
-
-def percentual_change(tickers, start="2016-05-25", interval="1d"):
-    data = dict()
-    for ticker in tickers:
-        stock_data = sd.get_stock_data(ticker, start=start, interval=interval)
-        closed_values = stock_data['Close']
-        one_day_ahead_closed_values = closed_values.shift(-1)
-        percent_change = 100 * (one_day_ahead_closed_values - closed_values).div(closed_values)
-        percent_change = percent_change.dropna()
-        data[ticker] = percent_change
-    return data

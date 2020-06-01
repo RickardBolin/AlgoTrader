@@ -44,6 +44,7 @@ class Plotter:
         self.hold_on_button.grid(row=0, column=0)
         self.hold_on_button.bind('<Button-1>', self.toggle_hold_on)
         self.hold_on = False
+        self.param = "None"
 
         # Add buttons to change viewing dates
         self.viewing_date_buttons = []
@@ -56,13 +57,27 @@ class Plotter:
         self.PLOT_OPTIONS = [
             'Regular',
             'Percentual change',
-            'Growth since time t0'
+            'Moving Average'
         ]
+        self.PLOT_TRANSFORMATIONS = [
+            'None',
+            'ts.percentual_change',
+            'ts.moving_average'
+        ]
+
+        self.plot_to_func = dict(zip(self.PLOT_OPTIONS, self.PLOT_TRANSFORMATIONS))
+
         self.plot_style = tk.StringVar(self.plot_frame)
         self.plot_style.set(self.PLOT_OPTIONS[0])
 
         self.plot_menu = tk.OptionMenu(self.plot_frame, self.plot_style, *self.PLOT_OPTIONS)
-        self.plot_menu.pack(anchor=tk.NW)
+        self.plot_menu.pack()#row=0, column=0)
+
+        self.param = tk.StringVar()
+        self.param_box = tk.Entry(self.plot_frame, textvariable=self.param)
+        self.param.set("None")
+        self.param_box.pack()#row=0, column=1)
+
 
     # Type: Stock or algorithm, come up with better name later
     def plot_stocks(self, tickers):
@@ -72,12 +87,17 @@ class Plotter:
             self.a = self.figure.add_subplot(111)
 
         # Get data from backend
-        stocks = plot.get_stocks(tickers, plot_style=self.plot_style.get())
+        dates, prices = plot.get_stocks(tickers, plot_style=self.plot_to_func[self.plot_style.get()], params=self.param.get())
         # Plot the retrieved stock data
+        #for ticker in tickers:
+        #    self.a.plot(dates, price_dict[ticker], label=ticker)
+        self.a.plot(dates, prices)
+
+        '''
         for ticker, series in stocks.items():
             self.a.plot(series, label=ticker)
-
-        self.a.legend()
+        '''
+        self.a.legend(tickers)
         self.a.set_ylabel('$')
         self.a.set_xlabel('Date')
         self.canvas.draw()

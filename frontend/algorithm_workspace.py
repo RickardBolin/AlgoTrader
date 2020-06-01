@@ -141,7 +141,3 @@ class AlgorithmWorkspace:
         self.plotter.update_plot(self.results, type="Algorithm_results", hold_on=hold_on)
 
 
-############# VAD SKA LIGGA?
-    def moving_average(data, window):
-        return np.nan_to_num(np.convolve(data, np.ones(window), 'same') / window)
-
