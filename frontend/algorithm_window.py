@@ -85,7 +85,7 @@ class ResultHandler:
         #####
         self.results_list.insert(0, "test")
 
-        self.add_statistics(self.results)
+        #self.add_statistics(self.results)
 
     def add_statistics(self, results):
         for bot_name, (timestamps, price, position) in results.items():

@@ -1,6 +1,7 @@
 import backend.utils as utils
 import backend.stock_data as sd
 from collections import defaultdict, namedtuple
+from file_system.file_handler import write_result
 
 
 def get_event_list(tickers, start="2016-05-25", interval="1d"):
@@ -36,21 +37,21 @@ def test_algorithms(tickers, bot_names):
     actions = backtest(bots, tickers)
 
     results = defaultdict(tuple)
-    result = namedtuple("Result", ["timestamp", "price", "position"])
+    result = namedtuple("Results", ["timestamps", "prices", "positions"])
 
     for bot in bots:
-        x = defaultdict(list)
-        y = defaultdict(list)
+        timestamps = defaultdict(list)
+        prices = defaultdict(list)
         positions = defaultdict(list)
 
         for (time, ticker, price), position in actions[bot.name]:
-            x[ticker].append(utils.convert_unix_to_timestamp(time))
+            timestamps[ticker].append(utils.convert_unix_to_timestamp(time))
             # Append new price to y
-            y[ticker].append(price)
+            prices[ticker].append(price)
             positions[ticker].append(position)
 
-        results[bot.name] = result(x, y, positions)
-    return results
+        results[bot.name] = result(timestamps, prices, positions)
+    write_result('../file_system/results/test.csv', results)
 
 
 def load_agent(name):
