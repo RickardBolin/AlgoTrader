@@ -47,7 +47,6 @@ class MainWindow:
         workspaces.stock_workspace.open_communication_with_plotter(plotter)
         algorithm_window.list.open_communication_with_algorithm_workspace(workspaces.algorithm_workspace)
 
-        workspaces.stock_workspace.open_communication_with_stock_window(stock_window)
         algorithm_window.result_handler.open_communication_with_workspaces(workspaces)
         algorithm_window.result_handler.open_communication_with_backend(backend)
         algorithm_window.result_handler.open_communication_with_plotter(plotter)

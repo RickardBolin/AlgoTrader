@@ -1,5 +1,5 @@
 import tkinter as tk
-from backend import backtest
+import backend.algorithm as algo
 from datetime import datetime
 import numpy as np
 from collections import defaultdict, namedtuple
@@ -97,7 +97,7 @@ class AlgorithmWorkspace:
         bots = [self.load_agent(name)() for name in self.selected_bots]
 
         # Get dictionary of the actions that each bot made, where the bot name is the key
-        actions = backtest.backtest(bots, stocks)
+        actions = algo.backtest(bots, stocks)
 
         for bot in bots:
             x = defaultdict(list)
