@@ -92,26 +92,25 @@ class AlgorithmWorkspace:
         self.list.activate(index)
         self.list.update()
 
+    # Kan bara hantera en algorithm åt gången atm!
     def test_algorithms(self, stocks):
+        for name in self.selected:
+            bot = self.load_agent(name)()
 
-        #selected_algorithms = self.selected
-        selected_algorithms = "gustafs_moneymaker"
-        bot = self.load_agent(selected_algorithms)()
+            actions = backtest.backtest(bot, stocks)
 
-        actions = backtest.backtest(bot, stocks)
+            x = defaultdict(list)
+            y = defaultdict(list)
+            positions = defaultdict(list)
 
-        x = defaultdict(list)
-        y = defaultdict(list)
-        positions = defaultdict(list)
+            for (time, ticker, price), position in actions:
+                x[ticker].append(self.convert_unix_to_timestamp(time))
+                # Append new price to y
+                y[ticker].append(price)
+                positions[ticker].append(position)
 
-        for (time, ticker, price), position in actions:
-            x[ticker].append(self.convert_unix_to_timestamp(time))
-            # Append new price to y
-            y[ticker].append(price)
-            positions[ticker].append(position)
-
-        result = namedtuple("Result", ["timestamp", "price", "position"])
-        self.results = result(x, y, positions)
+            result = namedtuple("Result", ["timestamp", "price", "position"])
+            self.results = result(x, y, positions)
 
     @staticmethod
     def convert_unix_to_timestamp(unix_time):
