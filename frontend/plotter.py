@@ -8,7 +8,7 @@ import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
 from pandas.plotting import register_matplotlib_converters
-
+import backend.plots as plot
 register_matplotlib_converters()
 
 
@@ -64,7 +64,6 @@ class Plotter:
         self.plot_menu = tk.OptionMenu(self.plot_frame, self.plot_style, *self.PLOT_OPTIONS)
         self.plot_menu.pack(anchor=tk.NW)
 
-
     # Type: Stock or algorithm, come up with better name later
     def plot_stocks(self, tickers):
         # If hold-on checkbox is not checked, plot to the current figure
@@ -73,7 +72,7 @@ class Plotter:
             self.a = self.figure.add_subplot(111)
 
         # Get data from backend
-        stocks = self.backend.get_stocks(tickers, plot_style=self.plot_style.get())
+        stocks = plot.get_stocks(tickers, plot_style=self.plot_style.get())
         # Plot the retrieved stock data
         for ticker, series in stocks.items():
             self.a.plot(series, label=ticker)

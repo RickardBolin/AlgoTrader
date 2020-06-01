@@ -58,7 +58,7 @@ def load_agent(name):
     Loads a bot from the bots directory and validates
     its interface
     """
-    mod_name = "trading_algorithms." + name + ".bot"
+    mod_name = "file_system.trading_algorithms." + name + ".bot"
     mod = __import__(mod_name, fromlist=['Bot'])
     klass = getattr(mod, 'Bot')
     has_function(klass, name, "handle_event")
