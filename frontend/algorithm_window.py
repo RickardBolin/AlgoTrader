@@ -20,7 +20,7 @@ class AlgorithmList:
         self.list_frame = tk.Frame(self.root)
         self.list_frame.pack(anchor=tk.NE)
 
-        algorithms = os.listdir("../trading_algorithms")
+        algorithms = os.listdir("../file_system/trading_algorithms")
         self.list = FilterList(self.list_frame,
                 source=algorithms,
                 display_rule=lambda item: item,
@@ -57,6 +57,9 @@ class ResultHandler:
         self.results_list = tk.Listbox(self.results_frame, height=8)
         self.results_list.pack(anchor=tk.NW)
 
+        self.statistics = tk.Listbox(self.results_frame, height=8)
+        self.statistics.pack(anchor=tk.SW)
+
         self.test_algorithm_button = tk.Button(self.results_frame, text="Test Algorithm")
         self.test_algorithm_button.pack(expand=1, fill="x")
         self.test_algorithm_button.bind('<Button-1>', self.test_algorithms)
@@ -80,6 +83,18 @@ class ResultHandler:
         self.results = self.backend.test_algorithms(tickers, bot_names)
         #####
         self.results_list.insert(0, "test")
+
+        self.add_statistics(self.results)
+
+    def add_statistics(self, results):
+        for bot_name, (timestamps, price, position) in results.items():
+            self.statistics.insert(tk.END, bot_name)
+            for ticker, _position in position.items():
+                num_longs = len([pos for pos in _position if pos == 'long'])
+                num_shorts = len(_position) - num_longs
+                self.statistics.insert(tk.END, 'Ticker: ' + ticker)
+                self.statistics.insert(tk.END, 'Number of longs: ' + str(num_longs))
+                self.statistics.insert(tk.END, 'Number of shorts: ' + str(num_shorts))
 
     def plot_results(self, event):
         self.plotter.plot_result(self.results_list.get(tk.ACTIVE))

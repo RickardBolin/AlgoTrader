@@ -1,0 +1,39 @@
+Index: frontend/Stocks.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import sys\nimport csv\nsys.path.append(\"..\")\n\nimport tkinter as tk\nfrom matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk\nfrom matplotlib.figure import Figure\nfrom pandas.plotting import register_matplotlib_converters\nregister_matplotlib_converters()\nfrom backend import stock_data as sd\nfrom collections import namedtuple\nfrom tkfilterlist import FilterList\nfrom functools import partial\n\n\nclass StockWindow:\n\n    def __init__(self, StockTab):\n        self.StockTab = StockTab\n        self.StockPlot = StockPlot(StockTab, self)\n        self.StockList = StockList(StockTab, self.StockPlot)\n\n\nclass StockPlot:\n\n    def __init__(self, root, StockWindow):\n        self.StockWindow = StockWindow\n        self.root = root\n        self.stock_frame = tk.Frame(self.root)\n        self.stock_frame.pack(side=\"left\", anchor=tk.NW)\n\n        # Initialize stock window with Apple stock data\n        self.figure = Figure(figsize=(5, 5), dpi=100)\n        stock_data = sd.get_stock_data(\"AAPL\", start=\"2013-05-25\", interval=\"1d\")\n        self.a = self.figure.add_subplot(111)\n        self.graph = self.a.plot(stock_data[\"Close\"])\n        self.canvas = FigureCanvasTkAgg(self.figure, self.stock_frame)\n        self.canvas.draw()\n        self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)\n\n    def update_stock(self, ticker):\n        stock_data = sd.get_stock_data(ticker, start=\"2019-05-25\", interval=\"1d\")\n        self.graph[0].set_ydata(stock_data[\"Close\"])\n        self.a.set_ylim([0.9*min(stock_data[\"Close\"]), 1.1*max(stock_data[\"Close\"])])\n        self.canvas.draw()\n\n\nclass StockList:\n\n    def __init__(self, root, StockPlot):\n        self.StockPlot = StockPlot\n        self.root = root\n        self.stock_list_frame = tk.Frame(self.root)\n        self.stock_list_frame.pack(anchor=tk.NE)\n        stock_names = self.load_ticker_name_info(\"NASDAQ\")\n        self.stock_list = FilterList(self.stock_list_frame,\n                height=27,\n                source=stock_names,\n                display_rule=lambda item: item[0] + \": \" + item[1],\n                filter_rule=lambda item, text:\n                            item[0].lower().startswith(text.lower()) or item[1].lower().startswith(text.lower()))\n        \n        self.stock_list.pack(side=\"top\", expand=1, fill=\"both\")\n        self.stock_list.bind('<Return>', self.search)\n\n    def search(self, event):\n        ticker = self.stock_list.selection()[0]\n        self.StockPlot.update_stock(ticker)\n\n\n    @staticmethod\n    def load_ticker_name_info(exchange):\n        with open(\"../Data/Tickers/\" + exchange + \".csv\") as csv_file:\n            csv_reader = csv.reader(csv_file, delimiter=',')\n            company = namedtuple(\"company_info\", [\"ticker\", \"name\"])\n            stock_info = [company(stock[0], stock[1]) for stock in csv_reader]\n            return stock_info\n\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- frontend/Stocks.py	(revision 07f645123f7c14c8271f8527f5fc5d0b83395741)
++++ frontend/Stocks.py	(date 1590797253430)
+@@ -17,14 +17,13 @@
+ 
+     def __init__(self, StockTab):
+         self.StockTab = StockTab
+-        self.StockPlot = StockPlot(StockTab, self)
++        self.StockPlot = StockPlot(StockTab)
+         self.StockList = StockList(StockTab, self.StockPlot)
+ 
+ 
+ class StockPlot:
+ 
+-    def __init__(self, root, StockWindow):
+-        self.StockWindow = StockWindow
++    def __init__(self, root):
+         self.root = root
+         self.stock_frame = tk.Frame(self.root)
+         self.stock_frame.pack(side="left", anchor=tk.NW)
+@@ -39,9 +38,9 @@
+         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+ 
+     def update_stock(self, ticker):
+-        stock_data = sd.get_stock_data(ticker, start="2019-05-25", interval="1d")
+-        self.graph[0].set_ydata(stock_data["Close"])
+-        self.a.set_ylim([0.9*min(stock_data["Close"]), 1.1*max(stock_data["Close"])])
++        stock_data = sd.get_stock_data(ticker, start="2013-05-25", interval="1d")
++        self.graph[0].set_data(stock_data.index, stock_data['Close'])
++        self.a.set_ylim([0.9*min(stock_data["Close"]), stock_data[-1]])])
+         self.canvas.draw()
+ 
+ 

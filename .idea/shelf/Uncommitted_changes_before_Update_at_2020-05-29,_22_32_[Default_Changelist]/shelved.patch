@@ -1,0 +1,84 @@
+Index: .idea/kompisfonden.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<module type=\"PYTHON_MODULE\" version=\"4\">\n  <component name=\"NewModuleRootManager\">\n    <content url=\"file://$MODULE_DIR$\" />\n    <orderEntry type=\"inheritedJdk\" />\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\n  </component>\n  <component name=\"TestRunnerService\">\n    <option name=\"PROJECT_TEST_RUNNER\" value=\"Unittests\" />\n  </component>\n</module>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/kompisfonden.iml	(revision 841c8fe31f5c6036677931c29071de1c9c4c8986)
++++ .idea/kompisfonden.iml	(date 1590779087553)
+@@ -1,11 +1,10 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <module type="PYTHON_MODULE" version="4">
+   <component name="NewModuleRootManager">
+-    <content url="file://$MODULE_DIR$" />
+-    <orderEntry type="inheritedJdk" />
++    <content url="file://$MODULE_DIR$">
++      <excludeFolder url="file://$MODULE_DIR$/venv" />
++    </content>
++    <orderEntry type="jdk" jdkName="Python 3.7 (kompisfonden)" jdkType="Python SDK" />
+     <orderEntry type="sourceFolder" forTests="false" />
+   </component>
+-  <component name="TestRunnerService">
+-    <option name="PROJECT_TEST_RUNNER" value="Unittests" />
+-  </component>
+ </module>
+\ No newline at end of file
+Index: frontend/gui.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import tkinter as tk\nfrom functools import partial\nimport matplotlib\n#matplotlib.use(\"TkAgg\")\nfrom matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk\nfrom matplotlib.figure import Figure\nfrom pandas.plotting import register_matplotlib_converters\nregister_matplotlib_converters()\nfrom backend import stock_data as sd\n\n\nclass StockWindow:\n\n    def __init__(self, root):\n\n        self.root = root\n        self.stock_frame = tk.Frame(self.root)\n        self.stock_frame.pack(side=tk.BOTTOM)\n\n        # Initialize stock window with Apple stock data\n        self.figure = Figure(figsize=(5, 5), dpi=100)\n        print(self.figure)\n        stock_data = sd.get_stock_data(\"AAPL\", start=\"2019-05-25\", interval=\"1d\")\n        self.a = self.figure.add_subplot(111)\n        self.graph = self.a.plot(stock_data[\"Close\"])\n        self.canvas = FigureCanvasTkAgg(self.figure, self.stock_frame)\n        self.canvas.draw()\n        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)\n\n    def update_stock(self, stock):\n        stock_data = sd.get_stock_data(stock, start=\"2019-05-25\", interval=\"1d\")\n        self.graph[0].set_ydata(stock_data[\"Close\"])\n        self.a.set_ylim([0.9*min(stock_data[\"Close\"]), 1.1*max(stock_data[\"Close\"])])\n        self.canvas.draw()\n\n\nclass Buttons:\n\n    def __init__(self, root):\n        self.root = root\n        self.button_frame = tk.Frame(self.root)\n        self.button_frame.pack(side=tk.TOP)\n\n        self.stock_label = tk.Label(self.button_frame, text=\"Stock ticker\")\n        self.stock_entry = tk.Entry(self.button_frame)\n\n        self.stock_label.grid(row=0)\n        self.stock_entry.grid(row=0, column=1)\n\n        self.search_button = tk.Button(self.button_frame, text=\"Search\")\n        self.search_button.grid(row=1, column=0, columnspan=2)\n        self.search_button.bind(\"<Button-1>\", self.search_stock)\n\n    def search_stock(self, event):\n        stock = self.stock_entry.get()\n        StockWindow.update_stock(stock)\n        return 0\n\n\nroot = tk.Tk()\nroot.minsize(640, 400)\nStockWindow = StockWindow(root)\nButtons = Buttons(root)\nroot.mainloop()\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- frontend/gui.py	(revision 841c8fe31f5c6036677931c29071de1c9c4c8986)
++++ frontend/gui.py	(date 1590784319793)
+@@ -1,18 +1,20 @@
+ import tkinter as tk
+ from functools import partial
+ import matplotlib
+-#matplotlib.use("TkAgg")
++# matplotlib.use("TkAgg")
+ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+ from matplotlib.figure import Figure
+ from pandas.plotting import register_matplotlib_converters
+-register_matplotlib_converters()
++import sys
++sys.path.append('..')
+ from backend import stock_data as sd
+ 
++register_matplotlib_converters()
++
+ 
+ class StockWindow:
+ 
+     def __init__(self, root):
+-
+         self.root = root
+         self.stock_frame = tk.Frame(self.root)
+         self.stock_frame.pack(side=tk.BOTTOM)
+@@ -30,7 +32,7 @@
+     def update_stock(self, stock):
+         stock_data = sd.get_stock_data(stock, start="2019-05-25", interval="1d")
+         self.graph[0].set_ydata(stock_data["Close"])
+-        self.a.set_ylim([0.9*min(stock_data["Close"]), 1.1*max(stock_data["Close"])])
++        self.a.set_ylim([0.9 * min(stock_data["Close"]), 1.1 * max(stock_data["Close"])])
+         self.canvas.draw()
+ 
+ 
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"ProjectRootManager\" version=\"2\" project-jdk-name=\"Python 3.7 (venv)\" project-jdk-type=\"Python SDK\" />\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/misc.xml	(revision 841c8fe31f5c6036677931c29071de1c9c4c8986)
++++ .idea/misc.xml	(date 1590779087578)
+@@ -1,4 +1,4 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.7 (venv)" project-jdk-type="Python SDK" />
++  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.7 (kompisfonden)" project-jdk-type="Python SDK" />
+ </project>
+\ No newline at end of file

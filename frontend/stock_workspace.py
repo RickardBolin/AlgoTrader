@@ -81,12 +81,3 @@ class StockWorkspace:
         :param algorithm_workspace: AlgorithmWorkspace.
         """
         self.plotter = plotter
-
-
-
-
-
-
-
-
-

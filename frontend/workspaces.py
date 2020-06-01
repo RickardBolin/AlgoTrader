@@ -13,6 +13,3 @@ class Workspaces:
     def __init__(self, workspaces_frame):
         self.stock_workspace = StockWorkspace(workspaces_frame)
         self.algorithm_workspace = AlgorithmWorkspace(workspaces_frame)
-
-
-
