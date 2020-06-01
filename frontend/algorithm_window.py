@@ -78,12 +78,9 @@ class ResultHandler:
         bot_names = self.workspaces.algorithm_workspace.selected_bots
         # Results is a dictionary with bot.name as key, a tuple (timestamps, price, position) as value,
         # and each of those are themselves dictionaries with tickers as keys.
-
-        #####
-        # SHOULD BE REMOVED WHEN WE HAVE A FILE SYSTEM
-        self.results = algo.test_algorithms(tickers, bot_names)
-        #####
-        self.results_list.insert(0, "test")
+        name = "".join(bot_names)
+        algo.test_algorithms(tickers, bot_names, name)
+        self.results_list.insert(0, name)
 
         #self.add_statistics(self.results)
 
@@ -114,10 +111,4 @@ class ResultHandler:
         """
         self.workspaces = workspaces
 
-    def open_communication_with_backend(self, backend):
-        """
-        Functions which lets the plot communicate the backend.
-        :param backend: Backend.
-        """
-        self.backend = backend
 

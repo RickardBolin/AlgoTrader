@@ -29,7 +29,7 @@ def backtest(bots, tickers):
     return actions
 
 
-def test_algorithms(tickers, bot_names):
+def test_algorithms(tickers, bot_names, algorithm_name):
 
     # Load all bots that are selected in the workspace
     bots = [load_agent(name)() for name in bot_names]
@@ -51,7 +51,7 @@ def test_algorithms(tickers, bot_names):
             positions[ticker].append(position)
 
         results[bot.name] = result(timestamps, prices, positions)
-    write_result('../file_system/results/test.csv', results)
+    write_result('../file_system/results/' + algorithm_name + '.csv', results)
 
 
 def load_agent(name):

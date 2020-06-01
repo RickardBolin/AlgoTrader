@@ -1,5 +1,6 @@
 import backend.stock_data as sd
 from collections import defaultdict
+from file_system.file_handler import read_result
 
 
 def get_stocks(tickers, plot_style):
@@ -8,13 +9,9 @@ def get_stocks(tickers, plot_style):
     else:
         return percentual_change(tickers)
 
-'''
-# Will need result_name-parameter later when we have a file-system!
+
 def get_result(result_name):  # , plot_style=None):
-    #####
-    # ONLY THIS SHOULD BE REPLACED WITH A FUNCTION THAT READS FROM FILE
-    result = self.results_handler.results
-    #####
+    result = read_result('../file_system/results/' + result_name + '.csv')
     structured_results = defaultdict(tuple)
     for bot_name, (timestamps, prices, positions) in result.items():
         # Loop over all stocks that the algorithm was tested on
@@ -31,7 +28,6 @@ def get_result(result_name):  # , plot_style=None):
                     y_short.append(price)
             structured_results[ticker] = (x_long, x_short, y_long, y_short)
     return structured_results
-'''
 
 
 def regular_stock(tickers, start="2016-05-25", interval="1d"):

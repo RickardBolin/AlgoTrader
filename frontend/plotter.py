@@ -89,7 +89,7 @@ class Plotter:
             self.a = self.figure.add_subplot(111)
 
         # Get result from backend
-        structured_result = self.backend.get_result(result)#, plot_style=self.plot_style.get())
+        structured_result = plot.get_result(result)#, plot_style=self.plot_style.get())
         for ticker, (x_long, x_short, y_long, y_short) in structured_result.items():
             self.a.scatter(x_long, y_long, marker='o')
             self.a.scatter(x_short, y_short, marker='x')
@@ -118,9 +118,3 @@ class Plotter:
     def toggle_hold_on(self, event):
         self.hold_on = not self.hold_on
 
-    def open_communication_with_backend(self, backend):
-        """
-        Functions which lets the plot communicate the backend.
-        :param backend: Backend.
-        """
-        self.backend = backend
