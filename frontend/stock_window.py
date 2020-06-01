@@ -44,13 +44,6 @@ class StockList:
         self.list.bind('<Return>', self.add_to_workspace)
         self.list.bind('<Double-Button-1>', self.add_to_workspace)
 
-    def open_communication_with_workspaces(self, workspaces):
-        """
-        Gives stock list possibility to modify workspace. Perhaps silly solution, but will have to do for now.
-        :param workspace:
-        """
-        self.workspaces = workspaces
-
     def add_to_workspace(self, event):
         """
         Adds clicked ticker to the workspace.
@@ -58,7 +51,7 @@ class StockList:
         """
         ticker = self.list.selection()[0]
         EMPTY_BOX = "\u2610"
-        self.workspaces.stock_workspace.add(EMPTY_BOX + ticker)
+        self.stock_workspace.add(EMPTY_BOX + ticker)
 
     @staticmethod
     def load_ticker_name_info(exchange):
@@ -73,3 +66,10 @@ class StockList:
             company = namedtuple("company_info", ["ticker", "name"])
             stock_info = [company(stock[0], stock[1]) for stock in csv_reader]
             return stock_info
+
+    def open_communication_with_stock_workspace(self, stock_workspace):
+        """
+        Gives stock list possibility to modify workspace. Perhaps silly solution, but will have to do for now.
+        :param stock_workspace: StockWorkspace
+        """
+        self.stock_workspace = stock_workspace

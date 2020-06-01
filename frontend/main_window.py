@@ -4,6 +4,8 @@ from stock_window import StockWindow
 from algorithm_window import AlgorithmWindow
 from workspaces import Workspaces
 from plotter import Plotter
+from backend.backend import Backend
+
 
 class MainWindow:
     def __init__(self):
@@ -37,15 +39,20 @@ class MainWindow:
         root.title("Kompisfonden")
         workspaces = self.construct_workspace(root)
         stock_window, algorithm_window = self.construct_tabs(root)
+        backend = Backend(algorithm_window.result_handler)
         plotter = Plotter(root)
 
         # Open communications
-        stock_window.list.open_communication_with_workspaces(workspaces)
-        algorithm_window.list.open_communication_with_workspaces(workspaces)
+        stock_window.list.open_communication_with_stock_workspace(workspaces.stock_workspace)
+        workspaces.stock_workspace.open_communication_with_plotter(plotter)
+        algorithm_window.list.open_communication_with_algorithm_workspace(workspaces.algorithm_workspace)
 
         workspaces.stock_workspace.open_communication_with_stock_window(stock_window)
-        workspaces.stock_workspace.open_communication_with_plotter(plotter)
-        workspaces.algorithm_workspace.open_communication_with_plotter(plotter)
+        algorithm_window.result_handler.open_communication_with_workspaces(workspaces)
+        algorithm_window.result_handler.open_communication_with_backend(backend)
+        algorithm_window.result_handler.open_communication_with_plotter(plotter)
+
+        plotter.open_communication_with_backend(backend)
 
         root.mainloop()
 

@@ -39,13 +39,19 @@ class Plotter:
         self.toolbar.update()
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
+        # Add "hold on"-checkbutton
+        self.hold_on_button = tk.Checkbutton(self.button_frame, text="Hold on")
+        self.hold_on_button.grid(row=0, column=0)
+        self.hold_on_button.bind('<Button-1>', self.toggle_hold_on)
+        self.hold_on = False
+
         # Add buttons to change viewing dates
+        self.viewing_date_buttons = []
         times = ["one_min", "one_day", "one_month", "one_year", "three_years"]
-        self.buttons = []
         for i, time in enumerate(times):
-            self.buttons.append(tk.Button(self.button_frame, text=time))
-            self.buttons[i].grid(row=0, column=i)
-            self.buttons[i].bind("<Button-1>", eval("self." + time + "_button"))
+            self.viewing_date_buttons.append(tk.Button(self.button_frame, text=time))
+            self.viewing_date_buttons[i].grid(row=0, column=i+1)
+            self.viewing_date_buttons[i].bind("<Button-1>", eval("self." + time + "_button"))
 
         self.PLOT_OPTIONS = [
             'Regular',
@@ -60,39 +66,36 @@ class Plotter:
 
 
     # Type: Stock or algorithm, come up with better name later
-    def update_plot(self, data, type, hold_on=False):
+    def plot_stocks(self, tickers):
         # If hold-on checkbox is not checked, plot to the current figure
-        if not hold_on:
+        if not self.hold_on:
             self.figure.clear()
             self.a = self.figure.add_subplot(111)
 
-        # If "data" is a dictionary, we expect it to have tickers as keys and pandas.Series-objects as values
-        if type == "Stock":
-            for ticker, series in data.items():
-                self.a.plot(series, label=ticker)
-        # If "data" is a (named)tuple, we expect it to contain the results of a backtested algorithm
-        # on the form (timestamps, price, position)
-        elif type == "Algorithm_results":
-            for bot, actions in data.items():
-                timestamps, prices, positions = actions
-                # Loop over all stocks that the algorithm was tested on
-                for ticker in timestamps:
-                    x_long, x_short, y_long, y_short = [], [], [], []
-
-                    # Separate long and short positions and scatter with different markers
-                    for price, position, timestamp in zip(prices[ticker], positions[ticker], timestamps[ticker]):
-                        if position == "long":
-                            x_long.append(timestamp)
-                            y_long.append(price)
-                        else:
-                            x_short.append(timestamp)
-                            y_short.append(price)
-                    self.a.scatter(x_long, y_long, marker='o')
-                    self.a.scatter(x_short, y_short, marker='x')
-        else:
-            print("Wrong type!")
+        # Get data from backend
+        stocks = self.backend.get_stocks(tickers, plot_style=self.plot_style.get())
+        # Plot the retrieved stock data
+        for ticker, series in stocks.items():
+            self.a.plot(series, label=ticker)
 
         self.a.legend()
+        self.a.set_ylabel('$')
+        self.a.set_xlabel('Date')
+        self.canvas.draw()
+
+    def plot_result(self, result):
+        # If hold-on checkbox is not checked, plot to the current figure
+        if not self.hold_on:
+            self.figure.clear()
+            self.a = self.figure.add_subplot(111)
+
+        # Get result from backend
+        structured_result = self.backend.get_result(result)#, plot_style=self.plot_style.get())
+        for ticker, (x_long, x_short, y_long, y_short) in structured_result.items():
+            self.a.scatter(x_long, y_long, marker='o')
+            self.a.scatter(x_short, y_short, marker='x')
+
+        #self.a.legend()
         self.a.set_ylabel('$')
         self.a.set_xlabel('Date')
         self.canvas.draw()
@@ -112,3 +115,13 @@ class Plotter:
 
     def three_years_button(self, event):
         self.plot_time_frame = "3 Years"
+
+    def toggle_hold_on(self, event):
+        self.hold_on = not self.hold_on
+
+    def open_communication_with_backend(self, backend):
+        """
+        Functions which lets the plot communicate the backend.
+        :param backend: Backend.
+        """
+        self.backend = backend

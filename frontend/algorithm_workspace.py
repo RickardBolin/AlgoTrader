@@ -13,7 +13,7 @@ class AlgorithmWorkspace:
     """
 
     def __init__(self, workspace_frame):
-        self.selected = []
+        self.selected_bots = []
         self.results = defaultdict(tuple)
 
         self.list = tk.Listbox(workspace_frame, height=15)
@@ -61,8 +61,8 @@ class AlgorithmWorkspace:
         highlighted_idx = self.list.curselection()[0]
         highlighted_elem = self.list.get(highlighted_idx)[1:]
         self.list.delete(highlighted_idx)
-        if highlighted_elem in self.selected:
-            self.selected.remove(highlighted_elem)
+        if highlighted_elem in self.selected_bots:
+            self.selected_bots.remove(highlighted_elem)
 
     def remove_all(self, event):
         """
@@ -78,12 +78,12 @@ class AlgorithmWorkspace:
         # Make sure to not include the box in the ticker with [1:]
         highlighted_elem = highlighted_elem[1:]
 
-        if highlighted_elem in self.selected:
-            self.selected.remove(highlighted_elem)
+        if highlighted_elem in self.selected_bots:
+            self.selected_bots.remove(highlighted_elem)
             new_string = EMPTY_BOX + highlighted_elem
 
         else:
-            self.selected.append(highlighted_elem)
+            self.selected_bots.append(highlighted_elem)
             new_string = CHECKED_BOX + highlighted_elem
 
         self.list.delete(index)
@@ -94,7 +94,7 @@ class AlgorithmWorkspace:
     # Kan bara hantera en algorithm åt gången atm!
     def test_algorithms(self, stocks):
         # Load all bots that are selected in the workspace
-        bots = [self.load_agent(name)() for name in self.selected]
+        bots = [self.load_agent(name)() for name in self.selected_bots]
 
         # Get dictionary of the actions that each bot made, where the bot name is the key
         actions = backtest.backtest(bots, stocks)
