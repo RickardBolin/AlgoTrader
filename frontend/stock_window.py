@@ -60,7 +60,7 @@ class StockList:
         :param exchange: Choice of stock exchange.
         :return: List of namedtuples with stock ticker and company name from stock exchange.
         """
-        with open("../data/Tickers/" + exchange + ".csv") as csv_file:
+        with open("../file_system/data/Tickers/" + exchange + ".csv") as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             next(csv_file)
             company = namedtuple("company_info", ["ticker", "name"])
