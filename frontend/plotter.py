@@ -26,12 +26,13 @@ class Plotter:
         self.plot_frame.pack(side="left", anchor=tk.SW)
 
         # Add empty figure
-        self.plot_time_frame = "3 Years"
         self.figure = Figure(figsize=(5, 5), dpi=100)
         self.a = self.figure.add_subplot(111)
         self.canvas = FigureCanvasTkAgg(self.figure, self.plot_frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+        self.plot_time_frame = self.a.get_xlim()
+
 
         # Add toolbar
         self.toolbar = NavigationToolbar2Tk(self.canvas, self.plot_frame)
@@ -47,7 +48,7 @@ class Plotter:
 
         # Add buttons to change viewing dates
         self.viewing_date_buttons = []
-        times = ["one_min", "one_day", "one_month", "one_year", "three_years"]
+        times = ["one_hour", "one_day", "one_month", "one_year", "three_years"]
         for i, time in enumerate(times):
             self.viewing_date_buttons.append(tk.Button(self.button_frame, text=time))
             self.viewing_date_buttons[i].grid(row=0, column=i+1)
@@ -87,6 +88,8 @@ class Plotter:
         dates, prices = plot.get_stocks(tickers, plot_style=self.plot_to_func[
                                         self.plot_style.get()], params=self.param.get())
         # Plot the retrieved stock data)
+        print(type(dates))
+        print(type(prices))
         self.a.plot(dates, prices)
         self.a.legend(tickers)
         self.a.set_ylabel('$')
@@ -114,20 +117,30 @@ class Plotter:
         self.canvas.draw()
 
     # Hur slår vi ihop detta till en funktion?!
-    def one_min_button(self, event):
-        self.plot_time_frame = "1 min"
+    def one_hour_button(self, event):
+        _, curr_x_max = self.a.get_xlim()
+        self.a.set_xlim((curr_x_max - 1/24, curr_x_max))
+        self.canvas.draw()
 
     def one_day_button(self, event):
-        self.plot_time_frame = "1 day"
+        _, curr_x_max = self.a.get_xlim()
+        self.a.set_xlim((curr_x_max - 1, curr_x_max))
+        self.canvas.draw()
 
     def one_month_button(self, event):
-        self.plot_time_frame = "1 month"
+        _, curr_x_max = self.a.get_xlim()
+        self.a.set_xlim((curr_x_max - 30, curr_x_max))
+        self.canvas.draw()
 
     def one_year_button(self, event):
-        self.plot_time_frame = "1 Year"
+        _, curr_x_max = self.a.get_xlim()
+        self.a.set_xlim((curr_x_max - 365, curr_x_max))
+        self.canvas.draw()
 
     def three_years_button(self, event):
-        self.plot_time_frame = "3 Years"
+        _, curr_x_max = self.a.get_xlim()
+        self.a.set_xlim((curr_x_max - 365*3, curr_x_max))
+        self.canvas.draw()
 
     def toggle_hold_on(self, event):
         self.hold_on = not self.hold_on
