@@ -86,7 +86,7 @@ class ResultHandler:
         self.results_list.insert(0, name)
 
         algorithm_results = read_result('../file_system/results/' + name + '.csv')
-        percentual_profit = 100*algo.calc_total_percentual_profit(algorithm_results)
+        percentual_profit = 100*(algo.calc_total_percentual_profit(algorithm_results)-1)
         self.statistics_box.insert(0, 'Total percentual profit:')
         self.statistics_box.insert(tk.END, str(percentual_profit) + '%')
 
