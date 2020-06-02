@@ -74,15 +74,19 @@ def calc_componentwise_percentual_profit(results):
         timestamps, prices, positions = bot_results
         for ticker in timestamps:
             stock_prices, stock_positions = prices[ticker], positions[ticker]
-            percentual_profit = 0
+            percentual_profit = 1
             if stock_positions[0] == 'long':
                 sign = 1
             else:
                 sign = -1
 
             for shift, price in enumerate(stock_prices[:-1], start=1):
-                percentual_profit *= (1 + sign*stock_prices[shift]/price)
+                if sign == 1:
+                    percentual_profit *= stock_prices[shift]/price
+                else:
+                    percentual_profit *= price/stock_prices[shift]
                 sign *= -1
+                print(percentual_profit)
             stock_percentual_profits[ticker] = percentual_profit
         percentual_profits[bot_name] = stock_percentual_profits
 
@@ -100,11 +104,12 @@ def calc_total_percentual_profit(results):
     :return: Total profit out of all bots on all stocks.
     """
     percentual_profits = calc_componentwise_percentual_profit(results)
-    percentual_total_total_profit = 0
+    percentual_total_total_profit = 1
 
     for (bot_name, bot_results) in percentual_profits.items():
         for (ticker, percentual_profit) in bot_results.items():
             percentual_total_total_profit *= percentual_profit
+
     return percentual_total_total_profit
 
 
