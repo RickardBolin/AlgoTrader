@@ -41,6 +41,15 @@ class StockWorkspace:
         self.plot_menu = tk.OptionMenu(self.plot_options_frame, self.interval, *self.INTERVAL_OPTIONS)
         self.plot_menu.grid(row=0, column=1)
 
+        # Add label and entry to choose start date
+        self.start_label = tk.Label(self.plot_options_frame, text="Start date:", width=7)
+        self.start_label.grid(row=1, column=0)
+        self.start = tk.StringVar()
+        self.start.set("2019-04-20")
+
+        self.param_box = tk.Entry(self.plot_options_frame, textvariable=self.start, width=10)
+        self.param_box.grid(row=1, column=1)
+
     def add(self, elem):
         """
         Adds an element at the end of the workspace.
@@ -88,7 +97,7 @@ class StockWorkspace:
         self.list.update()
 
     def plot_stocks(self, event):
-        self.plotter.plot_stocks(self.selected_tickers, interval=self.interval.get())
+        self.plotter.plot_stocks(self.selected_tickers, interval=self.interval.get(), start=self.start.get())
 
     def open_communication_with_plotter(self, plotter):
         """

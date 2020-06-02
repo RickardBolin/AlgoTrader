@@ -8,14 +8,12 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from matplotlib.figure import Figure
 from pandas.plotting import register_matplotlib_converters
 import backend.plots as plot
-import backend.utils as utils
 register_matplotlib_converters()
 
 
 class Plotter:
     """
-    POTENTIALLY UNFINISHED
-    Class which handles the stockplot.
+    ADD COMMENT HERE
     """
 
     def __init__(self, root):
@@ -89,7 +87,7 @@ class Plotter:
         self.param.set("None")
         self.param_box.grid(row=1, column=2)
 
-    def plot_stocks(self, tickers, interval):
+    def plot_stocks(self, tickers, interval, start):
         # If hold-on checkbox is not checked, plot to the current figure
         if not self.hold_on:
             # Reset current Axes
@@ -97,7 +95,7 @@ class Plotter:
 
         # Get data from backend
         dates, prices = plot.get_stocks(tickers, plot_style=self.plot_to_func[
-                                        self.plot_style.get()], params=self.param.get(), interval=interval)
+                                        self.plot_style.get()], params=self.param.get(), interval=interval, start=start)
         # Plot the retrieved stock data)
         self.a.plot(dates, prices)
         self.a.legend(tickers)
