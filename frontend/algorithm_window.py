@@ -4,6 +4,7 @@ import os
 import tkinter as tk
 from tkfilterlist import FilterList
 import backend.algorithm as algo
+from file_system.file_handler import read_result
 
 
 class AlgorithmWindow:
@@ -58,8 +59,8 @@ class ResultHandler:
         self.results_list = tk.Listbox(self.results_frame, height=8)
         self.results_list.pack(anchor=tk.NW)
 
-        self.statistics = tk.Listbox(self.results_frame, height=8)
-        self.statistics.pack(anchor=tk.SW)
+        self.statistics_box = tk.Listbox(self.results_frame, height=8)
+        self.statistics_box.pack(anchor=tk.SW)
 
         self.test_algorithm_button = tk.Button(self.results_frame, text="Test Algorithm")
         self.test_algorithm_button.pack(expand=1, fill="x")
@@ -82,8 +83,12 @@ class ResultHandler:
         algo.test_algorithms(tickers, bot_names, name)
 
         ############ Lägg in att ta bort vid dublett.
-
         self.results_list.insert(0, name)
+
+        algorithm_results = read_result('../file_system/results/' + name + '.csv')
+        percentual_profit = 100*algo.calc_total_percentual_profit(algorithm_results)
+        self.statistics_box.insert(0, 'Total percentual profit:')
+        self.statistics_box.insert(tk.END, str(percentual_profit) + '%')
 
     def plot_results(self, event):
         self.plotter.plot_result(self.results_list.get(tk.ACTIVE))

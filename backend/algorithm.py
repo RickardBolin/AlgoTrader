@@ -1,10 +1,11 @@
 import backend.utils as utils
 import backend.stock_data as sd
 from collections import defaultdict, namedtuple
-from file_system.file_handler import write_result
+from file_system.file_handler import write_result, read_result
+import math
 
 
-def get_event_list(tickers, start="2020-05-30", interval="1m"):
+def get_event_list(tickers, start="2018-05-30", interval="1d"):
     event_list = []
     for ticker in tickers:
         stock_data = sd.get_stock_data(ticker, start=start, interval=interval)
@@ -56,36 +57,60 @@ def test_algorithms(tickers, bot_names, algorithm_name):
     write_result('../file_system/results/' + algorithm_name + '.csv', results)
 
 
-def calc_percentual_profit_components(results):
+def calc_componentwise_percentual_profit(results):
     """
-    Calculated the percentual profit. Assumed to have the form dict(bots)
-    with (bot_name, ticker_dict) as key value pairs. Thereafter ticker_dict have the form dict(tickers)
-    with (ticker, actions). Thereafter actions have (timestamps, prices, positions) where each component are lists.
-    :param results: total profit
-    :return:
+    Calculates the compnentwise percentual profit. Assumed to have the form dict(bots)
+    with (bot_name, actions_tuple) as key value pairs. Thereafter actions_tuple has the appearence of
+    (timestamps, prices, positions) where each of these are a dictionary with ticker as key
+    and a list of values as value.
+    :param results: result dict.
+    :return: Component-wise percentual profit. Dict of bots where each bot has ha dict of results for each stock.
     """
 
     percentual_profits = defaultdict(defaultdict)
+    investment_start_price = defaultdict(defaultdict)
     for bot_name, bot_results in results.items():
-        stock_profits = defaultdict(float)
-        for ticker, (timestamps, prices, positions) in bot_results.items():
-            percentual_profit = 1
-            for shift, timestamp, price, position in enumerate(zip(timestamps[:-1], prices, positions), start=1):
-                percentual_profit *= (1 + (prices[shift] - price) / price)
-            stock_profits[ticker] = percentual_profit
-        percentual_profits[bot_name] = stock_profits
+        stock_percentual_profits = defaultdict(float)
+        investment_stock_start_prices = defaultdict(float)
+        timestamps, prices, positions = bot_results
+        for ticker in timestamps:
+            stock_prices, stock_positions = prices[ticker], positions[ticker]
+            profit = 0
+            if stock_positions[0] == 'long':
+                sign = 1
+            else:
+                sign = -1
 
-    return percentual_profits
+            for shift, price in enumerate(stock_prices[:-1], start=1):
+                profit += sign*(stock_prices[shift] - price)
+                sign *= -1
+            stock_percentual_profits[ticker] = profit/stock_prices[0]
+            investment_stock_start_prices[ticker] = stock_prices[0]
+        percentual_profits[bot_name] = stock_percentual_profits
+        investment_start_price[bot_name] = investment_stock_start_prices
+
+    return percentual_profits, investment_start_price
 
 
-def calc_percentual_profit_total(results):
-    percentual_profits = calc_percentual_profit_components(results)
-    total_percentual_profit = 1
-    for bot_name, bot_results in percentual_profits.items():
-        for ticker, percentual_profit in percentual_profits.items():
-            total_percentual_profit *= percentual_profit
+def calc_total_percentual_profit(results):
+    """
+    CLEANUP?
+    Calculates the total percentual profit. Assumed to have the form dict(bots)
+    with (bot_name, actions_tuple) as key value pairs. Thereafter actions_tuple has the appearence of
+    (timestamps, prices, positions) where each of these are a dictionary with ticker as key
+    and a list of values as value.
+    :param results: result dict
+    :return: Total profit out of all bots on all stocks.
+    """
+    percentual_profits, start_prices = calc_componentwise_percentual_profit(results)
+    total_profit = 0
+    total_start_price = 0
 
-    return total_percentual_profit
+    for (bot_name, bot_results), investment_start_price in zip(percentual_profits.items(), start_prices.values()):
+        for (ticker, percentual_profit), investment_stock_start_price in zip(bot_results.items(), investment_start_price.values()):
+            total_profit += percentual_profit
+            total_start_price += investment_stock_start_price
+    return total_profit/total_start_price
 
 
 def load_agent(name):
