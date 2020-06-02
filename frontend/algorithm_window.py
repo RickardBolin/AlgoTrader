@@ -88,9 +88,15 @@ class ResultHandler:
         self.results_list.insert(0, name)
 
         algorithm_results = read_result('../file_system/results/' + name + '.csv')
-        percentual_profit = 100*(algo.calc_total_percentual_profit(algorithm_results)-1)
-        self.statistics_box.insert(0, 'Total percentual profit:')
-        self.statistics_box.insert(tk.END, str(percentual_profit) + '%')
+        self.add_statistics(algo.calc_componentwise_percentual_profit(algorithm_results))
+
+    def add_statistics(self, result):
+        for bot_name, bot_results in result.items():
+            self.statistics_box.insert(tk.END, bot_name)
+            self.statistics_box.insert(tk.END, 'Profit multipliers: ')
+            for ticker, multiplier in bot_results.items():
+                self.statistics_box.insert(tk.END, ticker + ': ' + f'{multiplier:.2f}')
+
 
     def plot_results(self, event):
         self.plotter.plot_result(self.results_list.get(tk.ACTIVE))
