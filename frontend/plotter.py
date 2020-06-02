@@ -88,8 +88,6 @@ class Plotter:
         dates, prices = plot.get_stocks(tickers, plot_style=self.plot_to_func[
                                         self.plot_style.get()], params=self.param.get())
         # Plot the retrieved stock data)
-        print(type(dates))
-        print(type(prices))
         self.a.plot(dates, prices)
         self.a.legend(tickers)
         self.a.set_ylabel('$')
@@ -104,12 +102,10 @@ class Plotter:
 
         # Get result from backend
         structured_result = plot.get_result(result)#, plot_style=self.plot_style.get())
-        for ticker, (x_long, x_short, y_long, y_short) in structured_result.items():
-            datetime_x_long = [utils.convert_timestamp_to_datetime(_x_long) for _x_long in x_long]
-            datetime_x_short = [utils.convert_timestamp_to_datetime(_x_short) for _x_short in x_short]
-
-            self.a.scatter(datetime_x_long, y_long, marker='o')
-            self.a.scatter(datetime_x_short, y_short, marker='x')
+        for bot_name, bot_results in structured_result.items():
+            for ticker, (long, short) in bot_results.items():
+                self.a.scatter(long.index, long, marker='o')
+                self.a.scatter(short.index, short, marker='x')
 
         #self.a.legend()
         self.a.set_ylabel('$')
