@@ -68,28 +68,24 @@ def calc_componentwise_percentual_profit(results):
     """
 
     percentual_profits = defaultdict(defaultdict)
-    investment_start_price = defaultdict(defaultdict)
     for bot_name, bot_results in results.items():
         stock_percentual_profits = defaultdict(float)
-        investment_stock_start_prices = defaultdict(float)
         timestamps, prices, positions = bot_results
         for ticker in timestamps:
             stock_prices, stock_positions = prices[ticker], positions[ticker]
-            profit = 0
+            percentual_profit = 0
             if stock_positions[0] == 'long':
                 sign = 1
             else:
                 sign = -1
 
             for shift, price in enumerate(stock_prices[:-1], start=1):
-                profit += sign*(stock_prices[shift] - price)
+                percentual_profit *= (1 + sign*stock_prices[shift]/price)
                 sign *= -1
-            stock_percentual_profits[ticker] = profit/stock_prices[0]
-            investment_stock_start_prices[ticker] = stock_prices[0]
+            stock_percentual_profits[ticker] = percentual_profit
         percentual_profits[bot_name] = stock_percentual_profits
-        investment_start_price[bot_name] = investment_stock_start_prices
 
-    return percentual_profits, investment_start_price
+    return percentual_profits
 
 
 def calc_total_percentual_profit(results):
@@ -102,15 +98,13 @@ def calc_total_percentual_profit(results):
     :param results: result dict
     :return: Total profit out of all bots on all stocks.
     """
-    percentual_profits, start_prices = calc_componentwise_percentual_profit(results)
-    total_profit = 0
-    total_start_price = 0
+    percentual_profits = calc_componentwise_percentual_profit(results)
+    percentual_total_total_profit = 0
 
-    for (bot_name, bot_results), investment_start_price in zip(percentual_profits.items(), start_prices.values()):
-        for (ticker, percentual_profit), investment_stock_start_price in zip(bot_results.items(), investment_start_price.values()):
-            total_profit += percentual_profit
-            total_start_price += investment_stock_start_price
-    return total_profit/total_start_price
+    for (bot_name, bot_results) in percentual_profits.items():
+        for (ticker, percentual_profit) in bot_results.items():
+            percentual_total_total_profit *= percentual_profit
+    return percentual_total_total_profit
 
 
 def load_agent(name):
