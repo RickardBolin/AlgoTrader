@@ -4,14 +4,19 @@ from collections import defaultdict, namedtuple
 from file_system.file_handler import write_result
 
 
-def get_event_list(tickers, start="2016-05-25", interval="1d"):
+def get_event_list(tickers, start="2019-05-30", interval="1d"):
     event_list = []
     for ticker in tickers:
         stock_data = sd.get_stock_data(ticker, start=start, interval=interval)
         for timestamp, new_price in stock_data["Close"].iteritems():
-            unix_time = utils.convert_timestamp_to_unix(timestamp)
-            event_list.append([unix_time, ticker, new_price])
+            _datetime = utils.convert_timestamp_to_datetime(timestamp)
+            #_datetime = _datetime.replace(hour=_datetime.hour + 4, minute=(_datetime.minute + 30)%60)
+            #unix_time = utils.convert_timestamp_to_unix(timestamp)
+            #event_list.append([unix_time, ticker, new_price])
+            event_list.append([_datetime, ticker, new_price])
     event_list.sort(key=lambda x: x[0])
+    for i, (datetime, _, _) in enumerate(event_list):
+        event_list[i][0] = utils.convert_datetime_to_timestamp(datetime)
     return event_list
 
 
@@ -44,8 +49,8 @@ def test_algorithms(tickers, bot_names, algorithm_name):
         prices = defaultdict(list)
         positions = defaultdict(list)
 
-        for (time, ticker, price), position in actions[bot.name]:
-            timestamps[ticker].append(utils.convert_unix_to_timestamp(time))
+        for (timestamp, ticker, price), position in actions[bot.name]:
+            timestamps[ticker].append(timestamp)#utils.convert_datetime_to_timestamp(datetime))
             # Append new price to y
             prices[ticker].append(price)
             positions[ticker].append(position)

@@ -11,7 +11,7 @@ class Bot:
         self.tickers = []
 
     def handle_event(self, event):
-        unix_time, ticker, new_price = event
+        timestamp, ticker, new_price = event
         if ticker not in self.tickers:
             self.add_ticker(ticker)
 

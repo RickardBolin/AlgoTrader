@@ -5,7 +5,7 @@ import pandas as pd
 import backend.timeseries as ts
 
 
-def get_stocks(tickers, plot_style, params="None", start="2016-05-25", interval="1d", price_type="Close"):
+def get_stocks(tickers, plot_style, params="None", start="2019-05-30", interval="1d", price_type="Close"):
     stock_data = sd.get_stock_data(tickers, start=start, interval=interval)
     stock_data = stock_data[price_type]
     # If we do not want to apply any transformation, return the regular stock data
@@ -32,13 +32,14 @@ def get_result(result_name):  # , plot_style=None):
             x_long, x_short, y_long, y_short = [], [], [], []
 
             # Separate long and short positions and scatter with different markers
-            for price, position, timestamp in zip(prices[ticker], positions[ticker], timestamps[ticker]):
+            for timestamp, price, position in zip(timestamps[ticker], prices[ticker], positions[ticker]):
                 if position == "long":
                     x_long.append(timestamp)
                     y_long.append(price)
                 else:
                     x_short.append(timestamp)
                     y_short.append(price)
+            print(x_long)
             structured_results[ticker] = (x_long, x_short, y_long, y_short)
     return structured_results
 

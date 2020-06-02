@@ -4,6 +4,7 @@ from collections import defaultdict, namedtuple
 from backend.utils import *
 sys.path.append('..')
 
+
 def read_result(file):
     results = defaultdict(tuple)
     result_tuple = namedtuple('Results', ['timestamps', 'prices', 'positions'])
@@ -21,8 +22,8 @@ def read_result(file):
             for ticker_idx in range(int(num_tickers)):
                 ticker, num_actions = next(csv_reader)
                 for action_idx in range(int(num_actions)):
-                    unix_time, price, position = next(csv_reader)
-                    timestamps[ticker].append(convert_unix_to_timestamp(int(unix_time)))
+                    timestamp, price, position = next(csv_reader)
+                    timestamps[ticker].append(timestamp)#convert_unix_to_timestamp(int(unix_time)))
                     prices[ticker].append(float(price))
                     positions[ticker].append(position)
 
@@ -45,4 +46,6 @@ def write_result(file, result):
                 num_actions = len(timestamps[ticker])
                 csv_writer.writerow([ticker, num_actions])
                 for timestamp, price, position in zip(timestamps[ticker], prices[ticker], positions[ticker]):
-                    csv_writer.writerow([convert_timestamp_to_unix(timestamp), price, position])
+                    print(type(timestamp))
+                    print(timestamp)
+                    csv_writer.writerow([timestamp, price, position])

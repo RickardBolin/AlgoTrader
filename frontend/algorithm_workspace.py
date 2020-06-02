@@ -104,8 +104,8 @@ class AlgorithmWorkspace:
             y = defaultdict(list)
             positions = defaultdict(list)
 
-            for (time, ticker, price), position in actions[bot.name]:
-                x[ticker].append(self.convert_unix_to_timestamp(time))
+            for (timestamp, ticker, price), position in actions[bot.name]:
+                x[ticker].append(timestamp)
                 # Append new price to y
                 y[ticker].append(price)
                 positions[ticker].append(position)
@@ -133,9 +133,6 @@ class AlgorithmWorkspace:
         if not callable(op):
             raise NotImplementedError('Bot "{}" does not implement method: "{}"'.format(
                 bot_name, function_name))
-    @staticmethod
-    def convert_unix_to_timestamp(unix_time):
-        return datetime.utcfromtimestamp(unix_time)
 
     def plot_algorithm_results(self, hold_on):
         self.plotter.update_plot(self.results, type="Algorithm_results", hold_on=hold_on)

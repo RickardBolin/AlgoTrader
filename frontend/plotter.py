@@ -8,6 +8,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from matplotlib.figure import Figure
 from pandas.plotting import register_matplotlib_converters
 import backend.plots as plot
+import backend.utils as utils
 register_matplotlib_converters()
 
 
@@ -101,8 +102,11 @@ class Plotter:
         # Get result from backend
         structured_result = plot.get_result(result)#, plot_style=self.plot_style.get())
         for ticker, (x_long, x_short, y_long, y_short) in structured_result.items():
-            self.a.scatter(x_long, y_long, marker='o')
-            self.a.scatter(x_short, y_short, marker='x')
+            datetime_x_long = [utils.convert_timestamp_to_datetime(_x_long) for _x_long in x_long]
+            datetime_x_short = [utils.convert_timestamp_to_datetime(_x_short) for _x_short in x_short]
+
+            self.a.scatter(datetime_x_long, y_long, marker='o')
+            self.a.scatter(datetime_x_short, y_short, marker='x')
 
         #self.a.legend()
         self.a.set_ylabel('$')
