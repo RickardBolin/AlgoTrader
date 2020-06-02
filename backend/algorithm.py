@@ -10,9 +10,6 @@ def get_event_list(tickers, start="2020-05-30", interval="1m"):
         stock_data = sd.get_stock_data(ticker, start=start, interval=interval)
         for timestamp, new_price in stock_data["Close"].iteritems():
             _datetime = utils.convert_timestamp_to_datetime(timestamp)
-            #_datetime = _datetime.replace(hour=_datetime.hour + 4, minute=(_datetime.minute + 30)%60)
-            #unix_time = utils.convert_timestamp_to_unix(timestamp)
-            #event_list.append([unix_time, ticker, new_price])
             event_list.append([_datetime, ticker, new_price])
     event_list.sort(key=lambda x: x[0])
     for i, (datetime, _, _) in enumerate(event_list):
