@@ -56,6 +56,38 @@ def test_algorithms(tickers, bot_names, algorithm_name):
     write_result('../file_system/results/' + algorithm_name + '.csv', results)
 
 
+def calc_percentual_profit_components(results):
+    """
+    Calculated the percentual profit. Assumed to have the form dict(bots)
+    with (bot_name, ticker_dict) as key value pairs. Thereafter ticker_dict have the form dict(tickers)
+    with (ticker, actions). Thereafter actions have (timestamps, prices, positions) where each component are lists.
+    :param results: total profit
+    :return:
+    """
+
+    percentual_profits = defaultdict(defaultdict)
+    for bot_name, bot_results in results.items():
+        stock_profits = defaultdict(float)
+        for ticker, (timestamps, prices, positions) in bot_results.items():
+            percentual_profit = 1
+            for shift, timestamp, price, position in enumerate(zip(timestamps[:-1], prices, positions), start=1):
+                percentual_profit *= (1 + (prices[shift] - price) / price)
+            stock_profits[ticker] = percentual_profit
+        percentual_profits[bot_name] = stock_profits
+
+    return percentual_profits
+
+
+def calc_percentual_profit_total(results):
+    percentual_profits = calc_percentual_profit_components(results)
+    total_percentual_profit = 1
+    for bot_name, bot_results in percentual_profits.items():
+        for ticker, percentual_profit in percentual_profits.items():
+            total_percentual_profit *= percentual_profit
+
+    return total_percentual_profit
+
+
 def load_agent(name):
     """
     Loads a bot from the bots directory and validates

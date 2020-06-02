@@ -80,19 +80,10 @@ class ResultHandler:
         # and each of those are themselves dictionaries with tickers as keys.
         name = "".join(bot_names)
         algo.test_algorithms(tickers, bot_names, name)
+
+        ############ Lägg in att ta bort vid dublett.
+
         self.results_list.insert(0, name)
-
-        #self.add_statistics(self.results)
-
-    def add_statistics(self, results):
-        for bot_name, (timestamps, price, position) in results.items():
-            self.statistics.insert(tk.END, bot_name)
-            for ticker, _position in position.items():
-                num_longs = len([pos for pos in _position if pos == 'long'])
-                num_shorts = len(_position) - num_longs
-                self.statistics.insert(tk.END, 'Ticker: ' + ticker)
-                self.statistics.insert(tk.END, 'Number of longs: ' + str(num_longs))
-                self.statistics.insert(tk.END, 'Number of shorts: ' + str(num_shorts))
 
     def plot_results(self, event):
         self.plotter.plot_result(self.results_list.get(tk.ACTIVE))
