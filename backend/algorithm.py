@@ -4,7 +4,7 @@ from collections import defaultdict, namedtuple
 from file_system.file_handler import write_result
 
 
-def get_event_list(tickers, start="2019-05-30", interval="1d"):
+def get_event_list(tickers, start="2020-05-30", interval="1m"):
     event_list = []
     for ticker in tickers:
         stock_data = sd.get_stock_data(ticker, start=start, interval=interval)

@@ -5,7 +5,7 @@ import pandas as pd
 import backend.timeseries as ts
 
 
-def get_stocks(tickers, plot_style, params="None", start="2019-05-30", interval="1d", price_type="Close"):
+def get_stocks(tickers, plot_style, params="None", start="2020-05-30", interval="1m", price_type="Close"):
     stock_data = sd.get_stock_data(tickers, start=start, interval=interval)
     stock_data = stock_data[price_type]
     # If we do not want to apply any transformation, return the regular stock data
@@ -25,9 +25,10 @@ def get_stocks(tickers, plot_style, params="None", start="2019-05-30", interval=
 
 def get_result(result_name):  # , plot_style=None):
     result = read_result('../file_system/results/' + result_name + '.csv')
-    structured_results = defaultdict(tuple)
+    structure_results = defaultdict(defaultdict)
     for bot_name, (timestamps, prices, positions) in result.items():
         # Loop over all stocks that the algorithm was tested on
+        bot_results = defaultdict(tuple)
         for ticker in timestamps:
             x_long, x_short, y_long, y_short = [], [], [], []
 
@@ -39,7 +40,10 @@ def get_result(result_name):  # , plot_style=None):
                 else:
                     x_short.append(timestamp)
                     y_short.append(price)
-            print(x_long)
-            structured_results[ticker] = (x_long, x_short, y_long, y_short)
-    return structured_results
+
+            long = pd.Series(y_long, index=x_long)
+            short = pd.Series(y_short, index=x_short)
+            bot_results[ticker] = (long, short)
+        structure_results[bot_name] = bot_results
+    return structure_results
 

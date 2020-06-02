@@ -9,6 +9,8 @@ from matplotlib.figure import Figure
 from pandas.plotting import register_matplotlib_converters
 import backend.plots as plot
 import backend.utils as utils
+import pandas as pd
+import numpy as np
 register_matplotlib_converters()
 
 
@@ -101,13 +103,10 @@ class Plotter:
 
         # Get result from backend
         structured_result = plot.get_result(result)#, plot_style=self.plot_style.get())
-        for ticker, (x_long, x_short, y_long, y_short) in structured_result.items():
-            datetime_x_long = [utils.convert_timestamp_to_datetime(_x_long) for _x_long in x_long]
-            datetime_x_short = [utils.convert_timestamp_to_datetime(_x_short) for _x_short in x_short]
-
-            self.a.scatter(datetime_x_long, y_long, marker='o')
-            self.a.scatter(datetime_x_short, y_short, marker='x')
-
+        for bot_name, bot_results in structured_result.items():
+            for ticker, (long, short) in bot_results.items():
+                self.a.scatter(long.index, long, marker='o')
+                self.a.scatter(short.index, short, marker='x')
         #self.a.legend()
         self.a.set_ylabel('$')
         self.a.set_xlabel('Date')
@@ -119,6 +118,10 @@ class Plotter:
 
     def one_day_button(self, event):
         self.plot_time_frame = "1 day"
+        rhs = self.a.get_xlim()[0]
+
+        # TEMPORARY RHS, THEN WILL ALWAYS BE FROM TODAY
+        window_lhs, window_rhs = self.a.get_xlim()
 
     def one_month_button(self, event):
         self.plot_time_frame = "1 month"
@@ -128,6 +131,7 @@ class Plotter:
 
     def three_years_button(self, event):
         self.plot_time_frame = "3 Years"
+
 
     def toggle_hold_on(self, event):
         self.hold_on = not self.hold_on

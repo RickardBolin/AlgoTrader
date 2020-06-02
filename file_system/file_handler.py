@@ -1,8 +1,9 @@
 import csv
 import sys
 from collections import defaultdict, namedtuple
-from backend.utils import *
 sys.path.append('..')
+from backend.utils import *
+
 
 
 def read_result(file):
@@ -46,6 +47,4 @@ def write_result(file, result):
                 num_actions = len(timestamps[ticker])
                 csv_writer.writerow([ticker, num_actions])
                 for timestamp, price, position in zip(timestamps[ticker], prices[ticker], positions[ticker]):
-                    print(type(timestamp))
-                    print(timestamp)
                     csv_writer.writerow([timestamp, price, position])
