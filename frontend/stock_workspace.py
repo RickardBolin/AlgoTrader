@@ -17,14 +17,29 @@ class StockWorkspace:
         self.label.pack(expand=1, fill="both")
         self.list.pack(expand=1, fill="both")
 
+        self.plot_options_frame = tk.Frame(workspace_frame)
+        self.plot_options_frame.pack()
+
         # Add button that updates the plot
-        self.update_button = tk.Button(workspace_frame, text="Plot Stocks")
-        self.update_button.pack()
+        self.update_button = tk.Button(self.plot_options_frame, text="Plot Stocks")
+        self.update_button.grid(row=0, column=0)
         self.update_button.bind('<Button-1>', self.plot_stocks)
 
         self.list.bind('<BackSpace>', self.remove)
         self.list.bind('<Return>', self.select)
         self.list.bind('<Double-Button-1>', self.select)
+
+        # Add option menu to choose the interval between data points
+        self.INTERVAL_OPTIONS = [
+            '1m',
+            '1d',
+        ]
+
+        self.interval = tk.StringVar(self.plot_options_frame)
+        self.interval.set(self.INTERVAL_OPTIONS[1])
+
+        self.plot_menu = tk.OptionMenu(self.plot_options_frame, self.interval, *self.INTERVAL_OPTIONS)
+        self.plot_menu.grid(row=0, column=1)
 
     def add(self, elem):
         """
@@ -73,7 +88,7 @@ class StockWorkspace:
         self.list.update()
 
     def plot_stocks(self, event):
-        self.plotter.plot_stocks(self.selected_tickers)
+        self.plotter.plot_stocks(self.selected_tickers, interval=self.interval.get())
 
     def open_communication_with_plotter(self, plotter):
         """
