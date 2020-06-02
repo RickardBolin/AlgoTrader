@@ -5,7 +5,6 @@ sys.path.append('..')
 from backend.utils import *
 
 
-
 def read_result(file):
     results = defaultdict(tuple)
     result_tuple = namedtuple('Results', ['timestamps', 'prices', 'positions'])
