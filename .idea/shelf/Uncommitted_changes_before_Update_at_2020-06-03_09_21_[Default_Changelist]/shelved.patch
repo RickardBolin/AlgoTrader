@@ -1,0 +1,84 @@
+Index: backend/algorithm.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import backend.utils as utils\nimport backend.stock_data as sd\nfrom collections import defaultdict, namedtuple\nfrom file_system.file_handler import write_result, read_result\nimport math\n\n\ndef get_event_list(tickers, start, interval):\n    event_list = []\n    for ticker in tickers:\n        print(start)\n        stock_data = sd.get_stock_data(ticker, start=start, interval=interval)\n        for timestamp, new_price in stock_data[\"Close\"].iteritems():\n            _datetime = utils.convert_timestamp_to_datetime(timestamp)\n            event_list.append([_datetime, ticker, new_price])\n    event_list.sort(key=lambda x: x[0])\n    for i, (datetime, _, _) in enumerate(event_list):\n        event_list[i][0] = utils.convert_datetime_to_timestamp(datetime)\n    return event_list\n\n\ndef backtest(bots, tickers, start, interval):\n    # Get price changes of all stocks sorted by time\n    event_list = get_event_list(tickers, start, interval)\n    # Loop over each event and let each bot handle it\n    for event in event_list:\n        for bot in bots:\n            bot.handle_event(event)\n    # Save all the different bot.actions in a dictionary\n    actions = dict()\n    for bot in bots:\n        actions[bot.name] = bot.actions\n    return actions\n\n\ndef test_algorithms(tickers, start, interval, bot_names, algorithm_name):\n\n    # Load all bots that are selected in the workspace\n    bots = [load_agent(name)() for name in bot_names]\n    # Get dictionary of the actions that each bot made, where the bot name is the key\n    actions = backtest(bots, tickers, start, interval)\n\n    results = defaultdict(tuple)\n    result = namedtuple(\"Results\", [\"timestamps\", \"prices\", \"positions\"])\n\n    for bot in bots:\n        timestamps = defaultdict(list)\n        prices = defaultdict(list)\n        positions = defaultdict(list)\n\n        for (timestamp, ticker, price), position in actions[bot.name]:\n            timestamps[ticker].append(timestamp)#utils.convert_datetime_to_timestamp(datetime))\n            # Append new price to y\n            prices[ticker].append(price)\n            positions[ticker].append(position)\n\n        results[bot.name] = result(timestamps, prices, positions)\n    write_result('../file_system/results/' + algorithm_name + '.csv', results)\n\n\ndef calc_componentwise_percentual_profit(results):\n    \"\"\"\n    Calculates the compnentwise percentual profit. Assumed to have the form dict(bots)\n    with (bot_name, actions_tuple) as key value pairs. Thereafter actions_tuple has the appearence of\n    (timestamps, prices, positions) where each of these are a dictionary with ticker as key\n    and a list of values as value.\n    :param results: result dict.\n    :return: Component-wise percentual profit. Dict of bots where each bot has ha dict of results for each stock.\n    \"\"\"\n\n    percentual_profits = defaultdict(defaultdict)\n    for bot_name, bot_results in results.items():\n        stock_percentual_profits = defaultdict(float)\n        timestamps, prices, positions = bot_results\n        for ticker in timestamps:\n            stock_prices, stock_positions = prices[ticker], positions[ticker]\n            percentual_profit = 1\n            if stock_positions[0] == 'long':\n                sign = 1\n            else:\n                sign = -1\n\n            for shift, price in enumerate(stock_prices[:-1], start=1):\n                if sign == 1:\n                    percentual_profit *= stock_prices[shift]/price\n                else:\n                    percentual_profit *= price/stock_prices[shift]\n                sign *= -1\n                print(percentual_profit)\n            stock_percentual_profits[ticker] = percentual_profit\n        percentual_profits[bot_name] = stock_percentual_profits\n\n    return percentual_profits\n\n\ndef calc_total_percentual_profit(results):\n    \"\"\"\n    CLEANUP?\n    Calculates the total percentual profit. Assumed to have the form dict(bots)\n    with (bot_name, actions_tuple) as key value pairs. Thereafter actions_tuple has the appearence of\n    (timestamps, prices, positions) where each of these are a dictionary with ticker as key\n    and a list of values as value.\n    :param results: result dict\n    :return: Total profit out of all bots on all stocks.\n    \"\"\"\n    percentual_profits = calc_componentwise_percentual_profit(results)\n    percentual_total_total_profit = 1\n\n    for (bot_name, bot_results) in percentual_profits.items():\n        for (ticker, percentual_profit) in bot_results.items():\n            percentual_total_total_profit *= percentual_profit\n\n    return percentual_total_total_profit\n\n\ndef load_agent(name):\n    \"\"\"\n    Loads a bot from the bots directory and validates\n    its interface\n    \"\"\"\n    mod_name = \"file_system.trading_algorithms.\" + name + \".bot\"\n    mod = __import__(mod_name, fromlist=['Bot'])\n    klass = getattr(mod, 'Bot')\n    has_function(klass, name, \"handle_event\")\n    return klass\n\n\ndef has_function(module, bot_name, function_name):\n    \"\"\"\n    Checks if bot has the named function\n    \"\"\"\n    op = getattr(module, function_name, None)\n    if not callable(op):\n        raise NotImplementedError('Bot \"{}\" does not implement method: \"{}\"'.format(\n            bot_name, function_name))
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- backend/algorithm.py	(revision c4381e35f7c0011d706dd8878879535ce66f180e)
++++ backend/algorithm.py	(date 1591127625618)
+@@ -60,6 +60,10 @@
+ 
+ def calc_componentwise_percentual_profit(results):
+     """
++    SHOULD BE CLEANED UP. AT CURRENT STATE IT IS NOT CLEAR AND NOT EXPLAINED WHAT THIS DOES.
++    ALSO INTRODUCE THE NOTION OF MULTIPLIER AS WELL AS SKIP THE sign VARIABLE AND OPT TO JUST ZIP POSITIONS WITH
++    PRICE AND CHECK IF LONG OR SHORT INSTEAD OF 1 OR -1.
++
+     Calculates the compnentwise percentual profit. Assumed to have the form dict(bots)
+     with (bot_name, actions_tuple) as key value pairs. Thereafter actions_tuple has the appearence of
+     (timestamps, prices, positions) where each of these are a dictionary with ticker as key
+@@ -86,7 +90,6 @@
+                 else:
+                     percentual_profit *= price/stock_prices[shift]
+                 sign *= -1
+-                print(percentual_profit)
+             stock_percentual_profits[ticker] = percentual_profit
+         percentual_profits[bot_name] = stock_percentual_profits
+ 
+Index: file_system/results/gustafs_moneymaker.csv
+===================================================================
+--- file_system/results/gustafs_moneymaker.csv	(revision c4381e35f7c0011d706dd8878879535ce66f180e)
++++ file_system/results/gustafs_moneymaker.csv	(revision c4381e35f7c0011d706dd8878879535ce66f180e)
+@@ -1,16 +0,0 @@
+-1,1
+-boiiii
+-AAPL,13
+-2018-05-16 00:00:00,188.17999267578125,long
+-2018-06-21 00:00:00,185.4600067138672,short
+-2018-07-12 00:00:00,191.02999877929688,long
+-2018-09-19 00:00:00,218.3699951171875,short
+-2018-10-02 00:00:00,229.27999877929688,long
+-2018-10-17 00:00:00,221.19000244140625,short
+-2019-01-22 00:00:00,153.3000030517578,long
+-2019-05-13 00:00:00,185.72000122070312,short
+-2019-06-12 00:00:00,194.19000244140625,long
+-2019-08-07 00:00:00,199.0399932861328,short
+-2019-08-21 00:00:00,212.63999938964844,long
+-2020-02-25 00:00:00,288.0799865722656,short
+-2020-04-07 00:00:00,259.42999267578125,long
+Index: .idea/kompisfonden.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<module type=\"PYTHON_MODULE\" version=\"4\">\n  <component name=\"NewModuleRootManager\">\n    <content url=\"file://$MODULE_DIR$\">\n      <excludeFolder url=\"file://$MODULE_DIR$/venv\" />\n    </content>\n    <orderEntry type=\"jdk\" jdkName=\"Python 3.7 (venv)\" jdkType=\"Python SDK\" />\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\n  </component>\n</module>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/kompisfonden.iml	(revision c4381e35f7c0011d706dd8878879535ce66f180e)
++++ .idea/kompisfonden.iml	(date 1591127233771)
+@@ -4,7 +4,7 @@
+     <content url="file://$MODULE_DIR$">
+       <excludeFolder url="file://$MODULE_DIR$/venv" />
+     </content>
+-    <orderEntry type="jdk" jdkName="Python 3.7 (venv)" jdkType="Python SDK" />
++    <orderEntry type="jdk" jdkName="Python 3.8 (Kompisfonden)" jdkType="Python SDK" />
+     <orderEntry type="sourceFolder" forTests="false" />
+   </component>
+ </module>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"ProjectRootManager\" version=\"2\" project-jdk-name=\"Python 3.7 (venv)\" project-jdk-type=\"Python SDK\" />\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/misc.xml	(revision c4381e35f7c0011d706dd8878879535ce66f180e)
++++ .idea/misc.xml	(date 1591127233775)
+@@ -1,4 +1,4 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.7 (venv)" project-jdk-type="Python SDK" />
++  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.8 (Kompisfonden)" project-jdk-type="Python SDK" />
+ </project>
+\ No newline at end of file

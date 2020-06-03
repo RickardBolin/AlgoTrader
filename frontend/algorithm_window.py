@@ -58,6 +58,7 @@ class ResultHandler:
 
         self.results_list = tk.Listbox(self.results_frame, height=8)
         self.results_list.pack(anchor=tk.NW)
+        self.results_list.bind('<Button-1>', self.read_statistics)
 
         self.statistics_box = tk.Listbox(self.results_frame, height=8)
         self.statistics_box.pack(anchor=tk.SW)
@@ -69,9 +70,6 @@ class ResultHandler:
         self.plot_results_button = tk.Button(self.results_frame, text="Plot Results")
         self.plot_results_button.pack(expand=1, fill="x")
         self.plot_results_button.bind('<Button-1>', self.plot_results)
-
-        # SHOULD BE REMOVED WHEN WE HAVE A FILE SYSTEM
-        self.results = None
 
     def test_algorithms(self, event):
         # Tell backend to test the algorithm
@@ -86,12 +84,13 @@ class ResultHandler:
 
         ############ Lägg in att ta bort vid dublett.
         self.results_list.insert(0, name)
+        self.results_list.selection_set(0)
 
-        algorithm_results = read_result('../file_system/results/' + name + '.csv')
-        self.add_statistics(algo.calc_componentwise_percentual_profit(algorithm_results))
-
-    def add_statistics(self, result):
-        for bot_name, bot_results in result.items():
+    def read_statistics(self, event):
+        self.statistics_box.delete(0, tk.END)
+        algorithm_results = read_result('../file_system/results/' + self.results_list.selection_get() + '.csv')
+        algorithm_results = algo.calc_componentwise_percentual_profit(algorithm_results)
+        for bot_name, bot_results in algorithm_results.items():
             self.statistics_box.insert(tk.END, bot_name)
             self.statistics_box.insert(tk.END, 'Profit multipliers: ')
             for ticker, multiplier in bot_results.items():
