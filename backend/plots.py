@@ -6,6 +6,20 @@ import backend.timeseries as ts
 
 
 def get_stocks(tickers, plot_style, params="None", start=None, end=None, interval="1d", price_type="Close"):
+    """
+    Unfinished function.
+
+    Gets the stock data for prescribed tickers, start time, end time, time interval, price type.
+    Applies (optionally) data transformations and returns list of timestamps and a dataframe of the prices.
+    :param tickers: Tickers to be fetched.
+    :param plot_style: Data transformations (e.g. moving average).
+    :param params: Parameters for data transformation.
+    :param start: Start time.
+    :param end: End time.
+    :param interval: Time interval. E.g. 1d -> one new data point per day.
+    :param price_type: Which price to be fetched. E.g. Daily highest price, Closing price etc.
+    :return: list of timestamps and a dataframe of the prices.
+    """
     stock_data = sd.get_stock_data(tickers, interval=interval, start=start, end=end)
     stock_data = stock_data[price_type]
     # If we do not want to apply any transformation, return the regular stock data
@@ -24,6 +38,11 @@ def get_stocks(tickers, plot_style, params="None", start=None, end=None, interva
 
 
 def get_result(result_name):  # , plot_style=None):
+    """
+    Fetches the prescribed file name and structure the result so that the plotter can easily read and plot the result.
+    :param result_name: Name of the file.
+    :return: Structured result dictionary.
+    """
     result = read_result('../file_system/results/' + result_name + '.csv')
     structure_results = defaultdict(defaultdict)
     for bot_name, df in result.items():

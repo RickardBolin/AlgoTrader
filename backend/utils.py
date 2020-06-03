@@ -1,8 +1,12 @@
 from datetime import datetime
-from time import mktime
 
 
 def convert_timestamp_to_datetime(timestamp):
+    """
+    Converter from timestamp unit to datetime unit.
+    :param timestamp: Timestamp to be converted.
+    :return: Datetime object.
+    """
     timestamp_length = len(str(timestamp))
     if timestamp_length == 19:
         return datetime.strptime(str(timestamp), '%Y-%m-%d %H:%M:%S')
@@ -16,4 +20,9 @@ def convert_timestamp_to_datetime(timestamp):
 
 
 def convert_datetime_to_timestamp(_datetime):
+    """
+    Converts datetime object to timestamp.
+    :param _datetime: Datetime object to be converted.
+    :return: Timestamp unit.
+    """
     return datetime.strftime(_datetime, '%Y-%m-%d %H:%M:%S')

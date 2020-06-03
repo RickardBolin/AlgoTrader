@@ -6,6 +6,19 @@ import pandas as pd
 
 
 def get_event_list(tickers, interval, start, end):
+    """
+    Constructs eventlist for the specified parameters. E.g. AAPL and TSLA are tickers, interval is 1 day,
+    start is 2019-05-30 and end is 2020-05-30, then the eventlist with the following form:
+    [(2019-05-30-00:00:00, AAPL, AAPL_price0), (2019-05-30-00:00:00, TSLA, TSLA_price0),
+    (2020-05-31-00:00:00, AAPL, AAPL_price1), (2020-05-31-00:00:00, TSLA, TSLA_price1), ...,
+    (2020-05-30-00:00:00, AAPL, AAPL_price364), (2020-05-30-00:00:00, TSLA, TSLA_price364)
+    ]
+    :param tickers: Stock tickers to be tested on.
+    :param interval: Time interval between measurements.
+    :param start: Start date/time
+    :param end: End date/time
+    :return: Sorted (in time) eventlist with all prescribed tickers.
+    """
     event_list = []
     for ticker in tickers:
         stock_data = sd.get_stock_data(tickers=ticker, start=start, end=end, interval=interval)
@@ -19,6 +32,17 @@ def get_event_list(tickers, interval, start, end):
 
 
 def backtest(bots, tickers, interval, start, end):
+    """
+    Tests the bots on granted stocks/tickers over prescibed time with granted time interval.
+    E.g. bots x and y shall be tested on the stocks AAPL (apple) and TSLA (Tesla) from
+    start 2019-05-30 to end 2020-05-30 with one day interval. Returns actions done by all bots.
+    :param bots: Iterable of bots.
+    :param tickers: Tickers to be tested on.
+    :param interval: Time interval e.g. 1 day -> one new data point every day (probably closed value).
+    :param start: Start time.
+    :param end: End time.
+    :return: Dictionary of (bot, actions taken by the bot) key value pairs.
+    """
     # Get price changes of all stocks sorted by time
     event_list = get_event_list(tickers=tickers, start=start, end=end, interval=interval)
     # Loop over each event and let each bot handle it
@@ -33,7 +57,15 @@ def backtest(bots, tickers, interval, start, end):
 
 
 def test_algorithms(tickers, interval, start, end, bot_names, algorithm_name):
-
+    """
+    Tests the prescribed algorithms and writes all actions to a file as pandas dataframes.
+    :param tickers: Tickers be be tested on.
+    :param interval: Interval period. E.g. 1d -> One new data point per day.
+    :param start: Start date/time
+    :param end: End date/time
+    :param bot_names: Name of all bots to be tested.
+    :param algorithm_name: Name of the algorithm (this name will be the name of the saved file).
+    """
     # Load all bots that are selected in the workspace
     bots = [load_agent(name)() for name in bot_names]
     # Get dictionary of the actions that each bot made, where the bot name is the key
@@ -52,12 +84,9 @@ def test_algorithms(tickers, interval, start, end, bot_names, algorithm_name):
 
 def calc_componentwise_percentual_profit(results):
     """
-    Calculates the compnentwise percentual profit. Assumed to have the form dict(bots)
-    with (bot_name, actions_tuple) as key value pairs. Thereafter actions_tuple has the appearence of
-    (timestamps, prices, positions) where each of these are a dictionary with ticker as key
-    and a list of values as value.
-    :param results: result dict.
-    :return: Component-wise percentual profit. Dict of bots where each bot has ha dict of results for each stock.
+    Calculates the individual profit multipliers for every prescribed stock for every prescribed bot.
+    :param results: Dictionary with (bot name, bot dataframe) as key-value paris.
+    :return: Dict of (bot name, profit multiplier dataframe) as key value pair.
     """
 
     percentual_profits = defaultdict(pd.DataFrame)
@@ -79,6 +108,8 @@ def load_agent(name):
     """
     Loads a bot from the bots directory and validates
     its interface
+    :param name: Name of bot.
+    :return klass: bot class.
     """
     mod_name = "file_system.trading_algorithms." + name + ".bot"
     mod = __import__(mod_name, fromlist=['Bot'])
@@ -89,7 +120,7 @@ def load_agent(name):
 
 def has_function(module, bot_name, function_name):
     """
-    Checks if bot has the named function
+    Checks if bot has the named function.
     """
     op = getattr(module, function_name, None)
     if not callable(op):
