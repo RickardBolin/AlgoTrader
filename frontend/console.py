@@ -1,6 +1,5 @@
 import tkinter as tk
 
-
 class Console:
     def __init__(self, console_tab):
         self.txt = tk.StringVar()
@@ -24,8 +23,6 @@ class Console:
         except:
             executed_command.insert(tk.END, "Command not found! \n")
 
-
-
         self.console_frame.see(tk.END)
 
     def open_communication_with_stock_workspace(self, stock_workspace):
@@ -34,3 +31,4 @@ class Console:
         :param stock_workspace: StockWorkspace
         """
         self.stock_workspace = stock_workspace
+

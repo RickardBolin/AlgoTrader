@@ -5,8 +5,8 @@ import pandas as pd
 import backend.timeseries as ts
 
 
-def get_stocks(tickers, plot_style, params="None", start="2018-05-30", interval="1d", price_type="Close"):
-    stock_data = sd.get_stock_data(tickers, start=start, interval=interval)
+def get_stocks(tickers, plot_style, params="None", start=None, end=None, interval="1d", price_type="Close"):
+    stock_data = sd.get_stock_data(tickers, interval=interval, start=start, end=end)
     stock_data = stock_data[price_type]
     # If we do not want to apply any transformation, return the regular stock data
     if plot_style == "None":
