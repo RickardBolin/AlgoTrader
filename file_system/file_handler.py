@@ -47,10 +47,10 @@ def write_result(file, results):
     :param file: filepath.
     :param results: Results to be written to file.
     """
-    with open(file, 'w') as f:
+    with open(file, 'w', newline='') as f:
         f.write(str(len(results)) + '\n')
 
     for bot_name, df in results.items():
-        with open(file, 'a') as f:
+        with open(file, 'a', newline='') as f:
             f.write(bot_name + ',' + str(len(df.index)) + '\n')
             df.to_csv(f, index=True)

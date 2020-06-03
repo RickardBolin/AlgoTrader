@@ -5,7 +5,9 @@ from algorithm_window import AlgorithmWindow
 from workspaces import Workspaces
 from plotter import Plotter
 from console import Console
-
+import os
+from importlib import reload
+import sys
 
 class MainWindow:
     def __init__(self):
@@ -36,6 +38,7 @@ class MainWindow:
 
     def openGUI(self):
         root = tk.Tk()
+        root.bind("<Control-r>", self.reload_all)
         root.style = ttk.Style()
         # ('clam', 'alt', 'default', 'classic')
         root.title("Kompisfonden")
@@ -54,5 +57,15 @@ class MainWindow:
         console.open_communication_with_stock_workspace(workspaces.stock_workspace)
 
         root.mainloop()
+
+    def reload_all(self, event):
+        for subdir, dirs, files in os.walk("/Users/rickard/PycharmProjects/kompisfonden"):
+            for filename in files:
+                filepath = subdir + os.sep + filename
+
+                if filepath in sys.modules:
+                    print(filepath)
+                    reload(filepath)
+        print("Everything reloaded!")
 
 MainWindow()
