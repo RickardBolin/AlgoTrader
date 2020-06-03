@@ -1,14 +1,13 @@
 import backend.utils as utils
 import backend.stock_data as sd
-from collections import defaultdict, namedtuple
-from file_system.file_handler import write_result, read_result
-import math
+from collections import defaultdict
+from file_system.file_handler import write_result
+import pandas as pd
 
 
 def get_event_list(tickers, start, interval):
     event_list = []
     for ticker in tickers:
-        print(start)
         stock_data = sd.get_stock_data(ticker, start=start, interval=interval)
         for timestamp, new_price in stock_data["Close"].iteritems():
             _datetime = utils.convert_timestamp_to_datetime(timestamp)
@@ -40,21 +39,14 @@ def test_algorithms(tickers, start, interval, bot_names, algorithm_name):
     # Get dictionary of the actions that each bot made, where the bot name is the key
     actions = backtest(bots, tickers, start, interval)
 
-    results = defaultdict(tuple)
-    result = namedtuple("Results", ["timestamps", "prices", "positions"])
+    results = defaultdict(pd.DataFrame)
 
     for bot in bots:
-        timestamps = defaultdict(list)
-        prices = defaultdict(list)
-        positions = defaultdict(list)
-
+        all_bot_actions = pd.DataFrame(columns=['Price', 'Position', 'Ticker'])
         for (timestamp, ticker, price), position in actions[bot.name]:
-            timestamps[ticker].append(timestamp)#utils.convert_datetime_to_timestamp(datetime))
-            # Append new price to y
-            prices[ticker].append(price)
-            positions[ticker].append(position)
-
-        results[bot.name] = result(timestamps, prices, positions)
+            _df = pd.DataFrame([[price, position, ticker]], columns=['Price', 'Position', 'Ticker'], index=[timestamp])
+            all_bot_actions = all_bot_actions.append(_df)
+        results[bot.name] = all_bot_actions
     write_result('../file_system/results/' + algorithm_name + '.csv', results)
 
 
@@ -68,49 +60,19 @@ def calc_componentwise_percentual_profit(results):
     :return: Component-wise percentual profit. Dict of bots where each bot has ha dict of results for each stock.
     """
 
-    percentual_profits = defaultdict(defaultdict)
-    for bot_name, bot_results in results.items():
-        stock_percentual_profits = defaultdict(float)
-        timestamps, prices, positions = bot_results
-        for ticker in timestamps:
-            stock_prices, stock_positions = prices[ticker], positions[ticker]
+    percentual_profits = defaultdict(pd.DataFrame)
+    for bot_name, bot_df in results.items():
+        df = pd.DataFrame(columns=['Multiplier'])
+        for ticker in bot_df.Ticker.unique():
+            ticker_df = bot_df.loc[bot_df['Ticker'] == ticker]
+            prices = ticker_df['Price']
             percentual_profit = 1
-            if stock_positions[0] == 'long':
-                sign = 1
-            else:
-                sign = -1
-
-            for shift, price in enumerate(stock_prices[:-1], start=1):
-                if sign == 1:
-                    percentual_profit *= stock_prices[shift]/price
-                else:
-                    percentual_profit *= price/stock_prices[shift]
-                sign *= -1
-                print(percentual_profit)
-            stock_percentual_profits[ticker] = percentual_profit
-        percentual_profits[bot_name] = stock_percentual_profits
+            for shift, (price, position) in enumerate(zip(prices[:-1], ticker_df['Position']), start=1):
+                percentual_profit *= prices[shift]/price if position == 'long' else price/prices[shift]
+            df.loc[ticker] = percentual_profit
+        percentual_profits[bot_name] = df
 
     return percentual_profits
-
-
-def calc_total_percentual_profit(results):
-    """
-    CLEANUP?
-    Calculates the total percentual profit. Assumed to have the form dict(bots)
-    with (bot_name, actions_tuple) as key value pairs. Thereafter actions_tuple has the appearence of
-    (timestamps, prices, positions) where each of these are a dictionary with ticker as key
-    and a list of values as value.
-    :param results: result dict
-    :return: Total profit out of all bots on all stocks.
-    """
-    percentual_profits = calc_componentwise_percentual_profit(results)
-    percentual_total_total_profit = 1
-
-    for (bot_name, bot_results) in percentual_profits.items():
-        for (ticker, percentual_profit) in bot_results.items():
-            percentual_total_total_profit *= percentual_profit
-
-    return percentual_total_total_profit
 
 
 def load_agent(name):

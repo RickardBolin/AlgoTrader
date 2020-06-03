@@ -106,7 +106,6 @@ class Plotter:
         if not self.hold_on:
             # Reset current Axes
             self.reset_axes()
-
         # Get result from backend
         structured_result = plot.get_result(result)#, plot_style=self.plot_style.get())
         for bot_name, bot_results in structured_result.items():

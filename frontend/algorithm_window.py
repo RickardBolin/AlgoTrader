@@ -90,10 +90,10 @@ class ResultHandler:
         self.statistics_box.delete(0, tk.END)
         algorithm_results = read_result('../file_system/results/' + self.results_list.selection_get() + '.csv')
         algorithm_results = algo.calc_componentwise_percentual_profit(algorithm_results)
-        for bot_name, bot_results in algorithm_results.items():
+        for bot_name, bot_df in algorithm_results.items():
             self.statistics_box.insert(tk.END, bot_name)
             self.statistics_box.insert(tk.END, 'Profit multipliers: ')
-            for ticker, multiplier in bot_results.items():
+            for ticker, multiplier in zip(bot_df.index, bot_df['Multiplier']):
                 self.statistics_box.insert(tk.END, ticker + ': ' + f'{multiplier:.2f}')
 
 

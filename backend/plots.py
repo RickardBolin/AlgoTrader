@@ -26,15 +26,15 @@ def get_stocks(tickers, plot_style, params="None", start="2018-05-30", interval=
 def get_result(result_name):  # , plot_style=None):
     result = read_result('../file_system/results/' + result_name + '.csv')
     structure_results = defaultdict(defaultdict)
-    for bot_name, (timestamps, prices, positions) in result.items():
+    for bot_name, df in result.items():
         # Loop over all stocks that the algorithm was tested on
         bot_results = defaultdict(tuple)
-        for ticker in timestamps:
-            x_long, x_short, y_long, y_short = [], [], [], []
-
+        for ticker in df.Ticker.unique():
+            actions = df.loc[df['Ticker'] == ticker]
             # Separate long and short positions and scatter with different markers
-            for timestamp, price, position in zip(timestamps[ticker], prices[ticker], positions[ticker]):
-                if position == "long":
+            x_long, x_short, y_long, y_short = [], [], [], []
+            for timestamp, price, position in zip(actions.index, actions['Price'], actions['Position']):
+                if position == 'long':
                     x_long.append(timestamp)
                     y_long.append(price)
                 else:
