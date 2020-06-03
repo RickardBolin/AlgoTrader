@@ -8,8 +8,7 @@ import math
 def get_event_list(tickers, interval, start, end):
     event_list = []
     for ticker in tickers:
-        print(start)
-        stock_data = sd.get_stock_data(ticker, interval=interval, start=start, end=end)
+        stock_data = sd.get_stock_data(tickers=ticker, start=start, end=end, interval=interval)
         for timestamp, new_price in stock_data["Close"].iteritems():
             _datetime = utils.convert_timestamp_to_datetime(timestamp)
             event_list.append([_datetime, ticker, new_price])
@@ -21,7 +20,7 @@ def get_event_list(tickers, interval, start, end):
 
 def backtest(bots, tickers, interval, start, end):
     # Get price changes of all stocks sorted by time
-    event_list = get_event_list(tickers, start, interval, end)
+    event_list = get_event_list(tickers=tickers, start=start, end=end, interval=interval)
     # Loop over each event and let each bot handle it
     for event in event_list:
         for bot in bots:
@@ -38,7 +37,7 @@ def test_algorithms(tickers, interval, start, end, bot_names, algorithm_name):
     # Load all bots that are selected in the workspace
     bots = [load_agent(name)() for name in bot_names]
     # Get dictionary of the actions that each bot made, where the bot name is the key
-    actions = backtest(bots, tickers, interval, start, end)
+    actions = backtest(bots=bots, tickers=tickers, interval=interval, start=start, end=end)
 
     results = defaultdict(tuple)
     result = namedtuple("Results", ["timestamps", "prices", "positions"])

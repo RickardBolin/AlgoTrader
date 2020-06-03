@@ -61,12 +61,18 @@ class AlgorithmWindow:
         # Tell backend to test the algorithm
         tickers = self.workspaces.stock_workspace.selected_tickers
         start = self.workspaces.stock_workspace.start.get()
+
+        if self.workspaces.stock_workspace.end.get() == "None":
+            end = None
+        else:
+            end = self.workspaces.stock_workspace.end.get()
+
         interval = self.workspaces.stock_workspace.interval.get()
         bot_names = self.workspaces.algorithm_workspace.selected_bots
         # Results is a dictionary with bot.name as key, a tuple (timestamps, price, position) as value,
         # and each of those are themselves dictionaries with tickers as keys.
         name = "".join(bot_names)
-        algo.test_algorithms(tickers, start, interval, bot_names, name)
+        algo.test_algorithms(tickers=tickers, interval=interval, start=start, end=end, bot_names=bot_names, algorithm_name=name)
 
         ############ Lägg in att ta bort vid dublett.
         self.results_list.insert(0, name)

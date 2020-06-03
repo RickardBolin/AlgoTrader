@@ -51,7 +51,7 @@ class StockWorkspace:
         self.start.set("2019-04-20")
 
         self.start_date_entry = tk.Entry(self.start_date_frame, textvariable=self.start, width=10)
-        self.start_date_entry.pack(expand=1, fill=tk.Y)
+        self.start_date_entry.pack(expand=1, fill=tk.X)
 
         self.end_date_frame = tk.LabelFrame(self.date_frame, text="End date")
         self.end_date_frame.pack(side=tk.RIGHT, expand=1, fill=tk.X)
@@ -108,11 +108,12 @@ class StockWorkspace:
         self.list.update()
 
     def plot_stocks(self, event):
+        print(str(self.end.get()))
         if str(self.end.get()) == "None":
-            self.plotter.plot_stocks(self.selected_tickers, interval=self.interval.get(), start=self.start.get(),
+            self.plotter.plot_stocks(tickers=self.selected_tickers, interval=self.interval.get(), start=self.start.get(),
                                      end=None)
         else:
-            self.plotter.plot_stocks(self.selected_tickers, interval=self.interval.get(), start=self.start.get(),
+            self.plotter.plot_stocks(tickers=self.selected_tickers, interval=self.interval.get(), start=self.start.get(),
                                      end=self.end.get())
 
     def open_communication_with_plotter(self, plotter):
