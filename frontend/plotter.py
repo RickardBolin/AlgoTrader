@@ -39,24 +39,42 @@ class Plotter:
         self.plot_frame.pack()
 
         # Add viewing date frame
-        self.view_date_frame = tk.Frame(self.plot_frame)
-        self.view_date_frame.pack()
+        self.timeframe_frame = tk.LabelFrame(self.plot_frame, text="Display Timeframe")
+        self.timeframe_frame.pack(expand=1, fill=tk.X)
 
         # Add buttons to change viewing dates
-        self.viewing_date_buttons = []
-        times = ["one_hour", "one_day", "one_month", "one_year", "three_years"]
-        for i, time in enumerate(times):
-            self.viewing_date_buttons.append(tk.Button(self.view_date_frame, text=time))
-            self.viewing_date_buttons[i].pack(side="left")
-            self.viewing_date_buttons[i].bind("<Button-1>", eval("self." + time + "_button"))
+        self.timeframe_buttons = []
+
+        self.TIMEFRAME_OPTIONS = [
+            'One hour',
+            'One day',
+            'One month',
+            'One year',
+            'Three years'
+        ]
+        self.TIMEFRAME_TRANSFORMATIONS = [
+            'one_hour',
+            'one_day',
+            'one_month',
+            'one_year',
+            'three_years'
+        ]
+
+        self.timeframe_to_func = dict(zip(self.TIMEFRAME_OPTIONS, self.TIMEFRAME_TRANSFORMATIONS))
+
+        for i, time in enumerate(self.TIMEFRAME_OPTIONS):
+            self.timeframe_buttons.append(tk.Button(self.timeframe_frame, text=time))
+            self.timeframe_buttons[i].pack(side="left", expand=1, fill=tk.X)
+            time = self.timeframe_to_func[time]
+            self.timeframe_buttons[i].bind("<Button-1>", eval("self." + time + "_button"))
 
         # Add options frame
         self.option_frame = tk.Frame(self.plot_frame)
-        self.option_frame.pack(side="bottom")
+        self.option_frame.pack(side="bottom", expand=1, fill=tk.X)
 
         # Add "hold on"-checkbutton
         self.hold_on_button = tk.Checkbutton(self.option_frame, text="Hold on")
-        self.hold_on_button.grid(row=1, column=0)
+        self.hold_on_button.pack(side=tk.LEFT)
         self.hold_on_button.bind('<Button-1>', self.toggle_hold_on)
         self.hold_on = False
         self.param = "None"
@@ -79,15 +97,15 @@ class Plotter:
         self.plot_style.set(self.PLOT_OPTIONS[0])
 
         self.plot_menu = tk.OptionMenu(self.option_frame, self.plot_style, *self.PLOT_OPTIONS)
-        self.plot_menu.grid(row=1, column=1)
+        self.plot_menu.pack(side=tk.LEFT)
 
         # Add Entry-field that takes user input of parameter
         self.param = tk.StringVar()
         self.param_box = tk.Entry(self.option_frame, textvariable=self.param)
         self.param.set("None")
-        self.param_box.grid(row=1, column=2)
+        self.param_box.pack(side=tk.LEFT, expand=1, fill=tk.X)
 
-    def plot_stocks(self, tickers, interval, start):
+    def plot_stocks(self, tickers, interval, start, end):
         # If hold-on checkbox is not checked, plot to the current figure
         if not self.hold_on:
             # Reset current Axes
@@ -95,7 +113,7 @@ class Plotter:
 
         # Get data from backend
         dates, prices = plot.get_stocks(tickers, plot_style=self.plot_to_func[
-                                        self.plot_style.get()], params=self.param.get(), interval=interval, start=start)
+                                        self.plot_style.get()], params=self.param.get(), interval=interval, start=start, end=end)
         # Plot the retrieved stock data)
         self.a.plot(dates, prices)
         self.a.legend(tickers)

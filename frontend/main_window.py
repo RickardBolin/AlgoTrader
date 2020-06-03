@@ -13,7 +13,7 @@ class MainWindow:
 
     def construct_tabs(self, root):
         tab_frame = ttk.Frame(root)
-        tab_frame.pack(side='right')
+        tab_frame.pack(side='right', fill="both")
         tab_control = ttk.Notebook(tab_frame)
 
         tab1 = ttk.Frame(tab_control)
@@ -46,10 +46,10 @@ class MainWindow:
         # Open communications
         stock_window.list.open_communication_with_stock_workspace(workspaces.stock_workspace)
         workspaces.stock_workspace.open_communication_with_plotter(plotter)
-        algorithm_window.list.open_communication_with_algorithm_workspace(workspaces.algorithm_workspace)
+        algorithm_window.open_communication_with_algorithm_workspace(workspaces.algorithm_workspace)
 
-        algorithm_window.result_handler.open_communication_with_workspaces(workspaces)
-        algorithm_window.result_handler.open_communication_with_plotter(plotter)
+        algorithm_window.open_communication_with_workspaces(workspaces)
+        algorithm_window.open_communication_with_plotter(plotter)
 
         console.open_communication_with_stock_workspace(workspaces.stock_workspace)
 

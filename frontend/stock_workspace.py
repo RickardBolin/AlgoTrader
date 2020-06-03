@@ -10,19 +10,20 @@ class StockWorkspace:
 
     def __init__(self, workspace_frame):
         self.selected_tickers = []
-        self.list = tk.Listbox(workspace_frame, height=15)
 
-        self.label = tk.Label(workspace_frame, text="Stock workspace")
+        self.stock_list_frame = tk.LabelFrame(workspace_frame, text="Stock Workspace")
+        self.stock_list_frame.pack(expand=True, fill=tk.BOTH)
+        self.list = tk.Listbox(self.stock_list_frame, height=15)
 
-        self.label.pack(expand=1, fill="both")
-        self.list.pack(expand=1, fill="both")
+        self.list.pack(expand=True, fill=tk.BOTH)
 
         self.plot_options_frame = tk.Frame(workspace_frame)
-        self.plot_options_frame.pack()
+        self.plot_options_frame.pack(expand=True, fill=tk.X)
 
+        # BYT GRID TILL FRAME FÖR BÅDA!
         # Add button that updates the plot
         self.update_button = tk.Button(self.plot_options_frame, text="Plot Stocks")
-        self.update_button.grid(row=0, column=0)
+        self.update_button.pack(side=tk.LEFT, expand=1, fill=tk.X)
         self.update_button.bind('<Button-1>', self.plot_stocks)
 
         self.list.bind('<BackSpace>', self.remove)
@@ -39,16 +40,26 @@ class StockWorkspace:
         self.interval.set(self.INTERVAL_OPTIONS[1])
 
         self.plot_menu = tk.OptionMenu(self.plot_options_frame, self.interval, *self.INTERVAL_OPTIONS)
-        self.plot_menu.grid(row=0, column=1)
+        self.plot_menu.pack(side=tk.RIGHT, expand=1, fill=tk.X)
 
-        # Add label and entry to choose start date
-        self.start_label = tk.Label(self.plot_options_frame, text="Start date:", width=7)
-        self.start_label.grid(row=1, column=0)
+        self.date_frame = tk.Frame(workspace_frame)
+        self.date_frame.pack(expand=1, fill=tk.X)
+        # Add label and entry to choose start and end dates
+        self.start_date_frame = tk.LabelFrame(self.date_frame, text="Starting date")
+        self.start_date_frame.pack(side=tk.LEFT, expand=1, fill=tk.X)
         self.start = tk.StringVar()
         self.start.set("2019-04-20")
 
-        self.param_box = tk.Entry(self.plot_options_frame, textvariable=self.start, width=10)
-        self.param_box.grid(row=1, column=1)
+        self.start_date_entry = tk.Entry(self.start_date_frame, textvariable=self.start, width=10)
+        self.start_date_entry.pack(expand=1, fill=tk.X)
+
+        self.end_date_frame = tk.LabelFrame(self.date_frame, text="End date")
+        self.end_date_frame.pack(side=tk.RIGHT, expand=1, fill=tk.X)
+        self.end = tk.StringVar()
+        self.end.set("None")
+
+        self.end_date_entry = tk.Entry(self.end_date_frame, textvariable=self.end, width=10)
+        self.end_date_entry.pack(expand=1, fill=tk.X)
 
     def add(self, elem):
         """
@@ -97,7 +108,13 @@ class StockWorkspace:
         self.list.update()
 
     def plot_stocks(self, event):
-        self.plotter.plot_stocks(self.selected_tickers, interval=self.interval.get(), start=self.start.get())
+        print(str(self.end.get()))
+        if str(self.end.get()) == "None":
+            self.plotter.plot_stocks(tickers=self.selected_tickers, interval=self.interval.get(), start=self.start.get(),
+                                     end=None)
+        else:
+            self.plotter.plot_stocks(tickers=self.selected_tickers, interval=self.interval.get(), start=self.start.get(),
+                                     end=self.end.get())
 
     def open_communication_with_plotter(self, plotter):
         """

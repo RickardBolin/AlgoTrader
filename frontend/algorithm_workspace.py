@@ -15,11 +15,9 @@ class AlgorithmWorkspace:
     def __init__(self, workspace_frame):
         self.selected_bots = []
         self.results = defaultdict(tuple)
-
-        self.list = tk.Listbox(workspace_frame, height=15)
-        self.label = tk.Label(workspace_frame, text="Algorithm workspace")
-
-        self.label.pack(expand=1, fill="both")
+        self.algorithm_list_frame = tk.LabelFrame(workspace_frame, text="Algorithm Workspace")
+        self.algorithm_list_frame.pack(expand=True, fill=tk.BOTH)
+        self.list = tk.Listbox(self.algorithm_list_frame, height=15)
         self.list.pack(expand=1, fill="both")
 
         self.list.bind('<BackSpace>', self.remove)
