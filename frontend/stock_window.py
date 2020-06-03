@@ -30,7 +30,7 @@ class StockList:
         self.root = root
 
         self.list_frame = tk.LabelFrame(self.root, text='Stocks')
-        self.list_frame.pack(side="right", anchor=tk.NE, fill="y")
+        self.list_frame.pack(fill="both", expand=1)
         stock_names = self.load_ticker_name_info("NASDAQ")
         self.list = FilterList(self.list_frame,
                                      height=27,

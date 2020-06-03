@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append("..")
 import os
 import tkinter as tk
@@ -11,65 +12,50 @@ class AlgorithmWindow:
 
     def __init__(self, root):
         self.root = root
-        self.list = AlgorithmList(root)
-        self.result_handler = ResultHandler(root)
 
+        self.results_and_bots_frame = tk.Frame(root, height=3)
+        self.results_and_bots_frame.pack(side=tk.TOP, expand=0, fill="both")
 
-class AlgorithmList:
+        # Create list of generated results
+        self.results_frame = tk.LabelFrame(self.results_and_bots_frame, text="Results")
+        self.results_frame.pack(side=tk.LEFT, fill="both")
 
-    def __init__(self, root):
-        self.root = root
-        self.list_frame = tk.Frame(self.root)
-        self.list_frame.pack(anchor=tk.NE)
+        self.results_list = tk.Listbox(self.results_frame)
+        self.results_list.pack(fill="both", expand=1)
+        self.results_list.bind('<Double-Button-1>', self.read_statistics)
+        self.results_list.bind('<Return>', self.read_statistics)
 
+        # Create bot list
+        self.bot_list_frame = tk.LabelFrame(self.results_and_bots_frame, text="Bots")
+        self.bot_list_frame.pack(side=tk.RIGHT, expand=1, fill="both")
         algorithms = os.listdir("../file_system/trading_algorithms")
-        self.list = FilterList(self.list_frame,
-                source=algorithms,
-                display_rule=lambda item: item,
-                filter_rule=lambda item, text:
-                            item.lower().startswith(text.lower()))
+        self.list = FilterList(self.bot_list_frame,
+                               source=algorithms,
+                               display_rule=lambda item: item,
+                               filter_rule=lambda item, text:
+                               item.lower().startswith(text.lower()))
 
         self.list.pack(side="top", expand=1, fill="both")
         self.list.bind('<Return>', self.add_to_workspace)
         self.list.bind('<Double-Button-1>', self.add_to_workspace)
 
-    def add_to_workspace(self, event):
-        """
-        Adds clicked ticker to the workspace.
-        :param event: Eventhandler.
-        """
-        algorithm = self.list.selection()
-        EMPTY_BOX = "\u2610"
-        self.algorithm_workspace.add(EMPTY_BOX + algorithm)
+        # Create frame for buttons
+        self.button_frame = tk.Frame(self.results_frame)
+        self.button_frame.pack()
 
-    def open_communication_with_algorithm_workspace(self, algorithm_workspace):
-        """
-        Functions which lets the algorithm list modify the algorithm workspace.
-        :param algorithm_workspace: Algorithm Workspace.
-        """
-        self.algorithm_workspace = algorithm_workspace
-
-
-class ResultHandler:
-    def __init__(self, root):
-        self.root = root
-        self.results_frame = tk.Frame(self.root)
-        self.results_frame.pack(anchor=tk.SE)
-
-        self.results_list = tk.Listbox(self.results_frame, height=8)
-        self.results_list.pack(anchor=tk.NW)
-        self.results_list.bind('<Button-1>', self.read_statistics)
-
-        self.statistics_box = tk.Listbox(self.results_frame, height=8)
-        self.statistics_box.pack(anchor=tk.SW)
-
-        self.test_algorithm_button = tk.Button(self.results_frame, text="Test Algorithm")
-        self.test_algorithm_button.pack(expand=1, fill="x")
+        self.test_algorithm_button = tk.Button(self.button_frame, text="Test Algorithm")
+        self.test_algorithm_button.pack(side=tk.LEFT)
         self.test_algorithm_button.bind('<Button-1>', self.test_algorithms)
 
-        self.plot_results_button = tk.Button(self.results_frame, text="Plot Results")
-        self.plot_results_button.pack(expand=1, fill="x")
+        self.plot_results_button = tk.Button(self.button_frame, text="Plot Results")
+        self.plot_results_button.pack(side=tk.LEFT)
         self.plot_results_button.bind('<Button-1>', self.plot_results)
+
+        # Create statistics box
+        self.statistics_frame = tk.LabelFrame(self.root, text="Statistics")
+        self.statistics_frame.pack(fill='both', expand=1)
+        self.statistics_box = tk.Listbox(self.statistics_frame)
+        self.statistics_box.pack(fill='both', expand=1)
 
     def test_algorithms(self, event):
         # Tell backend to test the algorithm
@@ -86,6 +72,9 @@ class ResultHandler:
         self.results_list.insert(0, name)
         self.results_list.selection_set(0)
 
+    def plot_results(self, event):
+        self.plotter.plot_result(self.results_list.get(tk.ACTIVE))
+
     def read_statistics(self, event):
         self.statistics_box.delete(0, tk.END)
         algorithm_results = read_result('../file_system/results/' + self.results_list.selection_get() + '.csv')
@@ -95,10 +84,6 @@ class ResultHandler:
             self.statistics_box.insert(tk.END, 'Profit multipliers: ')
             for ticker, multiplier in bot_results.items():
                 self.statistics_box.insert(tk.END, ticker + ': ' + f'{multiplier:.2f}')
-
-
-    def plot_results(self, event):
-        self.plotter.plot_result(self.results_list.get(tk.ACTIVE))
 
     def open_communication_with_plotter(self, plotter):
         """
@@ -114,4 +99,19 @@ class ResultHandler:
         """
         self.workspaces = workspaces
 
+    def add_to_workspace(self, event):
+        """
+        Adds clicked ticker to the workspace.
+        :param event: Eventhandler.
+        """
+        algorithm = self.list.selection()
+        EMPTY_BOX = "\u2610"
+        self.algorithm_workspace.add(EMPTY_BOX + algorithm)
+
+    def open_communication_with_algorithm_workspace(self, algorithm_workspace):
+        """
+        Functions which lets the algorithm list modify the algorithm workspace.
+        :param algorithm_workspace: Algorithm Workspace.
+        """
+        self.algorithm_workspace = algorithm_workspace
 

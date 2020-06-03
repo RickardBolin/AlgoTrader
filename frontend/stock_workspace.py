@@ -20,6 +20,9 @@ class StockWorkspace:
         self.plot_options_frame = tk.Frame(workspace_frame)
         self.plot_options_frame.pack()
 
+
+
+        # BYT GRID TILL FRAME FÖR BÅDA!
         # Add button that updates the plot
         self.update_button = tk.Button(self.plot_options_frame, text="Plot Stocks")
         self.update_button.grid(row=0, column=0)
