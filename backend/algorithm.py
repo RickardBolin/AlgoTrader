@@ -3,6 +3,7 @@ import backend.stock_data as sd
 from collections import defaultdict
 from file_system.file_handler import write_result
 import pandas as pd
+from importlib import reload
 
 
 def get_event_list(tickers, interval, start, end):
@@ -113,6 +114,7 @@ def load_agent(name):
     """
     mod_name = "file_system.trading_algorithms." + name + ".bot"
     mod = __import__(mod_name, fromlist=['Bot'])
+    reload(mod)
     klass = getattr(mod, 'Bot')
     has_function(klass, name, "handle_event")
     return klass
