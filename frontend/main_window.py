@@ -4,6 +4,7 @@ from stock_window import StockWindow
 from algorithm_window import AlgorithmWindow
 from workspaces import Workspaces
 from plotter import Plotter
+from console import Console
 
 
 class MainWindow:
@@ -18,13 +19,15 @@ class MainWindow:
         tab1 = ttk.Frame(tab_control)
         tab2 = ttk.Frame(tab_control)
         tab3 = ttk.Frame(tab_control)
+        tab4 = ttk.Frame(tab_control)
 
         tab_control.add(tab1, text='Stocks')
         tab_control.add(tab2, text='Algorithms')
         tab_control.add(tab3, text='Portfolios')
+        tab_control.add(tab4, text="Console")
 
         tab_control.pack(expand=1, fill="both")
-        return StockWindow(tab1), AlgorithmWindow(tab2)
+        return StockWindow(tab1), AlgorithmWindow(tab2), Console(tab4)
 
     def construct_workspace(self, root):
         workspaces_frame = ttk.Frame(root)
@@ -37,7 +40,7 @@ class MainWindow:
         # ('clam', 'alt', 'default', 'classic')
         root.title("Kompisfonden")
         workspaces = self.construct_workspace(root)
-        stock_window, algorithm_window = self.construct_tabs(root)
+        stock_window, algorithm_window, console = self.construct_tabs(root)
         plotter = Plotter(root)
 
         # Open communications
@@ -48,6 +51,8 @@ class MainWindow:
         algorithm_window.result_handler.open_communication_with_workspaces(workspaces)
         algorithm_window.result_handler.open_communication_with_plotter(plotter)
 
+        console.open_communication_with_stock_workspace(workspaces.stock_workspace)
+
         root.mainloop()
 
-test = MainWindow()
+MainWindow()
