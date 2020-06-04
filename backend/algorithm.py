@@ -83,13 +83,25 @@ def test_algorithms(tickers, interval, start, end, bot_names, algorithm_name):
     write_result('file_system/results/' + algorithm_name + '.csv', results)
 
 
-def calc_componentwise_percentual_profit(results):
+def calc_statistics(results):
+    statistics = defaultdict(pd.DataFrame)
+
+    perc_profits = _calc_componentwise_percentual_profit(results)
+    correct_pos = _calc_correct_positions(results)
+
+    dicts_to_morph = [perc_profits, correct_pos]
+    for _dict in dicts_to_morph:
+        for bot_name, bot_df in _dict.items():
+            statistics[bot_name] = pd.DataFrame(pd.concat([statistics[bot_name], bot_df], axis=1))
+    return statistics
+
+
+def _calc_componentwise_percentual_profit(results):
     """
     Calculates the individual profit multipliers for every prescribed stock for every prescribed bot.
     :param results: Dictionary with (bot name, bot dataframe) as key-value paris.
     :return: Dict of (bot name, profit multiplier dataframe) as key value pair.
     """
-
     percentual_profits = defaultdict(pd.DataFrame)
     for bot_name, bot_df in results.items():
         df = pd.DataFrame(columns=['Multiplier'])
@@ -103,6 +115,24 @@ def calc_componentwise_percentual_profit(results):
         percentual_profits[bot_name] = df
 
     return percentual_profits
+
+
+def _calc_correct_positions(results):
+    guessed_positions = defaultdict(pd.DataFrame)
+    for bot_name, bot_df in results.items():
+        df = pd.DataFrame(columns=['Correct', 'Incorrect'])
+        for ticker in bot_df.Ticker.unique():
+            ticker_df = bot_df.loc[bot_df['Ticker'] == ticker]
+            prices = ticker_df['Price']
+            total_guesses = len(prices) - 1
+            corrects = 0
+            for shift, (price, position) in enumerate(zip(prices[:-1], ticker_df['Position']), start=1):
+                if (position == 'long' and prices[shift] > price) or (position == 'short' and price > prices[shift]):
+                    corrects += 1
+            df.loc[ticker] = [corrects, total_guesses - corrects]
+        guessed_positions[bot_name] = df
+
+    return guessed_positions
 
 
 def load_agent(name):

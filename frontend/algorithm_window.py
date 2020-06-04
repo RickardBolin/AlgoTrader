@@ -83,7 +83,7 @@ class AlgorithmWindow:
     @staticmethod
     def write_statistics(name):
         algorithm_results = fh.read_result('file_system/results/' + name + '.csv')
-        algorithm_statistics = algo.calc_componentwise_percentual_profit(algorithm_results)
+        algorithm_statistics = algo.calc_statistics(algorithm_results)
         fh.write_statistics('file_system/algorithm_statistics/' + name + '.csv', algorithm_statistics)
 
     def read_statistics(self, event):
@@ -91,9 +91,16 @@ class AlgorithmWindow:
         algorithm_statistics = fh.read_statistics('file_system/algorithm_statistics/' + self.results_list.selection_get() + '.csv')
         for bot_name, bot_df in algorithm_statistics.items():
             self.statistics_box.insert(tk.END, bot_name)
-            self.statistics_box.insert(tk.END, 'Profit multipliers: ')
-            for ticker, multiplier in zip(bot_df.index, bot_df['Multiplier']):
-                self.statistics_box.insert(tk.END, ticker + ': ' + f'{float(multiplier):.2f}')
+            self.statistics_box.insert(tk.END, '-----------')
+            for ticker, *_params in bot_df.iterrows():
+                _params = _params[0]
+                self.statistics_box.insert(tk.END, ticker)
+                self.statistics_box.insert(tk.END, ', '.join(bot_df.columns))
+                params = []
+                for param in _params:
+                    params.append(str(param))
+
+                self.statistics_box.insert(tk.END, ', '.join(params))
 
     def refresh(self, event):
         self.list.destroy()
