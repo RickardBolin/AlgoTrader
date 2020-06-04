@@ -13,4 +13,3 @@ def get_stock_data(tickers, start=None, end=None, period="max", interval="1d", g
 	:return: Stock data.
 	"""
 	return yf.download(tickers=tickers, start=start, end=end, period=period, interval=interval, group_by=group_by, auto_adjust=auto_adjust, prepost=prepost, threads=threads, proxy=proxy)
-

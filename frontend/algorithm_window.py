@@ -4,6 +4,7 @@ from tkfilterlist import FilterList
 import backend.algorithm as algo
 import file_system.file_handler as fh
 
+
 class AlgorithmWindow:
 
     def __init__(self, root):
@@ -112,6 +113,7 @@ class AlgorithmWindow:
                     params.append(str(param))
 
                 self.statistics_box.insert(tk.END, ', '.join(params))
+            self.statistics_box.insert(tk.END, '')
 
     def refresh(self, event):
         self.list.destroy()
