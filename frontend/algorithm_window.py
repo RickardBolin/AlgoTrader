@@ -1,12 +1,8 @@
-import sys
-
-#sys.path.append("..")
 import os
 import tkinter as tk
 from tkfilterlist import FilterList
 import backend.algorithm as algo
 import file_system.file_handler as fh
-
 
 class AlgorithmWindow:
 
@@ -86,13 +82,13 @@ class AlgorithmWindow:
 
     @staticmethod
     def write_statistics(name):
-        algorithm_results = fh.read_result('../file_system/results/' + name + '.csv')
+        algorithm_results = fh.read_result('file_system/results/' + name + '.csv')
         algorithm_statistics = algo.calc_componentwise_percentual_profit(algorithm_results)
-        fh.write_statistics('../file_system/algorithm_statistics/' + name + '.csv', algorithm_statistics)
+        fh.write_statistics('file_system/algorithm_statistics/' + name + '.csv', algorithm_statistics)
 
     def read_statistics(self, event):
         self.statistics_box.delete(0, tk.END)
-        algorithm_statistics = fh.read_statistics('../file_system/algorithm_statistics/' + self.results_list.selection_get() + '.csv')
+        algorithm_statistics = fh.read_statistics('file_system/algorithm_statistics/' + self.results_list.selection_get() + '.csv')
         for bot_name, bot_df in algorithm_statistics.items():
             self.statistics_box.insert(tk.END, bot_name)
             self.statistics_box.insert(tk.END, 'Profit multipliers: ')
