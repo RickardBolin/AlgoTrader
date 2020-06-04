@@ -1,6 +1,6 @@
 class Bot:
     def __init__(self):
-        self.name = "boiiii"
+        self.name = "fjkdsfjsakfdj"
         self.positions = dict()
         self.last_ten_days = dict([])
         self.last_twenty_days = dict([])
@@ -18,6 +18,7 @@ class Bot:
         self.algorithm(ticker, event)
 
     def algorithm(self, ticker, event):
+
         if self.ten_day_MA[ticker] > 0 and self.twenty_day_MA[ticker] > 0:
             if self.ten_day_MA[ticker] > self.twenty_day_MA[ticker] and not self.positions[ticker] == "long":
                 self.positions[ticker] = "long"

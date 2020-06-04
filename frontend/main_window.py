@@ -19,14 +19,14 @@ class MainWindow(tk.Frame):
         self.openGUI(self)
 
     def construct_tabs(self, root):
-        tab_frame = ttk.Frame(root)
+        tab_frame = tk.Frame(root)
         tab_frame.pack(side=tk.RIGHT, fill="both")
         tab_control = ttk.Notebook(tab_frame)
 
-        tab1 = ttk.Frame(tab_control)
-        tab2 = ttk.Frame(tab_control)
-        tab3 = ttk.Frame(tab_control)
-        tab4 = ttk.Frame(tab_control)
+        tab1 = tk.Frame(tab_control)
+        tab2 = tk.Frame(tab_control)
+        tab3 = tk.Frame(tab_control)
+        tab4 = tk.Frame(tab_control)
 
         tab_control.add(tab1, text='Stocks')
         tab_control.add(tab2, text='Algorithms')
@@ -37,7 +37,7 @@ class MainWindow(tk.Frame):
         return StockWindow(tab1), AlgorithmWindow(tab2), Console(tab4)
 
     def construct_workspace(self, root):
-        workspaces_frame = ttk.Frame(root)
+        workspaces_frame = tk.Frame(root)
         workspaces_frame.pack(side=tk.LEFT)
         return Workspaces(workspaces_frame)
 
@@ -57,6 +57,5 @@ class MainWindow(tk.Frame):
 
         console.open_communication_with_stock_workspace(workspaces.stock_workspace)
 
-        #self.root.mainloop()
+        plotter.open_communication_with_stock_workspace(workspaces.stock_workspace)
 
-#MainWindow()

@@ -35,6 +35,7 @@ class AlgorithmWindow:
         self.list.bind('<Return>', self.add_to_workspace)
         self.list.bind('<Double-Button-1>', self.add_to_workspace)
         self.list.bind('<Control-r>', self.refresh)
+        self.list.focus_set()
 
         # Create frame for buttons
         self.button_frame = tk.Frame(self.results_frame)
@@ -49,10 +50,20 @@ class AlgorithmWindow:
         self.plot_results_button.bind('<Button-1>', self.plot_results)
 
         # Create statistics box
-        self.statistics_frame = tk.LabelFrame(self.root, text="Statistics")
-        self.statistics_frame.pack(fill='both', expand=1)
-        self.statistics_box = tk.Listbox(self.statistics_frame)
-        self.statistics_box.pack(fill='both', expand=1)
+        self.statistics_frame = tk.Frame(self.root)
+        self.statistics_frame.pack(fill=tk.BOTH, expand=1)
+        self.algorithm_statistics_frame = tk.LabelFrame(self.statistics_frame, text="Statistics")
+        self.algorithm_statistics_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+        self.statistics_box = tk.Listbox(self.algorithm_statistics_frame)
+        self.statistics_box.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+        self.highscore_frame = tk.LabelFrame(self.statistics_frame, text="Hall of Fame")
+        self.highscore_frame.pack(side=tk.RIGHT, fill=tk.Y)
+        self.highscore_box = tk.Listbox(self.highscore_frame)
+        self.highscore_box.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        for i in range(10):
+            self.highscore_box.insert(i, str(i+1) + ": " "None")
+
 
     def test_algorithms(self, event):
         # Tell backend to test the algorithm
@@ -83,7 +94,7 @@ class AlgorithmWindow:
     @staticmethod
     def write_statistics(name):
         algorithm_results = fh.read_result('file_system/results/' + name + '.csv')
-        algorithm_statistics = algo.calc_componentwise_percentual_profit(algorithm_results)
+        algorithm_statistics = algo.calc_statistics(algorithm_results)
         fh.write_statistics('file_system/algorithm_statistics/' + name + '.csv', algorithm_statistics)
 
     def read_statistics(self, event):
@@ -91,9 +102,16 @@ class AlgorithmWindow:
         algorithm_statistics = fh.read_statistics('file_system/algorithm_statistics/' + self.results_list.selection_get() + '.csv')
         for bot_name, bot_df in algorithm_statistics.items():
             self.statistics_box.insert(tk.END, bot_name)
-            self.statistics_box.insert(tk.END, 'Profit multipliers: ')
-            for ticker, multiplier in zip(bot_df.index, bot_df['Multiplier']):
-                self.statistics_box.insert(tk.END, ticker + ': ' + f'{float(multiplier):.2f}')
+            self.statistics_box.insert(tk.END, '-----------')
+            for ticker, *_params in bot_df.iterrows():
+                _params = _params[0]
+                self.statistics_box.insert(tk.END, ticker)
+                self.statistics_box.insert(tk.END, ', '.join(bot_df.columns))
+                params = []
+                for param in _params:
+                    params.append(str(param))
+
+                self.statistics_box.insert(tk.END, ', '.join(params))
 
     def refresh(self, event):
         self.list.destroy()

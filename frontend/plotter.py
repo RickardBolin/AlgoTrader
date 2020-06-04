@@ -28,7 +28,9 @@ class Plotter:
         self.reset_axes()
 
         # Add figure
-        self.canvas = FigureCanvasTkAgg(self.figure, self.plot_frame)
+        self.figure_frame = tk.LabelFrame(self.plot_frame, text="Figure")
+        self.figure_frame.pack(side=tk.TOP, expand=1, fill=tk.BOTH)
+        self.canvas = FigureCanvasTkAgg(self.figure, self.figure_frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack()#side="top")#(fill=tk.BOTH, expand=True)
         self.plot_time_frame = self.a.get_xlim()
@@ -105,7 +107,8 @@ class Plotter:
         self.param.set("None")
         self.param_box.pack(side=tk.LEFT, expand=1, fill=tk.X)
 
-    def plot_stocks(self, tickers, interval, start, end):
+
+    def plot_stocks(self, tickers, interval, start=None, end=None):
         # If hold-on checkbox is not checked, plot to the current figure
         if not self.hold_on:
             # Reset current Axes
@@ -139,29 +142,45 @@ class Plotter:
         self.a.set_xlabel('Date')
         self.a.tick_params(axis='x', labelrotation=45, labelsize=8)
         self.a.tick_params(axis='y', labelsize=8)
+        self.a.margins(x=0.0)
 
     # Hur slår vi ihop detta till en funktion?!
     def one_hour_button(self, event):
+        if self.stock_workspace.interval.get() == "1d":
+            self.stock_workspace.interval.set("1m")
+            self.stock_workspace.plot_stocks()
         _, curr_x_max = self.a.get_xlim()
         self.a.set_xlim((curr_x_max - 1/24, curr_x_max))
         self.canvas.draw()
 
     def one_day_button(self, event):
+        if self.stock_workspace.interval.get() == "1d":
+            self.stock_workspace.interval.set("1m")
+            self.stock_workspace.plot_stocks()
         _, curr_x_max = self.a.get_xlim()
         self.a.set_xlim((curr_x_max - 1, curr_x_max))
         self.canvas.draw()
 
     def one_month_button(self, event):
+        if self.stock_workspace.interval.get() == "1m":
+            self.stock_workspace.interval.set("1d")
+            self.stock_workspace.plot_stocks()
         _, curr_x_max = self.a.get_xlim()
         self.a.set_xlim((curr_x_max - 30, curr_x_max))
         self.canvas.draw()
 
     def one_year_button(self, event):
+        if self.stock_workspace.interval.get() == "1m":
+            self.stock_workspace.interval.set("1d")
+            self.stock_workspace.plot_stocks()
         _, curr_x_max = self.a.get_xlim()
         self.a.set_xlim((curr_x_max - 365, curr_x_max))
         self.canvas.draw()
 
     def three_years_button(self, event):
+        if self.stock_workspace.interval.get() == "1m":
+            self.stock_workspace.interval.set("1d")
+            self.stock_workspace.plot_stocks()
         _, curr_x_max = self.a.get_xlim()
         self.a.set_xlim((curr_x_max - 365*3, curr_x_max))
         self.canvas.draw()
@@ -169,3 +188,9 @@ class Plotter:
     def toggle_hold_on(self, event):
         self.hold_on = not self.hold_on
 
+    def open_communication_with_stock_workspace(self, stock_workspace):
+        """
+        Gives plotter possibility to modify workspace.
+        :param stock_workspace: StockWorkspace
+        """
+        self.stock_workspace = stock_workspace

@@ -74,8 +74,14 @@ def read_statistics(file):
             cols = next(csv_reader)[1:]
             df = pd.DataFrame(columns=cols)
             for ticker_idx in range(num_tickers):
-                ticker, multiplier = next(csv_reader)
-                df = df.append(pd.DataFrame([[f'{float(multiplier):.2f}']], columns=cols, index=[ticker]))
+                ticker, *_params = next(csv_reader)
+                params = []
+                for param in _params:
+                    if '.' in param:
+                        params.append(f'{float(param):.2f}')
+                    else:
+                        params.append(int(param))
+                df = df.append(pd.DataFrame([params], columns=cols, index=[ticker]))
             bots[bot_name] = df
             bot_idx += 1
     return bots
@@ -87,11 +93,11 @@ def write_statistics(file, statistics):
 
     DATA STORAGE INFO: First row contains number of bots. Thereafter the following rows have the following structure:
     bot name, number of tickers
-    Dataframe columns: '', Multiplier
-    ticker, multiplier
-    ticker, multiplier
+    Dataframe columns: '', params
+    ticker, params
+    ticker, params
     ...
-    ticker, multiplier
+    ticker, params
     bot name, number of tickers
     etc.
 
