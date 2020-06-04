@@ -28,7 +28,9 @@ class Plotter:
         self.reset_axes()
 
         # Add figure
-        self.canvas = FigureCanvasTkAgg(self.figure, self.plot_frame)
+        self.figure_frame = tk.LabelFrame(self.plot_frame, text="Figure")
+        self.figure_frame.pack(side=tk.TOP, expand=1, fill=tk.BOTH)
+        self.canvas = FigureCanvasTkAgg(self.figure, self.figure_frame)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack()#side="top")#(fill=tk.BOTH, expand=True)
         self.plot_time_frame = self.a.get_xlim()

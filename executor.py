@@ -1,15 +1,17 @@
 import tkinter
-from importlib import reload
+from tkinter import ttk
 from frontend.main_window import MainWindow
-import backend
-import file_system
-import frontend
-import sys
 
 
 class Executor:
     def __init__(self):
         self.root = tkinter.Tk()
+        # Fix for OSX buttons being unaligned vertically in the notebook tabs
+        if self.root.tk.call('tk', 'windowingsystem') == 'aqua':  # only for OSX
+            s = ttk.Style()
+            # Note: the name is specially for the text in the widgets
+            s.configure('TNotebook.Tab', padding=(12, 8, 12, 0))
+
         self.app = MainWindow(master=self.root, reload=self.on_reload)
         self.app.mainloop()
 

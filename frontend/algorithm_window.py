@@ -50,10 +50,20 @@ class AlgorithmWindow:
         self.plot_results_button.bind('<Button-1>', self.plot_results)
 
         # Create statistics box
-        self.statistics_frame = tk.LabelFrame(self.root, text="Statistics")
-        self.statistics_frame.pack(fill='both', expand=1)
-        self.statistics_box = tk.Listbox(self.statistics_frame)
-        self.statistics_box.pack(fill='both', expand=1)
+        self.statistics_frame = tk.Frame(self.root)
+        self.statistics_frame.pack(fill=tk.BOTH, expand=1)
+        self.algorithm_statistics_frame = tk.LabelFrame(self.statistics_frame, text="Statistics")
+        self.algorithm_statistics_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+        self.statistics_box = tk.Listbox(self.algorithm_statistics_frame)
+        self.statistics_box.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+        self.highscore_frame = tk.LabelFrame(self.statistics_frame, text="Hall of Fame")
+        self.highscore_frame.pack(side=tk.RIGHT, fill=tk.Y)
+        self.highscore_box = tk.Listbox(self.highscore_frame)
+        self.highscore_box.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        for i in range(10):
+            self.highscore_box.insert(i, str(i+1) + ": " "None")
+
 
     def test_algorithms(self, event):
         # Tell backend to test the algorithm
