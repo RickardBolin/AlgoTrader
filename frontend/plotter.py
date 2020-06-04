@@ -9,6 +9,7 @@ from matplotlib.figure import Figure
 from pandas.plotting import register_matplotlib_converters
 import backend.plots as plot
 register_matplotlib_converters()
+from backend import utils as utils
 
 
 class Plotter:
@@ -107,7 +108,6 @@ class Plotter:
         self.param.set("None")
         self.param_box.pack(side=tk.LEFT, expand=1, fill=tk.X)
 
-
     def plot_stocks(self, tickers, interval, start=None, end=None):
         # If hold-on checkbox is not checked, plot to the current figure
         if not self.hold_on:
@@ -131,8 +131,11 @@ class Plotter:
         structured_result = plot.get_result(result)#, plot_style=self.plot_style.get())
         for bot_name, bot_results in structured_result.items():
             for ticker, (long, short) in bot_results.items():
-                self.a.scatter(long.index, list(long.values), marker='o')
-                self.a.scatter(short.index, list(short.values), marker='x')
+                x_long = [utils.convert_timestamp_to_datetime(l) for l in long.index]
+                x_short = [utils.convert_timestamp_to_datetime(s) for s in short.index]
+
+                self.a.scatter(x_long, list(long.values), marker='o')
+                self.a.scatter(x_short, list(short.values), marker='x')
 
         self.canvas.draw()
 
@@ -144,7 +147,7 @@ class Plotter:
         self.a.tick_params(axis='y', labelsize=8)
         self.a.margins(x=0.0)
 
-    # Hur slår vi ihop detta till en funktion?!
+    # Hur slår vi ihop alla dessa till en funktion?!
     def one_hour_button(self, event):
         if self.stock_workspace.interval.get() == "1d":
             self.stock_workspace.interval.set("1m")
