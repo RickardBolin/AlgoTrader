@@ -18,7 +18,6 @@ def convert_timestamp_to_datetime(timestamp):
     else:
         print("Wrong format/lengths! The length of the timestamp is " + str(timestamp_length) + ". Only 19 and 25 currently allowed.")
 
-
 def convert_datetime_to_timestamp(_datetime):
     """
     Converts datetime object to timestamp.
