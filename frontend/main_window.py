@@ -57,6 +57,5 @@ class MainWindow(tk.Frame):
 
         console.open_communication_with_stock_workspace(workspaces.stock_workspace)
 
-        #self.root.mainloop()
+        plotter.open_communication_with_stock_workspace(workspaces.stock_workspace)
 
-#MainWindow()

@@ -35,6 +35,7 @@ class AlgorithmWindow:
         self.list.bind('<Return>', self.add_to_workspace)
         self.list.bind('<Double-Button-1>', self.add_to_workspace)
         self.list.bind('<Control-r>', self.refresh)
+        self.list.focus_set()
 
         # Create frame for buttons
         self.button_frame = tk.Frame(self.results_frame)

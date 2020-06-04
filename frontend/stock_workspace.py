@@ -107,14 +107,15 @@ class StockWorkspace:
         self.list.activate(index)
         self.list.update()
 
-    def plot_stocks(self, event):
-        print(str(self.end.get()))
+    def plot_stocks(self, event="None"):
         if str(self.end.get()) == "None":
-            self.plotter.plot_stocks(tickers=self.selected_tickers, interval=self.interval.get(), start=self.start.get(),
-                                     end=None)
+            self.plotter.plot_stocks(tickers=self.selected_tickers, interval=self.interval.get())
+            #start=self.start.get(), end=None)
+
+        #Might not need this anymore
         else:
-            self.plotter.plot_stocks(tickers=self.selected_tickers, interval=self.interval.get(), start=self.start.get(),
-                                     end=self.end.get())
+            self.plotter.plot_stocks(tickers=self.selected_tickers, interval=self.interval.get())#, start=self.start.get(),
+                                     #end=self.end.get())
 
     def open_communication_with_plotter(self, plotter):
         """
