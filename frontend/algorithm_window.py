@@ -5,7 +5,7 @@ import os
 import tkinter as tk
 from tkfilterlist import FilterList
 import backend.algorithm as algo
-from file_system.file_handler import read_result
+import file_system.file_handler as fh
 
 
 class AlgorithmWindow:
@@ -75,22 +75,29 @@ class AlgorithmWindow:
         name = "".join(bot_names)
         algo.test_algorithms(tickers=tickers, interval=interval, start=start, end=end, bot_names=bot_names, algorithm_name=name)
 
-        ############ Lägg in att ta bort vid dublett.
+        if name in self.results_list.get(0, tk.END):
+            self.results_list.delete(self.results_list.get(0, tk.END).index(name))
         self.results_list.insert(0, name)
+        self.write_statistics(name)
         self.results_list.selection_set(0)
 
     def plot_results(self, event):
         self.plotter.plot_result(self.results_list.get(tk.ACTIVE))
 
+    @staticmethod
+    def write_statistics(name):
+        algorithm_results = fh.read_result('../file_system/results/' + name + '.csv')
+        algorithm_statistics = algo.calc_componentwise_percentual_profit(algorithm_results)
+        fh.write_statistics('../file_system/algorithm_statistics/' + name + '.csv', algorithm_statistics)
+
     def read_statistics(self, event):
         self.statistics_box.delete(0, tk.END)
-        algorithm_results = read_result('file_system/results/' + self.results_list.selection_get() + '.csv')
-        algorithm_results = algo.calc_componentwise_percentual_profit(algorithm_results)
-        for bot_name, bot_df in algorithm_results.items():
+        algorithm_statistics = fh.read_statistics('../file_system/algorithm_statistics/' + self.results_list.selection_get() + '.csv')
+        for bot_name, bot_df in algorithm_statistics.items():
             self.statistics_box.insert(tk.END, bot_name)
             self.statistics_box.insert(tk.END, 'Profit multipliers: ')
             for ticker, multiplier in zip(bot_df.index, bot_df['Multiplier']):
-                self.statistics_box.insert(tk.END, ticker + ': ' + f'{multiplier:.2f}')
+                self.statistics_box.insert(tk.END, ticker + ': ' + f'{float(multiplier):.2f}')
 
     def refresh(self, event):
         self.list.destroy()
@@ -104,8 +111,6 @@ class AlgorithmWindow:
         self.list.bind('<Return>', self.add_to_workspace)
         self.list.bind('<Double-Button-1>', self.add_to_workspace)
         self.list.bind('<Control-r>', self.refresh)
-
-
 
     def open_communication_with_plotter(self, plotter):
         """
