@@ -13,7 +13,6 @@ class Bot:
         self.positions = {}
         self.event_counter = 0
 
-
     #unix_time, ticker, new_price = event
     def handle_event(self, event):
         self.event_counter += 1
@@ -24,28 +23,28 @@ class Bot:
 
         self.data[ticker].append(event)
 
-        if self.event_counter % 10 == 0:
+        if self.event_counter % 2== 0:
             self.algorithm()
 
     def algorithm(self):
         for ticker, events in self.data.items():
-            if len(events) < 30: 
+            if len(events) <= 30: 
                 continue
 
-            x = np.array(events)
-            x = x[-30:,2].astype(np.float)
+            x = np.array(events[-30:])
+            x = x[:,2].astype(np.float)
             x_mean = x.mean()
             x_std = x.std()
             x = (x-x_mean)/x_std
             x = x[:,np.newaxis,np.newaxis]
             
-
             prediction = self.model.predict(x)[0]
             
-            if prediction > x[-1] and self.positions[ticker] == "short":
+            
+            if prediction > x[-1,0,0] and self.positions[ticker] == "short":
                 self.positions[ticker] = "long"
                 self.actions.append([events[-1], self.positions[ticker]])
-            elif prediction < x[-1] and self.positions[ticker] == "long":
+            elif prediction < x[-1,0,0] and self.positions[ticker] == "long":
                 self.positions[ticker] = "short"
                 self.actions.append([events[-1], self.positions[ticker]])
             
