@@ -3,6 +3,7 @@ import sys
 from collections import defaultdict
 #sys.path.append('..')
 import pandas as pd
+import os.path
 
 
 def read_result(file):
@@ -47,6 +48,11 @@ def write_result(file, results):
     :param file: filepath.
     :param results: Results to be written to file.
     """
+
+    dir_name = os.path.dirname(file)
+    if not os.path.exists(dir_name):
+        os.mkir(dir_name)
+
     with open(file, 'w', newline='') as f:
         f.write(str(len(results)) + '\n')
 
@@ -104,6 +110,12 @@ def write_statistics(file, statistics):
     :param file: filepath.
     :param statistics: statistics to be written to file.
     """
+
+    dir_name = os.path.dirname(file)
+    if not os.path.exists(dir_name):
+        os.mkdir(dir_name)
+
+
     with open(file, 'w', newline='') as f:
         f.write(str(len(statistics)) + '\n')
 
