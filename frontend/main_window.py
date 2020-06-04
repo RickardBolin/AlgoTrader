@@ -1,17 +1,23 @@
 import tkinter as tk					 
 from tkinter import ttk
-from stock_window import StockWindow
-from algorithm_window import AlgorithmWindow
-from workspaces import Workspaces
-from plotter import Plotter
-from console import Console
+from frontend.stock_window import StockWindow
+from frontend.algorithm_window import AlgorithmWindow
+from frontend.workspaces import Workspaces
+from frontend.plotter import Plotter
+from frontend.console import Console
 import os
 from importlib import reload
 import sys
 
-class MainWindow:
-    def __init__(self):
-        self.openGUI()
+class MainWindow(tk.Frame):
+    def __init__(self, master=None, reload=None):
+        root = tk.Frame.__init__(self, master)
+        self.master.title("Kompisfonden")
+        self.master.bind("<Control-R>", reload)
+
+        self.pack()
+
+        self.openGUI(self, reload)
 
     def construct_tabs(self, root):
         tab_frame = ttk.Frame(root)
@@ -36,15 +42,12 @@ class MainWindow:
         workspaces_frame.pack(side='left')
         return Workspaces(workspaces_frame)
 
-    def openGUI(self):
-        root = tk.Tk()
-        root.bind("<Control-r>", self.reload_all)
-        root.style = ttk.Style()
-        # ('clam', 'alt', 'default', 'classic')
-        root.title("Kompisfonden")
-        workspaces = self.construct_workspace(root)
-        stock_window, algorithm_window, console = self.construct_tabs(root)
-        plotter = Plotter(root)
+    def openGUI(self, root, reload):
+        self.root = root
+
+        workspaces = self.construct_workspace(self.root)
+        stock_window, algorithm_window, console = self.construct_tabs(self.root)
+        plotter = Plotter(self.root)
 
         # Open communications
         stock_window.list.open_communication_with_stock_workspace(workspaces.stock_workspace)
@@ -56,16 +59,6 @@ class MainWindow:
 
         console.open_communication_with_stock_workspace(workspaces.stock_workspace)
 
-        root.mainloop()
+        #self.root.mainloop()
 
-    def reload_all(self, event):
-        for subdir, dirs, files in os.walk("/Users/rickard/PycharmProjects/kompisfonden"):
-            for filename in files:
-                filepath = subdir + os.sep + filename
-
-                if filepath in sys.modules:
-                    print(filepath)
-                    reload(filepath)
-        print("Everything reloaded!")
-
-MainWindow()
+#MainWindow()

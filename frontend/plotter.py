@@ -128,8 +128,8 @@ class Plotter:
         structured_result = plot.get_result(result)#, plot_style=self.plot_style.get())
         for bot_name, bot_results in structured_result.items():
             for ticker, (long, short) in bot_results.items():
-                self.a.scatter(long.index, long, marker='o')
-                self.a.scatter(short.index, short, marker='x')
+                self.a.scatter(long.index, list(long.values), marker='o')
+                self.a.scatter(short.index, list(short.values), marker='x')
 
         self.canvas.draw()
 
