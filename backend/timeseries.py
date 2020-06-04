@@ -9,7 +9,6 @@ def moving_average(data, window, rule='same'):
     :param rule: ?
     :return: Moving average of prescribed data.
     """
-    #return np.nan_to_num(np.convolve(data, np.ones(window), rule) / window)
     return np.convolve(data, np.ones(window), rule) / window
 
 

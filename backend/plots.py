@@ -22,6 +22,7 @@ def get_stocks(tickers, plot_style, params="None", start=None, end=None, interva
     """
     stock_data = sd.get_stock_data(tickers, interval=interval, start=start, end=end)
     stock_data = stock_data[price_type]
+
     # If we do not want to apply any transformation, return the regular stock data
     if plot_style == "None":
         return stock_data.index, stock_data
@@ -34,7 +35,12 @@ def get_stocks(tickers, plot_style, params="None", start=None, end=None, interva
         for ticker, _prices in stock_data.items():
             prices[ticker] = eval(plot_style + "(_prices, " + params + ")")
 
-    return stock_data.index, pd.DataFrame.from_dict(prices)
+
+    ### Do we need this?
+    x = [str(timestamp) for timestamp in stock_data.index]
+    ###
+
+    return x, pd.DataFrame.from_dict(prices)
 
 
 def get_result(result_name):  # , plot_style=None):
@@ -43,7 +49,7 @@ def get_result(result_name):  # , plot_style=None):
     :param result_name: Name of the file.
     :return: Structured result dictionary.
     """
-    result = read_result('../file_system/results/' + result_name + '.csv')
+    result = read_result('file_system/results/' + result_name + '.csv')
     structure_results = defaultdict(defaultdict)
     for bot_name, df in result.items():
         # Loop over all stocks that the algorithm was tested on

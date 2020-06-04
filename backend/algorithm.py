@@ -80,7 +80,7 @@ def test_algorithms(tickers, interval, start, end, bot_names, algorithm_name):
             _df = pd.DataFrame([[price, position, ticker]], columns=['Price', 'Position', 'Ticker'], index=[timestamp])
             all_bot_actions = all_bot_actions.append(_df)
         results[bot.name] = all_bot_actions
-    write_result('../file_system/results/' + algorithm_name + '.csv', results)
+    write_result('file_system/results/' + algorithm_name + '.csv', results)
 
 
 def calc_componentwise_percentual_profit(results):
