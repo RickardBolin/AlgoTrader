@@ -10,6 +10,6 @@ class Workspaces:
     change graph. This might be dumb, but it'll suffice for now i guess.
     """
 
-    def __init__(self, workspaces_frame):
-        self.stock_workspace = StockWorkspace(workspaces_frame)
-        self.algorithm_workspace = AlgorithmWorkspace(workspaces_frame)
+    def __init__(self, workspace_frame):
+        self.stock_workspace = StockWorkspace(workspace_frame)
+        self.algorithm_workspace = AlgorithmWorkspace(workspace_frame)

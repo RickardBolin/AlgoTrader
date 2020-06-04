@@ -14,14 +14,13 @@ class MainWindow(tk.Frame):
         root = tk.Frame.__init__(self, master)
         self.master.title("Kompisfonden")
         self.master.bind("<Control-R>", reload)
-
         self.pack()
 
-        self.openGUI(self, reload)
+        self.openGUI(self)
 
     def construct_tabs(self, root):
         tab_frame = ttk.Frame(root)
-        tab_frame.pack(side='right', fill="both")
+        tab_frame.pack(side=tk.RIGHT, fill="both")
         tab_control = ttk.Notebook(tab_frame)
 
         tab1 = ttk.Frame(tab_control)
@@ -39,12 +38,11 @@ class MainWindow(tk.Frame):
 
     def construct_workspace(self, root):
         workspaces_frame = ttk.Frame(root)
-        workspaces_frame.pack(side='left')
+        workspaces_frame.pack(side=tk.LEFT)
         return Workspaces(workspaces_frame)
 
-    def openGUI(self, root, reload):
+    def openGUI(self, root):
         self.root = root
-
         workspaces = self.construct_workspace(self.root)
         stock_window, algorithm_window, console = self.construct_tabs(self.root)
         plotter = Plotter(self.root)
