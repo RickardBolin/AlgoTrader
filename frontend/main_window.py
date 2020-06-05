@@ -48,7 +48,9 @@ class MainWindow(tk.Frame):
         plotter = Plotter(self.root)
 
         # Open communications
-        stock_window.list.open_communication_with_stock_workspace(workspaces.stock_workspace)
+        stock_window.stock_list.open_communication_with_stock_workspace(workspaces.stock_workspace)
+        stock_window.currency_list.open_communication_with_stock_workspace(workspaces.stock_workspace)
+
         workspaces.stock_workspace.open_communication_with_plotter(plotter)
         algorithm_window.open_communication_with_algorithm_workspace(workspaces.algorithm_workspace)
 

@@ -6,50 +6,50 @@ from tkfilterlist import FilterList
 
 class StockWindow:
     """
-    POTENTIALLY UNFINISHED
     Class for the entire stock tab.
     Currently contains its tab, a stockplot and the list of stocks in an exchange.
     """
 
     def __init__(self, stock_tab):
         self.stock_tab = stock_tab
-        self.list = StockList(self.stock_tab)
+        self.lists_frame = tk.Frame(self.stock_tab)
+        self.lists_frame.pack(side=tk.TOP, expand=1, fill=tk.BOTH)
+        self.stock_list = StockList(self.lists_frame)
+        self.currency_list = CurrencyList(self.lists_frame)
+
+        self.stock_info_frame = tk.LabelFrame(self.stock_tab, text="Information")
+        self.stock_info_frame.pack(side=tk.BOTTOM, expand=1, fill=tk.BOTH)
 
 
 class StockList:
     """
-    NB! SEVERAL FEATURES IN THIS CLASS ARE SUBJECT TO CHANGE.
     Class for the filterable stocklist.
     Contains its rootframe and the stock plot which shall be updated.
     """
 
-    def __init__(self, root):
-        self.root = root
+    def __init__(self, lists_frame):
 
-        self.list_frame = tk.LabelFrame(self.root, text='Stocks')
-        self.list_frame.pack(fill=tk.BOTH, expand=0)
+        self.stock_list_frame = tk.LabelFrame(lists_frame, text='Stocks')
+        self.stock_list_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
         stock_names = self.load_ticker_name_info("NASDAQ")
-        self.list = FilterList(self.list_frame,
-                                     height=14,
+        self.stock_filter_list = FilterList(self.stock_list_frame,
+                                     height=1,
                                      source=stock_names,
                                      display_rule=lambda item: item[0] + ": " + item[1],
                                      filter_rule=lambda item, text:
                                      item[0].lower().startswith(text.lower()) or item[1].lower().startswith(
                                          text.lower()))
 
-        self.list.pack(side=tk.TOP, expand=1, fill=tk.BOTH)
-        self.list.bind('<Return>', self.add_to_workspace)
-        self.list.bind('<Double-Button-1>', self.add_to_workspace)
-
-        self.stock_info_frame = tk.LabelFrame(self.root, text="Stock information")
-        self.stock_info_frame.pack(side=tk.BOTTOM, expand=1, fill=tk.BOTH)
+        self.stock_filter_list.pack(side=tk.TOP, expand=1, fill=tk.BOTH)
+        self.stock_filter_list.bind('<Return>', self.add_to_workspace)
+        self.stock_filter_list.bind('<Double-Button-1>', self.add_to_workspace)
 
     def add_to_workspace(self, event):
         """
         Adds clicked ticker to the workspace.
         :param event: Eventhandler.
         """
-        ticker = self.list.selection()[0]
+        ticker = self.stock_filter_list.selection()[0]
         EMPTY_BOX = "\u2610"
         self.stock_workspace.add(EMPTY_BOX + ticker)
 
@@ -66,6 +66,56 @@ class StockList:
             company = namedtuple("company_info", ["ticker", "name"])
             stock_info = [company(stock[0], stock[1]) for stock in csv_reader]
             return stock_info
+
+    def open_communication_with_stock_workspace(self, stock_workspace):
+        """
+        Gives stock list possibility to modify workspace. Perhaps silly solution, but will have to do for now.
+        :param stock_workspace: StockWorkspace
+        """
+        self.stock_workspace = stock_workspace
+
+
+class CurrencyList:
+    """
+    Class for the filterable currency list.
+    Contains its rootframe and the plot which should be updated.
+    """
+
+    def __init__(self, root):
+        self.root = root
+
+        self.currency_list_frame = tk.LabelFrame(self.root, text='Currencies incl. crypto')
+        self.currency_list_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=1)
+        currencies = self.load_currency_tickers()
+        self.currency_list = FilterList(self.currency_list_frame,
+                                     height=1,
+                                     source=currencies,
+                                     display_rule=lambda item: item[0] + ": " + item[1],
+                                     filter_rule=lambda item, text:
+                                     item[0].lower().startswith(text.lower()) or item[1].lower().startswith(
+                                         text.lower()))
+
+        self.currency_list.pack(side=tk.TOP, expand=1, fill=tk.BOTH)
+        self.currency_list.bind('<Return>', self.add_to_workspace)
+        self.currency_list.bind('<Double-Button-1>', self.add_to_workspace)
+
+    def add_to_workspace(self, event):
+        """
+        Adds clicked ticker to the workspace.
+        :param event: Eventhandler.
+        """
+        ticker = self.currency_list.selection()[0]
+        EMPTY_BOX = "\u2610"
+        self.stock_workspace.add(EMPTY_BOX + ticker)
+
+    @staticmethod
+    def load_currency_tickers():
+        with open("file_system/data/Tickers/currencies.csv") as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            next(csv_file)
+            currency = namedtuple("currency_info", ["ticker", "name"])
+            currency_tickers = [currency(ticker, name) for ticker, name in csv_reader]
+            return currency_tickers
 
     def open_communication_with_stock_workspace(self, stock_workspace):
         """
