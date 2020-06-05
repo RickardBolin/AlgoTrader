@@ -1,7 +1,4 @@
-import sys
 import csv
-#sys.path.append("..")
-
 import tkinter as tk
 from collections import namedtuple
 from tkfilterlist import FilterList

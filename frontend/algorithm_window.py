@@ -3,6 +3,7 @@ import tkinter as tk
 from tkfilterlist import FilterList
 import backend.algorithm as algo
 import file_system.file_handler as fh
+import csv
 
 
 class AlgorithmWindow:
@@ -99,8 +100,48 @@ class AlgorithmWindow:
         self.highscore_box = tk.Listbox(self.highscore_frame)
         self.highscore_box.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
 
-        for i in range(10):
-            self.highscore_box.insert(i, str(i+1) + ": " "None")
+        self.find_results()
+        self.get_HOF()
+
+    def find_results(self):
+        path = 'file_system/results/'
+        for _file in os.listdir(path):
+            file = _file.split('.')[0]
+            self.results_list.insert(tk.END, file)
+
+    def get_HOF(self):
+        self.highscore_box.delete(0, tk.END)
+        path = 'file_system/hall_of_fame/hof.csv'
+        with open(path, 'r') as csf_file:
+            csv_reader = csv.reader(csf_file)
+            for placing in csv_reader:
+                bot, score = placing[0], placing[1]
+                self.highscore_box.insert(tk.END, bot + ': ' + score)
+
+    def add_to_HOF(self, result):
+        path = 'file_system/hall_of_fame/hof.csv'
+        for bot_name, score in result.items():
+            curr_hof = []
+            with open(path, 'r') as csf_file:
+                csv_reader = csv.reader(csf_file)
+                for placing in csv_reader:
+                    bot, _score,  = placing[0], float(placing[1])
+                    curr_hof.append((bot, _score))
+
+            if len(curr_hof) < 10:
+                curr_hof.append((bot_name, score))
+
+            elif curr_hof[-1][1] < score:
+                curr_hof.pop()
+                curr_hof.append((bot_name, score))
+
+            curr_hof.sort(key=lambda x: x[1], reverse=True)
+
+            with open(path, 'w') as csv_file:
+                csv_writer = csv.writer(csv_file)
+                for placing in curr_hof:
+                    csv_writer.writerow([placing[0], str(placing[1])])
+        self.get_HOF()
 
     def test_algorithms(self, event):
         # Tell backend to test the algorithm
@@ -123,6 +164,7 @@ class AlgorithmWindow:
             self.results_list.delete(self.results_list.get(0, tk.END).index(name))
         self.results_list.insert(0, name)
         self.write_statistics(name)
+        self.add_to_HOF(algo.get_score('file_system/algorithm_statistics/' + name + '.csv'))
         self.results_list.selection_set(0)
         self.display_results(self.results_list.selection_get())
 
@@ -132,7 +174,7 @@ class AlgorithmWindow:
 
     @staticmethod
     def write_statistics(name):
-        algorithm_results, _, _, _, _ = fh.read_result('file_system/results/' + name + '.csv')
+        algorithm_results, *unused = fh.read_result('file_system/results/' + name + '.csv')
         algorithm_statistics = algo.calc_statistics(algorithm_results)
         fh.write_statistics('file_system/algorithm_statistics/' + name + '.csv', algorithm_statistics)
 
@@ -145,12 +187,12 @@ class AlgorithmWindow:
             for ticker, *_params in bot_df.iterrows():
                 _params = _params[0]
                 self.statistics_box.insert(tk.END, ticker)
-                self.statistics_box.insert(tk.END, ', '.join(bot_df.columns))
+                self.statistics_box.insert(tk.END, ','.join(bot_df.columns))
                 params = []
                 for param in _params:
                     params.append(str(param))
 
-                self.statistics_box.insert(tk.END, ', '.join(params))
+                self.statistics_box.insert(tk.END, ','.join(params))
             self.statistics_box.insert(tk.END, '')
 
     def refresh(self, event):

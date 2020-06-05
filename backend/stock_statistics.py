@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 
 
 def calc_stock_statistics(stock_data):

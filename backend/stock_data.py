@@ -2,6 +2,7 @@ import yfinance as yf
 import time
 from datetime import datetime
 
+
 def get_stock_data(tickers, start=None, end=None, period="5y", interval="1d", group_by='column', auto_adjust=False, prepost=False, threads=True,proxy=None):
 
 	if interval[-1] == "m" and start == None:
@@ -13,3 +14,10 @@ def get_stock_data(tickers, start=None, end=None, period="5y", interval="1d", gr
 	:return: Stock data.
 	"""
 	return yf.download(tickers=tickers, start=start, end=end, period=period, interval=interval, group_by=group_by, auto_adjust=auto_adjust, prepost=prepost, threads=threads, proxy=proxy)
+
+"""
+def get_stock_info(tickers):
+	for ticker in tickers:
+		stock = yf.Ticker(ticker)
+		print(stock.dividends)
+"""
