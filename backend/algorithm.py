@@ -102,19 +102,19 @@ def _calc_componentwise_percentual_profit(results):
     :param results: Dictionary with (bot name, bot dataframe) as key-value paris.
     :return: Dict of (bot name, profit multiplier dataframe) as key value pair.
     """
-    percentual_profits = defaultdict(pd.DataFrame)
+    profit_multipliers = defaultdict(pd.DataFrame)
     for bot_name, bot_df in results.items():
         df = pd.DataFrame(columns=['Multiplier'])
         for ticker in bot_df.Ticker.unique():
             ticker_df = bot_df.loc[bot_df['Ticker'] == ticker]
             prices = ticker_df['Price']
-            percentual_profit = 1
+            multiplier = 1
             for shift, (price, position) in enumerate(zip(prices[:-1], ticker_df['Position']), start=1):
-                percentual_profit *= prices[shift]/price if position == 'long' else price/prices[shift]
-            df.loc[ticker] = percentual_profit
-        percentual_profits[bot_name] = df
+                multiplier *= prices[shift]/price if position == 'long' else 2 - prices[shift]/price
+            df.loc[ticker] = multiplier
+        profit_multipliers[bot_name] = df
 
-    return percentual_profits
+    return profit_multipliers
 
 
 def _calc_correct_positions(results):

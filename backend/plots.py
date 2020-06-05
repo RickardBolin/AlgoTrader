@@ -24,6 +24,8 @@ def get_stocks(tickers, plot_style, params="None", start=None, end=None, interva
     stock_data = sd.get_stock_data(tickers, interval=interval, start=start, end=end)
     stock_data = stock_data[price_type]
 
+    df, corr = ss.calc_stock_statistics(stock_data)
+
     # If we do not want to apply any transformation, return the regular stock data
     if plot_style == "None":
         return stock_data.index, stock_data
