@@ -87,12 +87,14 @@ class Plotter:
         self.PLOT_OPTIONS = [
             'Regular',
             'Percentual change',
-            'Moving Average'
+            'Moving Average',
+            'Fourier Transform'
         ]
         self.PLOT_TRANSFORMATIONS = [
             'None',
             'ts.percentual_change',
-            'ts.moving_average'
+            'ts.moving_average',
+            'ts.fourier_transform'
         ]
 
         self.plot_to_func = dict(zip(self.PLOT_OPTIONS, self.PLOT_TRANSFORMATIONS))
@@ -165,7 +167,7 @@ class Plotter:
     def one_hour_button(self, event):
         if self.stock_workspace.interval.get() == "1d":
             self.stock_workspace.interval.set("1m")
-            self.stock_workspace.plot_stocks()
+            self.stock_workspace.plot_stocks(event="None")
         _, curr_x_max = self.a.get_xlim()
         self.a.set_xlim((curr_x_max - 1/24, curr_x_max))
         self.canvas.draw()
@@ -173,7 +175,7 @@ class Plotter:
     def three_days_button(self, event):
         if self.stock_workspace.interval.get() == "1d":
             self.stock_workspace.interval.set("1m")
-            self.stock_workspace.plot_stocks()
+            self.stock_workspace.plot_stocks(event="None")
         _, curr_x_max = self.a.get_xlim()
         self.a.set_xlim((curr_x_max - 3, curr_x_max))
         self.canvas.draw()
@@ -181,7 +183,7 @@ class Plotter:
     def one_month_button(self, event):
         if self.stock_workspace.interval.get() == "1m":
             self.stock_workspace.interval.set("1d")
-            self.stock_workspace.plot_stocks()
+            self.stock_workspace.plot_stocks(event="None")
         _, curr_x_max = self.a.get_xlim()
         self.a.set_xlim((curr_x_max - 30, curr_x_max))
         self.canvas.draw()
@@ -189,7 +191,7 @@ class Plotter:
     def one_year_button(self, event):
         if self.stock_workspace.interval.get() == "1m":
             self.stock_workspace.interval.set("1d")
-            self.stock_workspace.plot_stocks()
+            self.stock_workspace.plot_stocks(event="None")
         _, curr_x_max = self.a.get_xlim()
         self.a.set_xlim((curr_x_max - 365, curr_x_max))
         self.canvas.draw()
@@ -197,7 +199,7 @@ class Plotter:
     def three_years_button(self, event):
         if self.stock_workspace.interval.get() == "1m":
             self.stock_workspace.interval.set("1d")
-            self.stock_workspace.plot_stocks()
+            self.stock_workspace.plot_stocks(event="None")
         _, curr_x_max = self.a.get_xlim()
         self.a.set_xlim((curr_x_max - 365*3, curr_x_max))
         self.canvas.draw()

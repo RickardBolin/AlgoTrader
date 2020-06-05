@@ -41,7 +41,6 @@ class StockWorkspace:
         self.plot_menu = tk.OptionMenu(self.plot_options_frame, self.interval, *self.INTERVAL_OPTIONS)
         self.plot_menu.pack(side=tk.RIGHT, expand=1, fill=tk.X)
 
-
     def add(self, elem):
         """
         Adds an element at the end of the workspace.

@@ -30,19 +30,22 @@ class StockList:
         self.root = root
 
         self.list_frame = tk.LabelFrame(self.root, text='Stocks')
-        self.list_frame.pack(fill="both", expand=1)
+        self.list_frame.pack(fill=tk.BOTH, expand=0)
         stock_names = self.load_ticker_name_info("NASDAQ")
         self.list = FilterList(self.list_frame,
-                                     height=27,
+                                     height=14,
                                      source=stock_names,
                                      display_rule=lambda item: item[0] + ": " + item[1],
                                      filter_rule=lambda item, text:
                                      item[0].lower().startswith(text.lower()) or item[1].lower().startswith(
                                          text.lower()))
 
-        self.list.pack(side="top", expand=1, fill="both")
+        self.list.pack(side=tk.TOP, expand=1, fill=tk.BOTH)
         self.list.bind('<Return>', self.add_to_workspace)
         self.list.bind('<Double-Button-1>', self.add_to_workspace)
+
+        self.stock_info_frame = tk.LabelFrame(self.root, text="Stock information")
+        self.stock_info_frame.pack(side=tk.BOTTOM, expand=1, fill=tk.BOTH)
 
     def add_to_workspace(self, event):
         """
