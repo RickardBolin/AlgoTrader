@@ -2,7 +2,7 @@ import yfinance as yf
 import time
 from datetime import datetime
 
-def get_stock_data(tickers, start=None, end=None, period="max", interval="1d", group_by='column', auto_adjust=False, prepost=False, threads=True,proxy=None):
+def get_stock_data(tickers, start=None, end=None, period="5y", interval="1d", group_by='column', auto_adjust=False, prepost=False, threads=True,proxy=None):
 
 	if interval[-1] == "m" and start == None:
 		# Might be able to get about one more days worth of data somehow

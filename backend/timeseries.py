@@ -21,7 +21,4 @@ def percentual_change(stock_data, shift):
     """
     if not shift:
         shift = 1
-    one_day_ahead_stock_data = stock_data.shift(-1*shift)
-    percent_change = 100 * (one_day_ahead_stock_data - stock_data).div(stock_data)
-    #percent_change = percent_change.dropna()
-    return percent_change
+    return stock_data.pct_change(periods=shift)

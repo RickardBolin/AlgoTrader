@@ -8,8 +8,6 @@ import backend.stock_statistics as ss
 
 def get_stocks(tickers, plot_style, params="None", start=None, end=None, interval="1d", price_type="Close"):
     """
-    Unfinished function.
-
     Gets the stock data for prescribed tickers, start time, end time, time interval, price type.
     Applies (optionally) data transformations and returns list of timestamps and a dataframe of the prices.
     :param tickers: Tickers to be fetched.
@@ -28,20 +26,15 @@ def get_stocks(tickers, plot_style, params="None", start=None, end=None, interva
     if plot_style == "None":
         return stock_data.index, stock_data
 
-    ## Add error message when params = "None"?
     prices = dict()
     if len(tickers) == 1:
         prices[tickers[0]] = eval(plot_style + "(stock_data, " + params + ")")
+
     else:
         for ticker, _prices in stock_data.items():
             prices[ticker] = eval(plot_style + "(_prices, " + params + ")")
 
-
-    ### Do we need this?
-    x = [str(timestamp) for timestamp in stock_data.index]
-    ###
-
-    return x, pd.DataFrame.from_dict(prices)
+    return stock_data.index, pd.DataFrame.from_dict(prices)
 
 
 def get_result(result_name):  # , plot_style=None):

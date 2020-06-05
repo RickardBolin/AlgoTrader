@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 import os.path
 
+
 class Bot:
     def __init__(self):
         self.name = "cnn"

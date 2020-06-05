@@ -39,7 +39,7 @@ class Plotter:
         self.toolbar_frame = tk.Frame(self.root) ### SHOULD BE IN PLOT FRAME, FUCK GUIS
         self.toolbar_frame.pack(side="top")
         self.toolbar = NavigationToolbar2Tk(self.canvas, self.root) ### SHOULD BE IN PLOT FRAME, FUCK GUIS
-        self.plot_frame.pack(side=tk.RIGHT)
+        self.plot_frame.pack(side=tk.RIGHT, expand=1, fill=tk.Y)
 
         # Add viewing date frame
         self.timeframe_frame = tk.LabelFrame(self.plot_frame, text="Display Timeframe")
