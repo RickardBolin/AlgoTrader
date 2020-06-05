@@ -4,6 +4,7 @@ from collections import defaultdict
 #sys.path.append('..')
 import pandas as pd
 import os.path
+import os
 
 
 def read_result(file):
@@ -51,7 +52,7 @@ def write_result(file, results):
 
     dir_name = os.path.dirname(file)
     if not os.path.exists(dir_name):
-        os.mkir(dir_name)
+        os.mkdir(dir_name)
 
     with open(file, 'w', newline='') as f:
         f.write(str(len(results)) + '\n')
@@ -114,7 +115,6 @@ def write_statistics(file, statistics):
     dir_name = os.path.dirname(file)
     if not os.path.exists(dir_name):
         os.mkdir(dir_name)
-
 
     with open(file, 'w', newline='') as f:
         f.write(str(len(statistics)) + '\n')

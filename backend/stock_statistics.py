@@ -1,11 +1,17 @@
 import pandas as pd
+import numpy as np
 
 
 def calc_stock_statistics(stock_data):
-    """FIXA OM BARA EN VARIABEL, ISF ÄR SERIES OBJ."""
+
+    cols = ['Average price', 'Standard deviation of price', 'Average returns', 'Standard deviation of returns']
+
+    if isinstance(stock_data, pd.Series):
+        return pd.DataFrame([_basic_statistics(stock_data)], columns=cols, index=[stock_data.name]), \
+                pd.DataFrame([1], columns=[stock_data.name], index=[stock_data.name])
 
     tickers = stock_data.columns
-    statistics_df = pd.DataFrame(columns=['Mean', 'Vol'])
+    statistics_df = pd.DataFrame(columns=cols)
     for ticker in tickers:
         statistics_df.loc[ticker] = _basic_statistics(stock_data[ticker])
 
@@ -13,4 +19,6 @@ def calc_stock_statistics(stock_data):
 
 
 def _basic_statistics(df):
-    return df.mean(), df.std()
+    returns = (df.shift(-1) - df).div(df)
+    returns = returns.dropna()
+    return df.mean(), df.std(), returns.mean(), returns.std()
