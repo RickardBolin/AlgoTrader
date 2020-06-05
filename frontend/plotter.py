@@ -50,14 +50,14 @@ class Plotter:
 
         self.TIMEFRAME_OPTIONS = [
             'One hour',
-            'One day',
+            'Three days',
             'One month',
             'One year',
             'Three years'
         ]
         self.TIMEFRAME_TRANSFORMATIONS = [
             'one_hour',
-            'one_day',
+            'three_days',
             'one_month',
             'one_year',
             'three_years'
@@ -156,12 +156,12 @@ class Plotter:
         self.a.set_xlim((curr_x_max - 1/24, curr_x_max))
         self.canvas.draw()
 
-    def one_day_button(self, event):
+    def three_days_button(self, event):
         if self.stock_workspace.interval.get() == "1d":
             self.stock_workspace.interval.set("1m")
             self.stock_workspace.plot_stocks()
         _, curr_x_max = self.a.get_xlim()
-        self.a.set_xlim((curr_x_max - 1, curr_x_max))
+        self.a.set_xlim((curr_x_max - 3, curr_x_max))
         self.canvas.draw()
 
     def one_month_button(self, event):
