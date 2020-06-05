@@ -1,7 +1,7 @@
 import backend.utils as utils
 import backend.stock_data as sd
 from collections import defaultdict
-from file_system.file_handler import write_result
+from file_system.file_handler import write_result, read_statistics
 import pandas as pd
 from importlib import reload
 
@@ -81,6 +81,16 @@ def test_algorithms(tickers, interval, start, end, bot_names, algorithm_name):
             all_bot_actions = all_bot_actions.append(_df)
         results[bot.name] = all_bot_actions
     write_result('file_system/results/' + algorithm_name + '.csv', results, tickers, interval, start, end)
+
+
+def get_score(file):
+    statistics = read_statistics(file)
+    scores = defaultdict(float)
+    for bot_name, statistic in statistics.items():
+        correct = statistic['Correct'].sum()
+        incorrect = statistic['Incorrect'].sum()
+        scores[bot_name] = float(f'{correct/(correct+incorrect):.2f}')
+    return scores
 
 
 def calc_statistics(results):
