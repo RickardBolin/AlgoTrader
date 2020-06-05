@@ -45,6 +45,37 @@ class AlgorithmWindow:
         # Add entry field to enter name of result
         self.generate_frame = tk.LabelFrame(self.button_frame, text="Generate results")
         self.generate_frame.pack(side=tk.LEFT, expand=1, fill=tk.X)
+        self.date_frame = tk.Frame(self.generate_frame)
+        self.date_frame.pack(expand=1, fill=tk.X)
+        # Add label and entry to choose start and end dates
+        self.start_date_frame = tk.LabelFrame(self.date_frame, text="Starting date")
+        self.start_date_frame.pack(side=tk.LEFT, expand=1, fill=tk.X)
+        self.start = tk.StringVar()
+        self.start.set("2019-04-20")
+
+        self.start_date_entry = tk.Entry(self.start_date_frame, textvariable=self.start, width=10)
+        self.start_date_entry.pack(expand=1, fill=tk.X)
+
+        # Add option menu to choose the interval between data points
+        self.INTERVAL_OPTIONS = [
+            '1m',
+            '1d',
+        ]
+
+        self.interval = tk.StringVar(self.date_frame)
+        self.interval.set(self.INTERVAL_OPTIONS[1])
+
+        self.interval_menu = tk.OptionMenu(self.date_frame, self.interval, *self.INTERVAL_OPTIONS)
+        self.interval_menu.pack(side=tk.RIGHT, expand=1, fill=tk.X)
+
+        self.end_date_frame = tk.LabelFrame(self.date_frame, text="End date")
+        self.end_date_frame.pack(expand=1, fill=tk.X)
+        self.end = tk.StringVar()
+        self.end.set("None")
+
+        self.end_date_entry = tk.Entry(self.end_date_frame, textvariable=self.end, width=10)
+        self.end_date_entry.pack(expand=1, fill=tk.X)
+
         self.name_label = tk.Label(self.generate_frame, text="Name:")
         self.name_label.pack(side=tk.LEFT)
         self.name = tk.StringVar()
@@ -74,14 +105,14 @@ class AlgorithmWindow:
     def test_algorithms(self, event):
         # Tell backend to test the algorithm
         tickers = self.workspaces.stock_workspace.selected_tickers
-        start = self.workspaces.stock_workspace.start.get()
+        start = self.start.get()
 
-        if self.workspaces.stock_workspace.end.get() == "None":
+        if self.end.get() == "None":
             end = None
         else:
-            end = self.workspaces.stock_workspace.end.get()
+            end = self.end.get()
 
-        interval = self.workspaces.stock_workspace.interval.get()
+        interval = self.interval.get()
         bot_names = self.workspaces.algorithm_workspace.selected_bots
         # Results is a dictionary with bot.name as key, a tuple (timestamps, price, position) as value,
         # and each of those are themselves dictionaries with tickers as keys.

@@ -18,9 +18,8 @@ class StockWorkspace:
         self.list.pack(expand=True, fill=tk.BOTH)
 
         self.plot_options_frame = tk.Frame(workspace_frame)
-        self.plot_options_frame.pack(expand=True, fill=tk.X)
+        self.plot_options_frame.pack(fill=tk.X)
 
-        # BYT GRID TILL FRAME FÖR BÅDA!
         # Add button that updates the plot
         self.update_button = tk.Button(self.plot_options_frame, text="Plot Stocks")
         self.update_button.pack(side=tk.LEFT, expand=1, fill=tk.X)
@@ -42,24 +41,6 @@ class StockWorkspace:
         self.plot_menu = tk.OptionMenu(self.plot_options_frame, self.interval, *self.INTERVAL_OPTIONS)
         self.plot_menu.pack(side=tk.RIGHT, expand=1, fill=tk.X)
 
-        self.date_frame = tk.Frame(workspace_frame)
-        self.date_frame.pack(expand=1, fill=tk.X)
-        # Add label and entry to choose start and end dates
-        self.start_date_frame = tk.LabelFrame(self.date_frame, text="Starting date")
-        self.start_date_frame.pack(side=tk.LEFT, expand=1, fill=tk.X)
-        self.start = tk.StringVar()
-        self.start.set("2019-04-20")
-
-        self.start_date_entry = tk.Entry(self.start_date_frame, textvariable=self.start, width=10)
-        self.start_date_entry.pack(expand=1, fill=tk.X)
-
-        self.end_date_frame = tk.LabelFrame(self.date_frame, text="End date")
-        self.end_date_frame.pack(side=tk.RIGHT, expand=1, fill=tk.X)
-        self.end = tk.StringVar()
-        self.end.set("None")
-
-        self.end_date_entry = tk.Entry(self.end_date_frame, textvariable=self.end, width=10)
-        self.end_date_entry.pack(expand=1, fill=tk.X)
 
     def add(self, elem):
         """
@@ -107,15 +88,8 @@ class StockWorkspace:
         self.list.activate(index)
         self.list.update()
 
-    def plot_stocks(self, event="None"):
-        if str(self.end.get()) == "None":
-            self.plotter.plot_stocks(tickers=self.selected_tickers, interval=self.interval.get())
-            #start=self.start.get(), end=None)
-
-        #Might not need this anymore
-        else:
-            self.plotter.plot_stocks(tickers=self.selected_tickers, interval=self.interval.get())#, start=self.start.get(),
-                                     #end=self.end.get())
+    def plot_stocks(self, event):
+        self.plotter.plot_stocks(tickers=self.selected_tickers, interval=self.interval.get())
 
     def open_communication_with_plotter(self, plotter):
         """
