@@ -45,7 +45,7 @@ def get_result(result_name):  # , plot_style=None):
     :param result_name: Name of the file.
     :return: Structured result dictionary.
     """
-    result = read_result('file_system/results/' + result_name + '.csv')
+    result, tickers, interval, start, end = read_result('file_system/results/' + result_name + '.csv')
     structure_results = defaultdict(defaultdict)
     for bot_name, df in result.items():
         # Loop over all stocks that the algorithm was tested on
@@ -66,5 +66,5 @@ def get_result(result_name):  # , plot_style=None):
             short = pd.Series(y_short, index=x_short)
             bot_results[ticker] = (long, short)
         structure_results[bot_name] = bot_results
-    return structure_results
+    return structure_results, tickers, interval, start, end
 

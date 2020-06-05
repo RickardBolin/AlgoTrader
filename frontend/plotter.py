@@ -10,6 +10,7 @@ from pandas.plotting import register_matplotlib_converters
 import backend.plots as plot
 register_matplotlib_converters()
 from backend import utils as utils
+import time
 
 
 class Plotter:
@@ -128,7 +129,8 @@ class Plotter:
             # Reset current Axes
             self.reset_axes()
         # Get result from backend
-        structured_result = plot.get_result(result)#, plot_style=self.plot_style.get())
+        structured_result, tickers, interval, start, end = plot.get_result(result)#, plot_style=self.plot_style.get())
+        self.plot_stocks(tickers=tickers, interval=interval, start=start, end=end)
         for bot_name, bot_results in structured_result.items():
             for ticker, (long, short) in bot_results.items():
                 x_long = [utils.convert_timestamp_to_datetime(l) for l in long.index]
@@ -136,6 +138,18 @@ class Plotter:
 
                 self.a.scatter(x_long, list(long.values), marker='o')
                 self.a.scatter(x_short, list(short.values), marker='x')
+
+        # Change timeframe on plot to only display the frame where the results are
+
+        if end is None:
+            end = time.time()/(60*60*24)
+        else:
+            end = utils.convert_timestamp_to_datetime(end).timestamp()/(60*60*24)
+        start = utils.convert_timestamp_to_datetime(start).timestamp()/(60*60*24)
+        days_diff = end - start
+        start_matplotlib_time = self.a.get_xlim()[1] - days_diff
+        end_matplotlib_time = self.a.get_xlim()[1]
+        self.a.set_xlim(start_matplotlib_time, end_matplotlib_time)
 
         self.canvas.draw()
 

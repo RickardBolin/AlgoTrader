@@ -16,6 +16,10 @@ def read_result(file):
     bots = defaultdict(pd.DataFrame)
     with open(file, 'r') as csv_file:
         csv_reader = csv.reader(csv_file)
+        tickers = next(csv_reader)
+        [interval, start, end] = next(csv_reader)
+        if end == "None":
+            end = None
         num_bots = int(next(csv_reader)[0])
         bot_idx = 0
         while bot_idx < num_bots:
@@ -29,10 +33,10 @@ def read_result(file):
                 df = df.append(pd.DataFrame([[float(price), position, ticker]], columns=cols, index=[timestamp]))
             bots[bot_name] = df
             bot_idx += 1
-    return bots
+    return bots, tickers, interval, start, end
 
 
-def write_result(file, results):
+def write_result(file, results, tickers, interval, start, end):
     """
     Writes results to a file. Results assumed to be a dictionary with (bot name, bot dataframe) as key-value pair.
 
@@ -50,11 +54,15 @@ def write_result(file, results):
     :param results: Results to be written to file.
     """
 
-    dir_name = os.path.dirname(file)
-    if not os.path.exists(dir_name):
-        os.mkdir(dir_name)
+    # Doesnt work on all computers for some reason
+    #dir_name = os.path.dirname(file)
+    #if not os.path.exists(dir_name):
+    #    os.mkdir(dir_name)
 
     with open(file, 'w', newline='') as f:
+        f.write(",".join(tickers) + "\n")
+        f.write(",".join([interval, start, str(end)]) + "\n")
+
         f.write(str(len(results)) + '\n')
 
     for bot_name, df in results.items():

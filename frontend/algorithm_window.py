@@ -18,9 +18,10 @@ class AlgorithmWindow:
         self.results_frame.pack(side=tk.LEFT, fill="both")
 
         self.results_list = tk.Listbox(self.results_frame)
-        self.results_list.pack(fill="both", expand=1)
-        self.results_list.bind('<Double-Button-1>', self.read_statistics)
-        self.results_list.bind('<Return>', self.read_statistics)
+        self.results_list.pack(side=tk.TOP, fill="both", expand=1)
+        self.results_list.bind('<Double-Button-1>', self.display_results)
+        self.results_list.bind('<Return>', self.display_results)
+
 
         # Create bot list
         self.bot_list_frame = tk.LabelFrame(self.results_and_bots_frame, text="Bots")
@@ -41,14 +42,19 @@ class AlgorithmWindow:
         # Create frame for buttons
         self.button_frame = tk.Frame(self.results_frame)
         self.button_frame.pack()
+        # Add entry field to enter name of result
+        self.generate_frame = tk.LabelFrame(self.button_frame, text="Generate results")
+        self.generate_frame.pack(side=tk.LEFT, expand=1, fill=tk.X)
+        self.name_label = tk.Label(self.generate_frame, text="Name:")
+        self.name_label.pack(side=tk.LEFT)
+        self.name = tk.StringVar()
+        self.name_entry = tk.Entry(self.generate_frame, textvariable=self.name, width=10)
+        self.name_entry.pack(side=tk.LEFT, expand=1, fill=tk.X)
+        self.name.set("Default")
 
-        self.test_algorithm_button = tk.Button(self.button_frame, text="Test Algorithm")
-        self.test_algorithm_button.pack(side=tk.LEFT)
+        self.test_algorithm_button = tk.Button(self.generate_frame, text="Test Algorithm")
+        self.test_algorithm_button.pack(side=tk.RIGHT, expand=1, fill=tk.X)
         self.test_algorithm_button.bind('<Button-1>', self.test_algorithms)
-
-        self.plot_results_button = tk.Button(self.button_frame, text="Plot Results")
-        self.plot_results_button.pack(side=tk.LEFT)
-        self.plot_results_button.bind('<Button-1>', self.plot_results)
 
         # Create statistics box
         self.statistics_frame = tk.Frame(self.root)
@@ -65,7 +71,6 @@ class AlgorithmWindow:
         for i in range(10):
             self.highscore_box.insert(i, str(i+1) + ": " "None")
 
-
     def test_algorithms(self, event):
         # Tell backend to test the algorithm
         tickers = self.workspaces.stock_workspace.selected_tickers
@@ -80,7 +85,7 @@ class AlgorithmWindow:
         bot_names = self.workspaces.algorithm_workspace.selected_bots
         # Results is a dictionary with bot.name as key, a tuple (timestamps, price, position) as value,
         # and each of those are themselves dictionaries with tickers as keys.
-        name = "".join(bot_names)
+        name = self.name_entry.get()
         algo.test_algorithms(tickers=tickers, interval=interval, start=start, end=end, bot_names=bot_names, algorithm_name=name)
 
         if name in self.results_list.get(0, tk.END):
@@ -88,13 +93,15 @@ class AlgorithmWindow:
         self.results_list.insert(0, name)
         self.write_statistics(name)
         self.results_list.selection_set(0)
+        self.display_results(self.results_list.selection_get())
 
-    def plot_results(self, event):
-        self.plotter.plot_result(self.results_list.get(tk.ACTIVE))
+    def display_results(self, event):
+        self.plotter.plot_result(self.results_list.selection_get())
+        self.read_statistics(event=None)
 
     @staticmethod
     def write_statistics(name):
-        algorithm_results = fh.read_result('file_system/results/' + name + '.csv')
+        algorithm_results, _, _, _, _ = fh.read_result('file_system/results/' + name + '.csv')
         algorithm_statistics = algo.calc_statistics(algorithm_results)
         fh.write_statistics('file_system/algorithm_statistics/' + name + '.csv', algorithm_statistics)
 
