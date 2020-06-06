@@ -46,6 +46,8 @@ class StockList:
         self.stock_filter_list.bind('<Return>', self.add_to_workspace)
         self.stock_filter_list.bind('<Double-Button-1>', self.add_to_workspace)
         self.stock_filter_list.bind('<Double-Button-3>', self.get_stock_info)
+        self.stock_filter_list.bind('<Control-i>', self.get_stock_info)
+
 
     def add_to_workspace(self, event):
         """
