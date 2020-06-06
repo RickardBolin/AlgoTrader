@@ -29,5 +29,6 @@ class Executor:
         self.app = MainWindow(master=self.root, reload=self.on_reload)
         self.app.mainloop()
 
+
 if __name__ == '__main__':
     Executor()

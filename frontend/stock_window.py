@@ -2,6 +2,7 @@ import csv
 import tkinter as tk
 from collections import namedtuple
 from tkfilterlist import FilterList
+import backend.stock_data as sd
 
 
 class StockWindow:
@@ -17,8 +18,9 @@ class StockWindow:
         self.stock_list = StockList(self.lists_frame)
         self.currency_list = CurrencyList(self.lists_frame)
 
-        self.stock_info_frame = tk.LabelFrame(self.stock_tab, text="Information")
-        self.stock_info_frame.pack(side=tk.BOTTOM, expand=1, fill=tk.BOTH)
+        self.info_frame = tk.LabelFrame(self.stock_tab, text="Information")
+        self.info_frame.pack(side=tk.BOTTOM, expand=1, fill=tk.BOTH)
+        self.info_list = Info(self.info_frame)
 
 
 class StockList:
@@ -43,6 +45,7 @@ class StockList:
         self.stock_filter_list.pack(side=tk.TOP, expand=1, fill=tk.BOTH)
         self.stock_filter_list.bind('<Return>', self.add_to_workspace)
         self.stock_filter_list.bind('<Double-Button-1>', self.add_to_workspace)
+        self.stock_filter_list.bind('<Double-Button-3>', self.get_stock_info)
 
     def add_to_workspace(self, event):
         """
@@ -52,6 +55,9 @@ class StockList:
         ticker = self.stock_filter_list.selection()[0]
         EMPTY_BOX = "\u2610"
         self.stock_workspace.add(EMPTY_BOX + ticker)
+
+    def get_stock_info(self, event):
+        self.info_list.display_stock_info(self.stock_filter_list.selection()[0])
 
     @staticmethod
     def load_ticker_name_info(exchange):
@@ -73,6 +79,13 @@ class StockList:
         :param stock_workspace: StockWorkspace
         """
         self.stock_workspace = stock_workspace
+
+    def open_communication_with_info_list(self, info_list):
+        """
+        Gives stock list possibility to modify workspace. Perhaps silly solution, but will have to do for now.
+        :param stock_workspace: StockWorkspace
+        """
+        self.info_list = info_list
 
 
 class CurrencyList:
@@ -123,3 +136,20 @@ class CurrencyList:
         :param stock_workspace: StockWorkspace
         """
         self.stock_workspace = stock_workspace
+
+
+class Info:
+
+    def __init__(self, frame):
+        self.frame = frame
+        self.info_list = tk.Listbox(self.frame, height=8)
+
+        self.info_list.pack(expand=1, fill=tk.BOTH)
+
+    def display_stock_info(self, ticker):
+        self.info_list.delete(0, tk.END)
+        stock_info = sd.get_stock_info(ticker)
+        for cat, measure in stock_info.items():
+            self.info_list.insert(tk.END, cat + ': ' + str(measure))
+
+
