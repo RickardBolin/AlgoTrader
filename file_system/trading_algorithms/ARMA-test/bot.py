@@ -13,6 +13,7 @@ class Bot:
         self.ARMA = defaultdict(arima_model.ARMAResults)
         self.train_data = defaultdict(pd.DataFrame)
         self.train_dps = 100
+        self.forecast_idx = 0
         self.seen_commodities = []
         self.actions = []
         self.pos = ''
@@ -23,24 +24,29 @@ class Bot:
             self.seen_commodities.append(com)
             self.train_data[com] = pd.DataFrame(columns=['price'])
 
+        self.train_data[com].loc[_time] = price
+
         num_dps = len(self.train_data[com])
         if num_dps < self.train_dps:
-            self.train_data[com].loc[_time] = price
-        elif num_dps == self.train_dps:
+            pass
+
+        elif num_dps % self.train_dps == 0:
             _new_ARMA = arima_model.ARMA(self.train_data[com], (1, 1))
             new_ARMA = _new_ARMA.fit()
             new_ARMA.summary()
             self.ARMA[com] = new_ARMA
-            self.train_data[com].loc[_time] = price
+            self.predictions = self.ARMA[com].predict(0, self.train_dps)
+            self.forecast_idx = 0
         else:
             self.algorithm(com, price, event)
 
     def algorithm(self, com, price, event):
         if self.pos != 'long':
-            if price < self.ARMA[com].predict()[0]:
+            if price < self.predictions[self.forecast_idx]:
                 self.pos = 'long'
                 self.actions.append([event, 'long'])
         else:
-            if price > self.ARMA[com].predict()[0]:
+            if price > self.predictions[self.forecast_idx]:
                 self.pos = 'short'
                 self.actions.append([event, 'short'])
+        self.forecast_idx += 1
