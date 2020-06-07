@@ -16,7 +16,7 @@ class StockWindow:
         self.lists_frame = tk.Frame(self.stock_tab)
         self.lists_frame.pack(side=tk.TOP, expand=1, fill=tk.BOTH)
         self.stock_list = StockList(self.lists_frame)
-        self.currency_list = CurrencyList(self.lists_frame)
+        #self.currency_list = CurrencyList(self.lists_frame) #####SEE BOTTOM
 
         self.info_frame = tk.LabelFrame(self.stock_tab, text="Information")
         self.info_frame.pack(side=tk.BOTTOM, expand=1, fill=tk.BOTH)
@@ -33,14 +33,14 @@ class StockList:
 
         self.stock_list_frame = tk.LabelFrame(lists_frame, text='Stocks')
         self.stock_list_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
-        stock_names = self.load_ticker_name_info("NASDAQ")
+        self.stock_names = self.load_ticker_name_info("NASDAQ")
         self.stock_filter_list = FilterList(self.stock_list_frame,
-                                     height=1,
-                                     source=stock_names,
-                                     display_rule=lambda item: item[0] + ": " + item[1],
-                                     filter_rule=lambda item, text:
-                                     item[0].lower().startswith(text.lower()) or item[1].lower().startswith(
-                                         text.lower()))
+                                            height=1,
+                                            source=self.stock_names,
+                                            display_rule=lambda item: item[0] + ": " + item[1],
+                                            filter_rule=lambda item, text:
+                                            item[0].lower().startswith(text.lower()) or item[1].lower().startswith(
+                                                text.lower()))
 
         self.stock_filter_list.pack(side=tk.TOP, expand=1, fill=tk.BOTH)
         self.stock_filter_list.bind('<Return>', self.add_to_workspace)
@@ -48,6 +48,28 @@ class StockList:
         self.stock_filter_list.bind('<Double-Button-3>', self.get_stock_info)
         self.stock_filter_list.bind('<Control-i>', self.get_stock_info)
 
+        self.EXCHANGES = [
+            'NASDAQ',
+            'AMEX',
+            'NYSE',
+            'OMXS',
+            'currencies'
+        ]
+
+        self.exchange = tk.StringVar(self.stock_list_frame)
+        self.exchange.set(self.EXCHANGES[0])
+        self.exchange.trace('w', self.change_exchange)
+
+        self.exchange_menu = tk.OptionMenu(self.stock_list_frame, self.exchange, *self.EXCHANGES)
+        self.exchange_menu.pack(side=tk.RIGHT)
+        self.text_box = tk.Text(self.stock_list_frame, height=1, width=20)
+        self.text_box.pack(side=tk.LEFT, expand=1, fill=tk.BOTH)
+        self.text_box.insert(tk.END, 'Choose exchange: ')
+
+    def change_exchange(self, *args):
+        self.stock_names = self.load_ticker_name_info(self.exchange.get())
+        self.stock_filter_list._source = self.stock_names
+        self.stock_filter_list.clear()
 
     def add_to_workspace(self, event):
         """
@@ -90,6 +112,26 @@ class StockList:
         self.info_list = info_list
 
 
+class Info:
+
+    def __init__(self, frame):
+        self.frame = frame
+        self.info_list = tk.Listbox(self.frame, height=5)
+
+        self.info_list.pack(expand=1, fill=tk.BOTH)
+
+    def display_stock_info(self, ticker):
+        self.info_list.delete(0, tk.END)
+        stock_info = sd.get_stock_info(ticker)
+        for cat, measure in stock_info.items():
+            self.info_list.insert(tk.END, cat + ': ' + str(measure))
+
+
+
+
+
+
+###### UNSURE ABOUT WHICH LAYOUT. FOR NOW I PLACE THIS HERE IN CASE WE WANT THIS WINDOW AGAIN.
 class CurrencyList:
     """
     Class for the filterable currency list.
@@ -138,20 +180,3 @@ class CurrencyList:
         :param stock_workspace: StockWorkspace
         """
         self.stock_workspace = stock_workspace
-
-
-class Info:
-
-    def __init__(self, frame):
-        self.frame = frame
-        self.info_list = tk.Listbox(self.frame, height=8)
-
-        self.info_list.pack(expand=1, fill=tk.BOTH)
-
-    def display_stock_info(self, ticker):
-        self.info_list.delete(0, tk.END)
-        stock_info = sd.get_stock_info(ticker)
-        for cat, measure in stock_info.items():
-            self.info_list.insert(tk.END, cat + ': ' + str(measure))
-
-

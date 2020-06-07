@@ -49,7 +49,7 @@ class MainWindow(tk.Frame):
 
         # Open communications
         stock_window.stock_list.open_communication_with_stock_workspace(workspaces.stock_workspace)
-        stock_window.currency_list.open_communication_with_stock_workspace(workspaces.stock_workspace)
+        #stock_window.currency_list.open_communication_with_stock_workspace(workspaces.stock_workspace) ### REMOVED FOR NOW, SINCE WE NOW CAN CHANGE EXCHANGES
         stock_window.stock_list.open_communication_with_info_list(stock_window.info_list)
 
         workspaces.stock_workspace.open_communication_with_plotter(plotter)
