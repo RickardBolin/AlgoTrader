@@ -1,4 +1,4 @@
-from collections import deque, defaultdict
+from collections import defaultdict
 import pandas as pd
 import statsmodels.tsa.arima_model as arima_model
 
@@ -33,7 +33,6 @@ class Bot:
         elif num_dps % self.train_dps == 0:
             _new_ARMA = arima_model.ARMA(self.train_data[com], (1, 1))
             new_ARMA = _new_ARMA.fit()
-            new_ARMA.summary()
             self.ARMA[com] = new_ARMA
             self.predictions = self.ARMA[com].predict(0, self.train_dps)
             self.forecast_idx = 0

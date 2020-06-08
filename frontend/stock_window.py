@@ -80,8 +80,8 @@ class StockList:
         :param event: Eventhandler.
         """
         ticker = self.stock_filter_list.selection()[0]
-        EMPTY_BOX = "\u2610"
-        self.stock_workspace.add(EMPTY_BOX + ticker)
+        CHECKED_BOX = "\u2611"
+        self.stock_workspace.add(CHECKED_BOX + ticker)
 
     def get_stock_info(self, event):
         self.info_list.display_stock_info(self.stock_filter_list.selection()[0])
@@ -128,58 +128,3 @@ class Info:
         stock_info = sd.get_stock_info(ticker)
         for cat, measure in stock_info.items():
             self.info_list.insert(tk.END, cat + ': ' + str(measure))
-
-
-
-
-
-
-###### UNSURE ABOUT WHICH LAYOUT. FOR NOW I PLACE THIS HERE IN CASE WE WANT THIS WINDOW AGAIN.
-class CurrencyList:
-    """
-    Class for the filterable currency list.
-    Contains its rootframe and the plot which should be updated.
-    """
-
-    def __init__(self, root):
-        self.root = root
-
-        self.currency_list_frame = tk.LabelFrame(self.root, text='Currencies incl. crypto')
-        self.currency_list_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=1)
-        currencies = self.load_currency_tickers()
-        self.currency_list = FilterList(self.currency_list_frame,
-                                     height=1,
-                                     source=currencies,
-                                     display_rule=lambda item: item[0] + ": " + item[1],
-                                     filter_rule=lambda item, text:
-                                     item[0].lower().startswith(text.lower()) or item[1].lower().startswith(
-                                         text.lower()))
-
-        self.currency_list.pack(side=tk.TOP, expand=1, fill=tk.BOTH)
-        self.currency_list.bind('<Return>', self.add_to_workspace)
-        self.currency_list.bind('<Double-Button-1>', self.add_to_workspace)
-
-    def add_to_workspace(self, event):
-        """
-        Adds clicked ticker to the workspace.
-        :param event: Eventhandler.
-        """
-        ticker = self.currency_list.selection()[0]
-        EMPTY_BOX = "\u2610"
-        self.stock_workspace.add(EMPTY_BOX + ticker)
-
-    @staticmethod
-    def load_currency_tickers():
-        with open("file_system/data/Tickers/currencies.csv") as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            next(csv_file)
-            currency = namedtuple("currency_info", ["ticker", "name"])
-            currency_tickers = [currency(ticker, name) for ticker, name in csv_reader]
-            return currency_tickers
-
-    def open_communication_with_stock_workspace(self, stock_workspace):
-        """
-        Gives stock list possibility to modify workspace. Perhaps silly solution, but will have to do for now.
-        :param stock_workspace: StockWorkspace
-        """
-        self.stock_workspace = stock_workspace

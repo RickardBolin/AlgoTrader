@@ -4,6 +4,7 @@ import numpy as np
 class Bot:
     def __init__(self):
         self.name = "MeanReversion"
+        self.plot_style = 'Percentual change'
         self.positions = dict()
         self.last_thirty = defaultdict(deque)
         self.mean = defaultdict(int)

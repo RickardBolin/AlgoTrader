@@ -51,6 +51,7 @@ class AlgorithmWorkspace:
         stripped = [string[1:] for string in self.list.get(0, tk.END)]
         if elem[1:] not in stripped:
             self.list.insert(tk.END, elem)
+            self.selected_bots.append(elem[1:])
 
     def remove(self, event):
         """
@@ -134,5 +135,3 @@ class AlgorithmWorkspace:
 
     def plot_algorithm_results(self, hold_on):
         self.plotter.update_plot(self.results, type="Algorithm_results", hold_on=hold_on)
-
-

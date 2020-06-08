@@ -49,6 +49,7 @@ class StockWorkspace:
         stripped = [string[1:] for string in self.list.get(0, tk.END)]
         if elem[1:] not in stripped:
             self.list.insert(tk.END, elem)
+            self.selected_tickers.append(elem[1:])
 
     def remove(self, event):
         """

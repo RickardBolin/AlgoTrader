@@ -131,15 +131,18 @@ class Plotter:
             # Reset current Axes
             self.reset_axes()
         # Get result from backend
-        structured_result, tickers, interval, start, end = plot.get_result(result)#, plot_style=self.plot_style.get())
+        structured_result, tickers, interval, start, end = plot.get_result(result)
         self.plot_stocks(tickers=tickers, interval=interval, start=start, end=end)
         for bot_name, bot_results in structured_result.items():
             for ticker, (long, short) in bot_results.items():
                 x_long = [utils.convert_timestamp_to_datetime(l) for l in long.index]
                 x_short = [utils.convert_timestamp_to_datetime(s) for s in short.index]
-
-                self.a.scatter(x_long, list(long.values), marker='o')
-                self.a.scatter(x_short, list(short.values), marker='x')
+                if self.plot_style.get() == 'Regular':
+                    self.a.scatter(x_long, list(long.values), marker='o')
+                    self.a.scatter(x_short, list(short.values), marker='x')
+                else:
+                    self.a.plot((x_long, x_long), self.a.get_ylim(), 'g--')
+                    self.a.plot((x_short, x_short), self.a.get_ylim(), 'r--')
 
         # Change timeframe on plot to only display the frame where the results are
 

@@ -37,7 +37,7 @@ def get_stocks(tickers, plot_style, params="None", start=None, end=None, interva
     return stock_data.index, pd.DataFrame.from_dict(prices)
 
 
-def get_result(result_name):  # , plot_style=None):
+def get_result(result_name):
     """
     Fetches the prescribed file name and structure the result so that the plotter can easily read and plot the result.
     :param result_name: Name of the file.

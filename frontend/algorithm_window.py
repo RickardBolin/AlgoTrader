@@ -228,8 +228,8 @@ class AlgorithmWindow:
         :param event: Eventhandler.
         """
         algorithm = self.list.selection()
-        EMPTY_BOX = "\u2610"
-        self.algorithm_workspace.add(EMPTY_BOX + algorithm)
+        CHECKED_BOX = "\u2611"
+        self.algorithm_workspace.add(CHECKED_BOX + algorithm)
 
     def open_communication_with_algorithm_workspace(self, algorithm_workspace):
         """
