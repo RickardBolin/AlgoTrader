@@ -23,7 +23,6 @@ class AlgorithmWindow:
         self.results_list.bind('<Double-Button-1>', self.display_results)
         self.results_list.bind('<Return>', self.display_results)
 
-
         # Create bot list
         self.bot_list_frame = tk.LabelFrame(self.results_and_bots_frame, text="Bots")
         self.bot_list_frame.pack(side=tk.RIGHT, expand=1, fill="both")
@@ -104,12 +103,18 @@ class AlgorithmWindow:
         self.get_HOF()
 
     def find_results(self):
+        """
+        Fetches name of all the saved result files and insert them into the results listbox.
+        """
         path = 'file_system/results/'
         for _file in os.listdir(path):
             file = _file.split('.')[0]
             self.results_list.insert(tk.END, file)
 
     def get_HOF(self):
+        """
+        Fetches the high score information and insert the scores into the hall of fame list.
+        """
         self.highscore_box.delete(0, tk.END)
         path = 'file_system/hall_of_fame/hof.csv'
         with open(path, 'r') as csf_file:
@@ -119,6 +124,11 @@ class AlgorithmWindow:
                 self.highscore_box.insert(tk.END, bot + ': ' + score)
 
     def add_to_HOF(self, result):
+        """
+        Checks if the result was good enough to get into the hall of fame. If so the result is added
+        (and last one is potentianally removed).
+        :param result: Dictionary of Dataframes containing the results for each bot.
+        """
         path = 'file_system/hall_of_fame/hof.csv'
         for bot_name, score in result.items():
             curr_hof = []
@@ -144,6 +154,12 @@ class AlgorithmWindow:
         self.get_HOF()
 
     def test_algorithms(self, event):
+        """
+        Function which is called when test algorithm button is pressed. Sends info to backend to test selected bots
+        on selected commodities and to write the statistics into a file. Adds to the Hall of fame if score was
+        was better than (some) others in hall of fame.
+        :param event: Eventhandler.
+        """
         # Tell backend to test the algorithm
         tickers = self.workspaces.stock_workspace.selected_tickers
         start = self.start.get()

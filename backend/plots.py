@@ -2,8 +2,6 @@ import backend.stock_data as sd
 from collections import defaultdict
 from file_system.file_handler import read_result
 import pandas as pd
-import backend.timeseries as ts
-import backend.stock_statistics as ss
 
 
 def get_stocks(tickers, plot_style, params="None", start=None, end=None, interval="1d", price_type="Close"):

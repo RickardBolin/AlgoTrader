@@ -1,6 +1,5 @@
 import yfinance as yf
 import time
-import pandas as pd
 from datetime import datetime, timedelta
 import backend.stock_statistics as ss
 from collections import namedtuple
@@ -70,6 +69,10 @@ def get_stock_info(ticker):
 
 
 def _info_categories():
+	"""
+	Returns a list of information categories.
+	:return: List of info categories.
+	"""
 	#'longBusinessSummary'
 	return ['fullTimeEmployees', 'sector', 'country', 'previousClose', 'averageDailyVolume10Day',
 			'dividendRate', 'beta', 'trailingPE', 'marketCap', 'priceToSalesTrailing12Months', 'forwardPE',
@@ -77,7 +80,13 @@ def _info_categories():
 			'earningsQuarterlyGrowth', 'pegRatio']
 
 
-def _recommendations(_ratings, time_frame=7):
+def _recommendations(_ratings, time_frame=30):
+	"""
+	Returns a tuple of (Positive, Neutral, Negative) recommendations for a stock.
+	:param _ratings: Dataframe of ratings.
+	:param time_frame (optional): Time frame of the recommendations, default is 30 days.
+	:return: Ratings tuple
+	"""
 	now = datetime.now()
 	prior = now - timedelta(days=time_frame)
 	_ratings = _ratings[prior:]

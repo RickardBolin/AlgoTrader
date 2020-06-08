@@ -3,13 +3,23 @@ from scipy import fft, ifft
 from scipy.signal import butter
 
 
-def fourier_transform(data, none="None"):
+def fourier_transform(data):
+    """
+    Calculates the fourier transform of some incoming data.
+    :param data: Signal to be transformed.
+    :return: Fourier transformed signal.
+    """
     y = np.abs(fft(data))
     y[len(y)//2:] = 0
-    return y#np.log(y)
+    return y    #np.log(y)
 
 
-def inverse_fourier_transform(data, none="None"):
+def inverse_fourier_transform(data):
+    """
+    Calculates the inverse fourier transform of some incoming data.
+    :param data: Signal to be inverse transformed.
+    :return: Inversed fourier transformed signal.
+    """
     return ifft(data)
 
 

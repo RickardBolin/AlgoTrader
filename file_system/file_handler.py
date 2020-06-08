@@ -52,6 +52,10 @@ def write_result(file, results, tickers, interval, start, end):
 
     :param file: filepath.
     :param results: Results to be written to file.
+    :param tickers: Tickers of commodities tested upon.
+    :param interval: Time interval, 1d -> One new data point per day.
+    :param start: Start time.
+    :param end: End time.
     """
 
     # Doesnt work on all computers for some reason

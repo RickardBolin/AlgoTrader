@@ -19,6 +19,13 @@ class Bot:
         self.pos = ''
 
     def handle_event(self, event):
+        """
+        Treats an incomming event in accordance to following rule:
+        If the bot has to few data points -> just add data point.
+        If bot has enough data points (or a multiple of the minimum number) -> Train an ARMA(1, 1) on the data and predict.
+        Else -> Send to algorithm for comparing predictions
+        :param event: Incoming event-tuple.
+        """
         _time, com, price = event
         if com not in self.seen_commodities:
             self.seen_commodities.append(com)
@@ -40,6 +47,13 @@ class Bot:
             self.algorithm(price, event)
 
     def algorithm(self, price, event):
+        """
+        Checks if the prediction is lower or larger than the incoming price. If the price is lower than the prediction
+        then the commodity is assumed to be undervalued and should therefore be bought. In the opposite case
+        the commodity should be sold.
+        :param price: New price.
+        :param event: Event-tuple to be added to actions list if action is taken.
+        """
         if self.pos != 'long':
             if price < self.predictions[self.forecast_idx]:
                 self.pos = 'long'
