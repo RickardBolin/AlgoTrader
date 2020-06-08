@@ -53,7 +53,10 @@ class StockList:
             'AMEX',
             'NYSE',
             'OMXS',
-            'currencies'
+            'currencies',
+            'SWE-ETF',
+            'SWE-INDEX',
+            'US-F'
         ]
 
         self.exchange = tk.StringVar(self.stock_list_frame)

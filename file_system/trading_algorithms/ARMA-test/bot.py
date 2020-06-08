@@ -38,9 +38,9 @@ class Bot:
             self.predictions = self.ARMA[com].predict(0, self.train_dps)
             self.forecast_idx = 0
         else:
-            self.algorithm(com, price, event)
+            self.algorithm(price, event)
 
-    def algorithm(self, com, price, event):
+    def algorithm(self, price, event):
         if self.pos != 'long':
             if price < self.predictions[self.forecast_idx]:
                 self.pos = 'long'
