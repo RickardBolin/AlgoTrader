@@ -53,7 +53,7 @@ def gbm(start_price, avg_return, vol, steps, bm=None):
     return stock_price
 
 
-def ornstein_uhlenbeck(start_price, avg_return, vol, steps, theta=0):
+def ornstein_uhlenbeck(start_price, avg_return, vol, steps, theta=1):
     """
     Solver to the SDE:
 
