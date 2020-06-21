@@ -1,5 +1,5 @@
 from collections import defaultdict
-import backend.SDE as sde
+import backend.sde as sde
 import statistics as stat
 import numpy as np
 
