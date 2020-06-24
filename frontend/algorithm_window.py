@@ -180,7 +180,7 @@ class AlgorithmWindow:
             self.results_list.delete(self.results_list.get(0, tk.END).index(name))
         self.results_list.insert(0, name)
         self.write_statistics(name)
-        self.add_to_HOF(algo.get_score('file_system/algorithm_statistics/' + name + '.csv'))
+        #self.add_to_HOF(algo.get_score('file_system/algorithm_statistics/' + name + '.csv'))
         self.results_list.selection_set(0)
         self.display_results(self.results_list.selection_get())
 
