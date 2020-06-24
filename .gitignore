@@ -2,6 +2,7 @@ file_system/results/
 file_system/algorithm_statistics/
 .idea/misc.xml
 .idea/kompisfonden.iml
+.vscode
 
 # Byte-compiled / optimized / DLL files
 !**/__pycache__/
