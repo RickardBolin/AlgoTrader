@@ -147,7 +147,7 @@ class AlgorithmWindow:
 
             curr_hof.sort(key=lambda x: x[1], reverse=True)
 
-            with open(path, 'w') as csv_file:
+            with open(path, 'w', newline='') as csv_file:
                 csv_writer = csv.writer(csv_file)
                 for placing in curr_hof:
                     csv_writer.writerow([placing[0], str(placing[1])])
