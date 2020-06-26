@@ -3,6 +3,7 @@ import tkinter as tk
 from collections import namedtuple
 from tkfilterlist import FilterList
 import backend.data_handler.stock_data as sd
+import os
 
 
 class StockWindow:
@@ -46,17 +47,7 @@ class StockList:
         self.stock_filter_list.bind('<Double-Button-1>', self.add_to_workspace)
         self.stock_filter_list.bind('<Double-Button-3>', self.get_stock_info)
         self.stock_filter_list.bind('<Control-i>', self.get_stock_info)
-
-        self.EXCHANGES = [
-            'NASDAQ',
-            'AMEX',
-            'NYSE',
-            'OMXS',
-            'currencies',
-            'SWE-ETF',
-            'SWE-INDEX',
-            'US-F'
-        ]
+        self.EXCHANGES = [os.path.splitext(name)[0] for name in os.listdir("./file_system/data/tickers")]
 
         self.exchange = tk.StringVar(self.stock_list_frame)
         self.exchange.set(self.EXCHANGES[0])

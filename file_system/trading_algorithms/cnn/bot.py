@@ -9,7 +9,7 @@ class Bot:
         self.actions = []
         self.data = {}
         path = os.path.dirname(os.path.realpath(__file__))
-        self.model = tf.keras.models.load_model(path + '/simple_lstm.h5')
+        self.model = tf.keras.models.load_model(path + '/model.h5')
         self.model.summary()
         self.positions = {}
         self.event_counter = 0
@@ -29,15 +29,15 @@ class Bot:
 
     def algorithm(self):
         for ticker, events in self.data.items():
-            if len(events) <= 30: 
+            if len(events) <= 32: 
                 continue
 
-            x = np.array(events[-30:])
+            x = np.array(events[-32:])
             x = x[:,2].astype(np.float)
             x_mean = x.mean()
             x_std = x.std()
             x = (x-x_mean)/x_std
-            x = x[:,np.newaxis,np.newaxis]
+            x = np.reshape(x,[1, 32, 1])
             
             prediction = self.model.predict(x)[0]
             
