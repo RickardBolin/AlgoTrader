@@ -1,5 +1,5 @@
 import backend.utils as utils
-import backend.stock_data as sd
+import backend.data_handler.stock_data as sd
 from collections import defaultdict
 from file_system.file_handler import write_result, read_statistics
 import pandas as pd

@@ -2,7 +2,7 @@ import csv
 import tkinter as tk
 from collections import namedtuple
 from tkfilterlist import FilterList
-import backend.stock_data as sd
+import backend.data_handler.stock_data as sd
 
 
 class StockWindow:
@@ -16,7 +16,6 @@ class StockWindow:
         self.lists_frame = tk.Frame(self.stock_tab)
         self.lists_frame.pack(side=tk.TOP, expand=1, fill=tk.BOTH)
         self.stock_list = StockList(self.lists_frame)
-        #self.currency_list = CurrencyList(self.lists_frame) #####SEE BOTTOM
 
         self.info_frame = tk.LabelFrame(self.stock_tab, text="Information")
         self.info_frame.pack(side=tk.BOTTOM, expand=1, fill=tk.BOTH)

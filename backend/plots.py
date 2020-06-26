@@ -1,11 +1,11 @@
-import backend.stock_data as sd
+import backend.data_handler.stock_data as sd
 from collections import defaultdict
 from file_system.file_handler import read_result
 import pandas as pd
-import backend.timeseries as ts
+import backend.stochastic_processes.timeseries as ts
 
 
-def get_stocks(tickers, plot_style, params="None", start=None, end=None, interval="1d", price_type="Close"):
+def get_stocks(tickers, plot_style, params=None, start=None, end=None, interval="1d", price_type="Close"):
     """
     Gets the stock data for prescribed tickers, start time, end time, time interval, price type.
     Applies (optionally) data transformations and returns list of timestamps and a dataframe of the prices.
@@ -22,18 +22,27 @@ def get_stocks(tickers, plot_style, params="None", start=None, end=None, interva
     stock_data = stock_data[price_type]
 
     # If we do not want to apply any transformation, return the regular stock data
-    if plot_style == "None":
-        return stock_data.index, stock_data
+    if plot_style == 'None' or not plot_style:
+        return stock_data
 
+    if not params or params == 'None':
+        params = ''
+    else:
+        params = ', ' + params
     prices = dict()
     if len(tickers) == 1:
-        prices[tickers[0]] = eval(plot_style + "(stock_data, " + params + ")")
+        prices[tickers[0]] = eval(plot_style + '(stock_data' + params + ')')
 
     else:
         for ticker, _prices in stock_data.items():
-            prices[ticker] = eval(plot_style + "(_prices, " + params + ")")
 
-    return stock_data.index, pd.DataFrame.from_dict(prices)
+            prices[ticker] = eval(plot_style + '(_prices' + params + ')')
+
+    new_df = pd.DataFrame()
+    for df in prices.values():
+        new_df = pd.concat([new_df, df], axis=1)
+
+    return new_df
 
 
 def get_result(result_name):

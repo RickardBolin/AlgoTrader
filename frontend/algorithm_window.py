@@ -87,6 +87,10 @@ class AlgorithmWindow:
         self.test_algorithm_button.pack(side=tk.RIGHT, expand=1, fill=tk.X)
         self.test_algorithm_button.bind('<Button-1>', self.test_algorithms)
 
+        self.export_button = tk.Button(self.generate_frame, text='Export data')
+        self.export_button.pack(side=tk.RIGHT, expand=1, fill=tk.X)
+        self.export_button.bind('<Button-1>', self.export)
+
         # Create statistics box
         self.statistics_frame = tk.Frame(self.root)
         self.statistics_frame.pack(fill=tk.BOTH, expand=1)
@@ -101,6 +105,14 @@ class AlgorithmWindow:
 
         self.find_results()
         self.get_HOF()
+
+    def export(self, event):
+        if self.end.get() == "None":
+            end = None
+        else:
+            end = self.end.get()
+
+        fh.export(tickers=self.workspaces.stock_workspace.selected_tickers, name='test', start=self.start.get(), end=end, interval=self.interval.get())
 
     def find_results(self):
         """
@@ -180,7 +192,7 @@ class AlgorithmWindow:
             self.results_list.delete(self.results_list.get(0, tk.END).index(name))
         self.results_list.insert(0, name)
         self.write_statistics(name)
-        self.add_to_HOF(algo.get_score('file_system/algorithm_statistics/' + name + '.csv'))
+        #self.add_to_HOF(algo.get_score('file_system/algorithm_statistics/' + name + '.csv'))
         self.results_list.selection_set(0)
         self.display_results(self.results_list.selection_get())
 

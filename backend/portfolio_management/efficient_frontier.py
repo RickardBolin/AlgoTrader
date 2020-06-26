@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import backend.stock_data as sd
 
 
 class EfficientFrontier:
@@ -21,7 +20,6 @@ class EfficientFrontier:
         self.opts_by_sr = self.maximize_sr()
         self.opts_by_std = self.minimize_std()
         self.opts_by_return = self.maximize_return()
-        self.plot()
 
     def plot(self):
         """
@@ -42,8 +40,6 @@ class EfficientFrontier:
         plt.xlabel('Volatility')
         plt.ylabel('Log-returns')
         plt.title('Efficient frontier')
-        plt.show()
-
         plt.show()
 
     def _simulate(self):
@@ -114,10 +110,3 @@ class EfficientFrontier:
         opt_point = (self.stds[argmax_return], self.returns[argmax_return])
         opt_weights = self.all_weights[argmax_return, :]
         return opt_point[1] / opt_point[0], opt_weights, opt_point
-
-
-# Test
-df = sd.get_stock_data(['AAPL', 'TSLA', 'FLWS'])
-df = df['Close']
-ef = EfficientFrontier(df=df)
-

@@ -4,10 +4,12 @@ from frontend.stock_window import StockWindow
 from frontend.algorithm_window import AlgorithmWindow
 from frontend.workspaces import Workspaces
 from frontend.plotter import Plotter
+from frontend.portfolio import Portfolio
 from frontend.console import Console
 import os
 from importlib import reload
 import sys
+
 
 class MainWindow(tk.Frame):
     def __init__(self, master=None, reload=None):
@@ -26,17 +28,18 @@ class MainWindow(tk.Frame):
         tab1 = tk.Frame(tab_control)
         tab2 = tk.Frame(tab_control)
         tab3 = tk.Frame(tab_control)
-        tab4 = tk.Frame(tab_control)
+        # tab4 = tk.Frame(tab_control)
 
         tab_control.add(tab1, text='Stocks')
         tab_control.add(tab2, text='Algorithms')
         tab_control.add(tab3, text='Portfolios')
-        tab_control.add(tab4, text="Console")
+        # tab_control.add(tab4, text="Console")
 
         tab_control.pack(expand=1, fill="both")
-        return StockWindow(tab1), AlgorithmWindow(tab2), Console(tab4)
+        return StockWindow(tab1), AlgorithmWindow(tab2), Portfolio(tab3) # , Console(tab4)
 
-    def construct_workspace(self, root):
+    @staticmethod
+    def construct_workspace(root):
         workspaces_frame = tk.Frame(root)
         workspaces_frame.pack(side=tk.LEFT, expand=1, fill=tk.BOTH)
         return Workspaces(workspaces_frame)
@@ -44,7 +47,7 @@ class MainWindow(tk.Frame):
     def openGUI(self, root):
         self.root = root
         workspaces = self.construct_workspace(self.root)
-        stock_window, algorithm_window, console = self.construct_tabs(self.root)
+        stock_window, algorithm_window, portfolio_window = self.construct_tabs(self.root)
         plotter = Plotter(self.root)
 
         # Open communications
@@ -57,7 +60,9 @@ class MainWindow(tk.Frame):
         algorithm_window.open_communication_with_workspaces(workspaces)
         algorithm_window.open_communication_with_plotter(plotter)
 
-        console.open_communication_with_stock_workspace(workspaces.stock_workspace)
+        portfolio_window.open_communication_with_stock_workspace(workspaces.stock_workspace)
+
+        # console.open_communication_with_stock_workspace(workspaces.stock_workspace)
 
         plotter.open_communication_with_stock_workspace(workspaces.stock_workspace)
 

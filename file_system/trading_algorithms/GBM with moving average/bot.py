@@ -1,5 +1,5 @@
 from collections import defaultdict
-import backend.sde as sde
+import backend.stochastic_processes.sde as sde
 import statistics as stat
 import numpy as np
 

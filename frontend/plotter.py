@@ -11,6 +11,7 @@ import backend.plots as plot
 register_matplotlib_converters()
 from backend import utils as utils
 import time
+import backend.stochastic_processes.timeseries as ts
 
 
 class Plotter:
@@ -92,7 +93,7 @@ class Plotter:
         ]
         self.PLOT_TRANSFORMATIONS = [
             'None',
-            'ts.percentual_change',
+            'ts.pct_change',
             'ts.moving_average',
             'ts.fourier_transform'
         ]
@@ -118,10 +119,11 @@ class Plotter:
             self.reset_axes()
 
         # Get data from backend
-        dates, prices = plot.get_stocks(tickers, plot_style=self.plot_to_func[
+        stock_df = plot.get_stocks(tickers, plot_style=self.plot_to_func[
                                         self.plot_style.get()], params=self.param.get(), interval=interval, start=start, end=end)
+
         # Plot the retrieved stock data)
-        self.a.plot(dates, prices)
+        self.a.plot(stock_df)
         self.a.legend(tickers)
         self.canvas.draw()
 

@@ -1,5 +1,6 @@
 import tkinter as tk
 
+
 class Console:
     def __init__(self, console_tab):
         self.txt = tk.StringVar()
