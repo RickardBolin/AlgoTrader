@@ -5,7 +5,7 @@ from backend.stochastic_processes.timeseries import pct_change
 from backend.stochastic_processes.statistics import cov, mean
 
 
-def VaR(df, weights, investment=None, percentile=5, days=1):
+def VaR(df, weights, investment=None, percentile=5, days=1, decimal_points=5):
     """
     Value-at-Risk
     :param df:
@@ -27,10 +27,10 @@ def VaR(df, weights, investment=None, percentile=5, days=1):
 
     if investment:
         _var = investment - _var
-        _vars = [np.round(_var * np.sqrt(day), 3) for day in range(1, days+1)]
+        _vars = [np.round(_var * np.sqrt(day), decimal_points) for day in range(1, days+1)]
+        _vars = pd.DataFrame(_vars, columns=['VaR (Absolute)'], index=range(1, days + 1))
     else:
-        _vars = [np.round(1 + _var * np.sqrt(day), 3) for day in range(1, days+1)]
-
-    _vars = pd.DataFrame(_vars, columns=['VaR'], index=range(1, days+1))
+        _vars = [np.round(-1*_var * np.sqrt(day), decimal_points) for day in range(1, days+1)]
+        _vars = pd.DataFrame(_vars, columns=['VaR (Relative)'], index=range(1, days + 1))
 
     return _vars
