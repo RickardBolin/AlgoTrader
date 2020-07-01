@@ -11,6 +11,8 @@ from backend.stochastic_processes.statistics import *
 def export(tickers, name, start=None, end=None, interval="1d"):
     stocks_df = sd.get_stock_data(tickers=tickers, start=start, end=end, interval=interval)
     path = 'file_system/exports/'
+    if not os.path.exists(path):
+        os.mkdir(path)
     _info = {}
     for ticker in tickers:
         _info[ticker] = sd.get_stock_info(ticker)
