@@ -6,7 +6,6 @@ import pandas as pd
 URL = 'https://www.privataaffarer.se/borsguiden/kalendarium-och-dagens-agenda/borskalender'
 CALENDER_TYPES = ['reports','sharedesc','meeting']
 
-
 def _reps(page):
     soup = BeautifulSoup(page.content, 'html.parser')
     columns = soup.thead

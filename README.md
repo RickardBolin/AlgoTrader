@@ -10,3 +10,10 @@ Tickers:
  ```
  investexcel.net
  ```
+
+
+ To make pyportfolioopt install if we use python 3.8 for example
+ ```bash
+sudo apt install python3.8-dev
+sudo apt install libpython3.8-dev
+ ```
