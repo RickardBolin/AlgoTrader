@@ -1,52 +1,60 @@
 import requests
 from bs4 import BeautifulSoup
-from wayback import WaybackClient
 import datetime
+import pandas as pd
 
-client = WaybackClient()
+URL = 'https://www.privataaffarer.se/borsguiden/kalendarium-och-dagens-agenda/borskalender'
+CALENDER_TYPES = ['reports','sharedesc','meeting']
+
 
 def reps(page):
     soup = BeautifulSoup(page.content, 'html.parser')
+    columns = soup.thead
+    columns = columns.find_all('th')
+    for i in range(len(columns)):
+        columns[i] = columns[i].get_text()
+    columns.append('Link')    
+     
     rows = soup.tbody
     rows = rows.find_all('tr')
     reports = []
-    
+
     for r in rows:
-        company = r.a.get('href')
+        report = []
+        link = r.a.get('href')
         tds = r.find_all('td')
-        typ = tds[1].get_text()
-        date = tds[2].get_text()
-        reports.append((company, typ, date))
 
-    return reports    
+        for td in tds:
+            report.append(td.get_text())
 
-def get_closest_result(url, date):
-    format_str = "%Y-%m-%d"
-    date = datetime.datetime.strptime(date, format_str)
-    results = list(client.search(url))
-    i = 0
-    while(results[i].timestamp < date):
-        i += 1 
+        report.append(link)
 
-    return results[i]
+        reports.append(report)
+                
+    return pd.DataFrame(reports, columns=columns)
 
-URL = 'https://www.privataaffarer.se/borsguiden/kalendarium-och-dagens-agenda/borskalender'
+def stockListIds(page):
+    soup = BeautifulSoup(page.content, 'html.parser')
+    opts = soup.find('select', {'name':'stockListMarketPlaceId'})
+    opts = opts.find_all('option')
+    ids = []
+    for o in opts[1:]:
+        ids.append(o.get('value'))
 
-page = requests.get(URL)
-reports = reps(page)
+    return ids
 
 
-results = list(client.search(URL))
-results.reverse()
+def get_possible_markets():
+    return stockListIds(requests.get(URL))
 
-print(results[10].raw_url)
+def get_upcoming_events(market):
+    ret = {}
+    for ctype in CALENDER_TYPES:
+        form_data = {'calendartype':ctype, 'majorSectorId':'', 'stockListMarketPlaceId': market}
+        ret[ctype] = reps(requests.post(URL, data=form_data))
 
-record = results[10]
+    return ret
 
-response = client.get_memento(record.raw_url)
+markets = get_possible_markets()
+print(get_upcoming_events(markets[10]))
 
-reports = reps(response)
-res = get_closest_result(reports[0][0],reports[0][2])
-print(reports[0])
-print(res)
-print(res.raw_url)
