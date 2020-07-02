@@ -7,7 +7,7 @@ URL = 'https://www.privataaffarer.se/borsguiden/kalendarium-och-dagens-agenda/bo
 CALENDER_TYPES = ['reports','sharedesc','meeting']
 
 
-def reps(page):
+def _reps(page):
     soup = BeautifulSoup(page.content, 'html.parser')
     columns = soup.thead
     columns = columns.find_all('th')
@@ -33,7 +33,7 @@ def reps(page):
                 
     return pd.DataFrame(reports, columns=columns)
 
-def stockListIds(page):
+def _stock_list_ids(page):
     soup = BeautifulSoup(page.content, 'html.parser')
     opts = soup.find('select', {'name':'stockListMarketPlaceId'})
     opts = opts.find_all('option')
@@ -45,13 +45,13 @@ def stockListIds(page):
 
 
 def get_possible_markets():
-    return stockListIds(requests.get(URL))
+    return _stock_list_ids(requests.get(URL))
 
 def get_upcoming_events(market):
     ret = {}
     for ctype in CALENDER_TYPES:
         form_data = {'calendartype':ctype, 'majorSectorId':'', 'stockListMarketPlaceId': market}
-        ret[ctype] = reps(requests.post(URL, data=form_data))
+        ret[ctype] = _reps(requests.post(URL, data=form_data))
 
     return ret
 
