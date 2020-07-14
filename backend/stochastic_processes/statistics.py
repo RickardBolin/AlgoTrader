@@ -1,13 +1,13 @@
 import pandas as pd
 
 
-def mean(df):
+def mean(df, as_df=False):
     """
     Calculates mean for all columns in dataframe
     :param df: Pandas Dataframe.
     :return: columnwise means.
     """
-    return df.mean()
+    return pd.DataFrame(df.mean(), columns=['Mean']) if as_df else df.mean()
 
 
 def var(df):

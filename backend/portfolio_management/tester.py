@@ -5,9 +5,13 @@ import backend.data_handler.stock_data as sd
 df = sd.get_stock_data(['AAPL', 'TSLA', 'FLWS'])
 df = df['Close']
 
-_ef = ef.EfficientFrontier(df)
+stocks = sd.get_stock_data(['AAPL', 'TSLA', 'FLWS'])
+stocks = stocks['Close']
 
-w = _ef.opts_by_sr[1]
+_ef = ef.EfficientFrontier(stocks)
+alloc = _ef.p_allocation
 
-print(risk.VaR(df, weights=w, investment=100000,days=15))
-print(risk.VaR(df, weights=w, days=15))
+
+print(risk.VaR(stocks, alloc, days=5))
+print(risk.VaR(stocks, alloc, investment=100000, days=5))
+
