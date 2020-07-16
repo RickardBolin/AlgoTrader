@@ -57,6 +57,46 @@ def backtest(bots, tickers, interval, start, end):
     return actions
 
 
+def test_portfolios(bots, interval, start, end):
+    tickers = bots[0].tickers
+    df = sd.get_stock_data(tickers=tickers, interval=interval, start=start, end=end)
+    open_df = df['Open']
+    close_df = df['Close']
+    print(open_df)
+
+    print('___________________________________________________________________________________________________')
+
+    for time, (_, open_prices), (_, close_prices) in zip(open_df.index, open_df.iterrows(), close_df.iterrows()):
+        for bot in bots:
+            bot.handle_event((time, open_prices, close_prices))
+
+    result = {}
+    for bot in bots:
+        result[bot.name + 'Absolute profit/loss'] = bot.balance - bot.init_invest
+        result[bot.name + 'Relative profit/loss'] = bot.balance/bot.init_invest
+
+        print('Initial investment:', bot.init_invest)
+        print('___________________________________________________________')
+        print('Optimal portfolio: ')
+        print('')
+        print('Final value:', bot.balance)
+        print('Profit:', bot.balance - bot.init_invest)
+        print('Relative profit (%):', 100 * (bot.balance/bot.init_invest - 1))
+        eq_dist = 1/len(tickers)
+        start_prices = close_df.head(1)
+        end_prices = close_df.tail(1)
+
+        portfolio = [bot.init_invest * eq_dist / start_prices[ticker][0] for ticker in tickers]
+        end_value = sum([end_prices[ticker][0] * num_stock for ticker, num_stock in zip(tickers, portfolio)])
+        print('____________________________________________________________')
+        print('Equally distributed portfolio: ')
+        print('')
+        print('Final value:', end_value)
+        print('Profit: ', end_value - bot.init_invest)
+        print('Relative profit (%):', 100 * (end_value / bot.init_invest - 1))
+    return result
+
+
 def test_algorithms(tickers, interval, start, end, bot_names, algorithm_name):
     """
     Tests the prescribed algorithms and writes all actions to a file as pandas dataframes.

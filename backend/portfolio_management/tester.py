@@ -11,7 +11,6 @@ stocks = stocks['Close']
 _ef = ef.EfficientFrontier(stocks)
 alloc = _ef.p_allocation
 
-
 print(risk.VaR(stocks, alloc, days=5))
-print(risk.VaR(stocks, alloc, investment=100000, days=5))
+print(risk.VaR(stocks, alloc, investment=100000, days=20))
 

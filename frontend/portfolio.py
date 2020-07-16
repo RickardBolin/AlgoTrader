@@ -7,6 +7,7 @@ from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import pandas as pd
 
 
 class Portfolio:
@@ -26,10 +27,10 @@ class Portfolio:
 
         self.generate_button = tk.Button(portfolio_window, text='Generate Portfolio', command=self.generate_new)
         self.generate_button.pack()
-
+        
         self.plot_frame.pack()
 
-        self.portfolio = {}
+        self.portfolio = pd.DataFrame()
         self.ef = None
         self.stocks = None
         self.tickers = None
@@ -39,8 +40,8 @@ class Portfolio:
         self.stocks = sd.get_stock_data(self.stock_workspace.selected_tickers)['Close']
         self.ef = ef.EfficientFrontier(self.stocks)
         self.tickers = self.stocks.columns
-        self.weights = self.ef.opts_by_sr[1]
-        self.portfolio = dict(zip(self.tickers, self.weights))
+        self.weights = self.ef.p_allocation
+        self.portfolio = pd.DataFrame(self.weights, columns=self.tickers)
         self.plot()
 
     def plot(self):
