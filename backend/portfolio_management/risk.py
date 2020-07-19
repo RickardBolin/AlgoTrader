@@ -1,9 +1,10 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from backend.stochastic_processes.timeseries import pct_change
 from backend.stochastic_processes.statistics import cov, mean
 from backend.stochastic_processes.sde import GBM
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 def VaR(df, weights, avg_returns=None, cov_m=None, investment=None, percentile=5, days=1, method='gbm'):
@@ -29,7 +30,7 @@ def VaR(df, weights, avg_returns=None, cov_m=None, investment=None, percentile=5
 
     mu, sigma = avg_returns @ weights, np.sqrt(weights.T @ cov_m @ weights)
 
-    sims = int(100)
+    sims = int(1e5)
     start_price = sum(df.iloc[-1] * weights)
     gbm = GBM(start_value=start_price, avg_returns=mu, avg_vol=sigma)
     sT = gbm.simulate(steps=days, sims=sims)
@@ -38,7 +39,6 @@ def VaR(df, weights, avg_returns=None, cov_m=None, investment=None, percentile=5
     _vars = [0 for _ in range(days)]
 
     for i, row in enumerate(diff):
-
         _vars[i] = -np.percentile(np.sort(row), percentile) / start_price
         if investment:
             _vars[i] *= investment

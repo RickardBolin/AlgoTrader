@@ -1,7 +1,5 @@
 import numpy as np
 import pandas as pd
-from backend.stochastic_processes.statistics import mean, cov, std
-from backend.stochastic_processes.timeseries import pct_change, differencing
 from abc import abstractmethod, ABC
 
 """
@@ -14,6 +12,7 @@ https://github.com/mattja/sdeint/tree/master/sdeint
 """
 NÅGOT HÄR ÄR FISHY!
 """
+
 
 class SDE(ABC):
 
@@ -55,12 +54,11 @@ class GBM(SDE):
 
     def integrate(self, steps, bm):
         t = np.arange(steps)
-        stock_prices = np.zeros(steps)
         expected_returns, expected_vols = self.avg_returns * steps, self.avg_vols * np.sqrt(steps)
-        for step in range(steps):
-            drift = (expected_returns - 0.5 * np.power(expected_vols, 2)) * t[step]
-            diffusion = expected_vols * bm[step]
-            stock_prices[step] = self.start_price * np.exp(drift + diffusion)
+
+        drift = (expected_returns - 0.5 * np.power(expected_vols, 2)) * t
+        diffusion = expected_vols * bm
+        stock_prices = self.start_price * np.exp(drift + diffusion)
 
         return stock_prices
 
