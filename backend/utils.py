@@ -36,3 +36,10 @@ def convert_datetime_to_timestamp(_datetime):
     :return: Timestamp unit.
     """
     return datetime.strftime(_datetime, '%Y-%m-%d %H:%M:%S')
+
+
+def factorial(n):
+    fac = 1
+    for i in range(1, n+1):
+        fac *= i
+    return int(fac)
