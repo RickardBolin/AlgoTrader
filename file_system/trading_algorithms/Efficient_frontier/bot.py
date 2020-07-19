@@ -23,7 +23,7 @@ class Bot:
             self.prices.loc[time] = close_prices
             if m == self.tf:
                 self._needs_training = not self._needs_training
-                self.ef = eff.EfficientFrontier(self.prices, rf=0.02, log=True, num_trade_days=252)
+                self.ef = eff.EfficientFrontier(self.prices, rf=0.02, num_trade_days=252)
                 self.allocation = self.ef.p_allocation
 
         else:

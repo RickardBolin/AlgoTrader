@@ -78,6 +78,7 @@ def test_portfolios(bots, interval, start, end):
         print('Initial investment:', bot.init_invest)
         print('___________________________________________________________')
         print('Optimal portfolio: ')
+        print('final weights:', bot.allocation)
         print('')
         print('Final value:', bot.balance)
         print('Profit:', bot.balance - bot.init_invest)
