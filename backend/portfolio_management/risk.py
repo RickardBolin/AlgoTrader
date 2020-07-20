@@ -3,8 +3,6 @@ import numpy as np
 from backend.stochastic_processes.timeseries import pct_change
 from backend.stochastic_processes.statistics import cov, mean
 from backend.stochastic_processes.sde import GBM
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 
 def VaR(df, weights, avg_returns=None, cov_m=None, investment=None, percentile=5, days=1, method='gbm'):
@@ -18,7 +16,9 @@ def VaR(df, weights, avg_returns=None, cov_m=None, investment=None, percentile=5
     :return:
     """
 
-    # ÄNDRA TILL BROWNIAN MOTION REALISATIONER
+    # OBS! KAN VARA SKEVT ATT PASSA SUM(START_PRICE * WEIGHTS), kolla upp.
+    # KOlla var hit, och var backtesting.
+
     if not avg_returns or not cov_m:
         returns = pct_change(df, shift=1).dropna()
 

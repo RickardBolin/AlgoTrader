@@ -9,10 +9,6 @@ Could be relevant:
 https://github.com/mattja/sdeint/tree/master/sdeint
 """
 
-"""
-NÅGOT HÄR ÄR FISHY!
-"""
-
 
 class SDE(ABC):
 
@@ -20,14 +16,13 @@ class SDE(ABC):
         pass
 
     @staticmethod
-    def brownian_motion(length, num_bms=1):
+    def brownian_motion(length, dt=1., num_bms=1):
         """
         Calculates a brownian motion.
         :param length: Length of brownian motion.
         :param num_bms: How many brownian motions to be simulated.
         :return: Matrix of brownian motion processes.
         """
-        dt = 1.
         b = np.random.normal(0, np.sqrt(dt), (length, num_bms))
         W = np.cumsum(b, axis=0)
         return W

@@ -62,7 +62,6 @@ def test_portfolios(bots, interval, start, end):
     df = sd.get_stock_data(tickers=tickers, interval=interval, start=start, end=end)
     open_df = df['Open']
     close_df = df['Close']
-    print(open_df)
 
     print('___________________________________________________________________________________________________')
 
