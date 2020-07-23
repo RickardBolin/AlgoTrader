@@ -47,9 +47,12 @@ class GBM(SDE):
         self.start_time = 0
         self.start_price = start_value
 
-    def integrate(self, steps, bm):
+    def integrate(self, steps, bm=None):
         t = np.arange(steps)
         expected_returns, expected_vols = self.avg_returns * steps, self.avg_vols * np.sqrt(steps)
+
+        if bm is None:
+            bm = self.brownian_motion(steps)
 
         drift = (expected_returns - 0.5 * np.power(expected_vols, 2)) * t
         diffusion = expected_vols * bm
@@ -67,7 +70,7 @@ class GBM(SDE):
         return simulations
 
 
-def ornstein_uhlenbeck(df, steps, theta=1, expected_returns=None, expected_vols=None, bm=None, interval='D'):
+class OrnsteinUhlenbeck(SDE):
     """
     Solver to the SDE:
 
@@ -83,27 +86,41 @@ def ornstein_uhlenbeck(df, steps, theta=1, expected_returns=None, expected_vols=
     :return: Estimated future returns based on the Ornstein-Uhlenbeck SDE.
     """
 
-    t = pd.date_range(df.index[-1], periods=steps + 1, freq=interval).drop(df.index[-1])
-    num_cols = df.shape[1]
-    stock_prices = np.zeros((steps, num_cols))
-    start_prices = df.tail(1)
+    def __init__(self, start_value, mean, std, theta=0, interval='D'):
+        super(OrnsteinUhlenbeck, self).__init__()
+        self.theta = theta
+        self.mean = mean
+        self.std = std
+        self.interval = interval
 
-    if not bm:
-        bm = brownian_motion(steps, num_bms=num_cols)
+        self.start_time = 0
+        self.start_price = start_value
 
-    if not expected_returns:
-        expected_returns = stat.mean(ts.differentiate(df, 1).dropna()) * steps
+    def integrate(self, steps, bm=None, dt=1.):
+        t = np.arange(steps)
 
-    if not expected_vols:
-        expected_vols = stat.std(ts.differentiate(df, 1).dropna()) * np.sqrt(steps)
+        stock_prices = np.zeros(steps)
+        stock_prices[0] = self.start_price
 
-    dt = 1
-    dB = bm[1:] - bm[:-1]
-    stock_prices[0] = start_prices
-    for step in range(1, steps):
-        stock_prices[step] = stock_prices[step-1] + theta * (expected_returns - stock_prices[step-1]) * dt + expected_vols * dB[step-1]
+        if bm is None:
+            bm = self.brownian_motion(steps)
 
-    return pd.DataFrame(stock_prices, columns=df.columns, index=t)
+        dB = bm[1:] - bm[:-1]
+
+        for step in range(1, steps):
+            stock_prices[step] = stock_prices[step - 1] + self.theta * (
+                        self.mean - stock_prices[step - 1]) * dt + self.std * dB[step - 1]
+
+        return stock_prices
+
+    def simulate(self, steps, sims=1e5):
+        simulations = np.zeros((steps, sims))
+        sims = int(sims)
+        bms = self.brownian_motion(steps, num_bms=sims).T
+        for i, bm in enumerate(bms):
+            simulations[:, i] = self.integrate(steps, bm=bm, dt=1.)
+
+        return simulations
 
 
 def runge_kutta():
