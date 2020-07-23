@@ -5,6 +5,7 @@ import backend.portfolio_management.risk as risk
 import backend.data_handler.stock_data as sd
 import backend.algorithm as algo
 
+
 tickers = ['ERIC-B.ST',
         'HM-B.ST',
         'ASSA-B.ST',

@@ -42,8 +42,8 @@ class EfficientFrontier:
         p_vol = np.sqrt(weights.T @ self.expected_cov_m @ weights)
         return np.array([p_ret, p_vol, p_ret / p_vol])
 
-    def get_neg_sharpe(self, weights, neg=True):
-        return - self.get_stats(weights)[2]
+    def get_neg_sharpe(self, weights):
+        return -self.get_stats(weights)[2]
 
     def solve(self):
         if self.allow_neg_weights:
@@ -79,6 +79,7 @@ class EfficientFrontier:
         row_to_add = np.log(row_to_add)
         _return = row_to_add - self.prev_prices
         e_return = _return * self.num_trade_days
+
 
         self.expected_returns = (1/self.num_trade_days) * ((self.num_trade_days - 1) * self.expected_returns + e_return)
 

@@ -41,13 +41,20 @@ class Portfolio:
         self.ef = ef.EfficientFrontier(self.stocks)
         self.tickers = self.stocks.columns
         self.weights = self.ef.p_allocation
-        self.portfolio = pd.DataFrame(self.weights, columns=self.tickers)
+        self.portfolio = pd.DataFrame([self.weights], columns=self.tickers)
         self.plot()
 
     def plot(self):
         self.figure.clear()
         self.ax = self.figure.add_subplot(111)
-        pie_ax = self.ax.pie(self.weights, labels=self.tickers, autopct='%1.1f%%')
+
+        disp_w, disp_t = [], []
+        for w, ticker in zip(self.weights, self.tickers):
+            if abs(w) > 1e-4:
+                disp_w.append(w)
+                disp_t.append(ticker)
+
+        pie_ax = self.ax.pie(disp_w, labels=disp_t, autopct='%1.1f%%')
         self.figure.legend(pie_ax[0], self.tickers, loc='upper right')
         self.canvas.draw()
 
