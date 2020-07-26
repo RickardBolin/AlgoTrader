@@ -55,5 +55,6 @@ def get_upcoming_events(market):
     return ret
 
 markets = get_possible_markets()
+print(markets)
 print(get_upcoming_events(markets[10]))
 

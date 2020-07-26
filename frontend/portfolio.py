@@ -90,7 +90,10 @@ class Portfolio:
         # Create portfolio list
         self.bot_list_frame = tk.LabelFrame(self.portfolios_statistics_frame, text="Portfolios", height=10)
         self.bot_list_frame.pack(side=tk.TOP, fill=tk.X)
-        algorithms = os.listdir("file_system/portfolios")
+        dir_name = "file_system/portfolios"
+        if not os.path.exists(dir_name):
+            os.mkdir(dir_name)
+        algorithms = os.listdir(dir_name)
         self.list = FilterList(self.bot_list_frame,
                                source=algorithms,
                                display_rule=lambda item: item,
