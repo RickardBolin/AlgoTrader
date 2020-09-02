@@ -42,4 +42,6 @@ Order management
 
 **Structure**
 
-![Pipeline](Pipline_kompisfond_v2.png)
+![Structure](Structure_v1.png)
+
+
