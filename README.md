@@ -18,4 +18,14 @@ sudo apt install python3.8-dev
 sudo apt install libpython3.8-dev
  ```
 
-![GitHub Logo](Pipline_kompisfond_v1.png)
+------------------------------------------------------------------------
+![Pipeline](Pipline_kompisfond_v1.png)
+
+Data management
+- [x] Download ticker data
+
+Price prediction
+- [x] Simple LSTM
+
+Position manager
+- [] Working long/short position 
