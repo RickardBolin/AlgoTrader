@@ -30,12 +30,12 @@ Price prediction
 - [x] Simple LSTM
 
 Position manager
-- [] Working long/short position 
+- [ ] Working long/short position 
 
 Portfolio optimization
 - [x] Efficient frontier
 
 Order management
-- [] Create/test a account
+- [ ] Create/test a account
 
 
