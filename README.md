@@ -19,6 +19,8 @@ sudo apt install libpython3.8-dev
  ```
 
 ------------------------------------------------------------------------
+Work in progress - Jonte
+
 **Workflow**
 
 ![Pipeline](Pipline_kompisfond_v2.png)
@@ -38,4 +40,6 @@ Portfolio optimization
 Order management
 - [ ] Create/test a account
 
+**Structure**
 
+![Pipeline](Pipline_kompisfond_v2.png)
