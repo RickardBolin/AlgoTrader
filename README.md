@@ -19,7 +19,9 @@ sudo apt install libpython3.8-dev
  ```
 
 ------------------------------------------------------------------------
-![Pipeline](Pipline_kompisfond_v1.png)
+**Workflow**
+
+![Pipeline](Pipline_kompisfond_v2.png)
 
 Data management
 - [x] Download ticker data
@@ -29,3 +31,11 @@ Price prediction
 
 Position manager
 - [] Working long/short position 
+
+Portfolio optimization
+- [x] Efficient frontier
+
+Order management
+- [] Create/test a account
+
+
