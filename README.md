@@ -18,4 +18,4 @@ sudo apt install python3.8-dev
 sudo apt install libpython3.8-dev
  ```
 
-![GitHub Logo](Untitled drawing.jpg)
+![GitHub Logo](Pipline_kompisfond_v1.png)
